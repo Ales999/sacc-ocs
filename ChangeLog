@@ -1,0 +1,229 @@
+#    SQUID Acconting                                            [SAcc system]
+#   Copyright (C) 2003-2006  the.Virus
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+version notes:
+ STABLE - production releases was tested with default values. (on OpenBSD and/or FreeBSD and/or Linux),
+ PRE - prerelease, partially tested (I think much more then CURRENT)
+ CURRENT - may have some bugs, may not works. but "make" is passed.
+ CVS - full UNTESTED version.
+
+Versions changing.
+// www: http://sacc.cybersec.ru
+//$Author: slavik $ $Date: 2008-01-16 14:25:35 +0500 (п║я─п╢, 16 п╞п╫п╡ 2008) $
+//$Id: ChangeLog 17 2008-01-16 09:25:35Z slavik $
+// (C) the.Virus
+// Legend:
+// + Added
+// * Improved/changed
+// - Bug fixed
+// ! Important
+
+20-08-2008 1.80-STABLE3
+- Исправлена ошибка с обработкой логов большого размера
++ Импорт и экспорт пользователей (для обновления системы)
+- Исправлена ошибка с ротированием лога в конце месяца
+* Улучшен автопоиск файлов сквида для скрипта configure
+! Отныне цель upgrade работает только в рамках одного релиза (т.е. например с 1.80-STABLE1 до 1.80-STABLE3)
+
+30-03-2007 1.80STABLE2
+- Исправлена ошибка с обработкой спецсимволов в именах пользователей
+
+16-03-2006 1.80stable1
+- Исправлена ошибка при которой по умолчанию был режим счета по IP
+
+18-10-2006 1.80rc3
+* добавлен вывод отладочной инфы о поиске mysql.
+* добавлена возможность считать траффик без авторизации и без отключения.
+
+26-05-2006 1.80rc2
+- Добавлена возможность скрыть rsh stat если её нет
+- Добавлен хэдер устанавливающий принудительно кодировку кои8
+- Исправлена ошибка из-за которой некорректно передавался пароль на root от СУБД.
+- Исправлена ошибка из-за которой писалось в syslog, хотя параметры явно указывали не делать этого.
+- Немного изменены параметры расчета времени проверок, должно меньше стать накладных расходов
+* Убрана необходимость включать RegisterGlobals в пхп.
+
+28-03-2006 1.80rc1
+- исправлены проблемы из-за которых не собиралось под gcc 4.1
++ создан механизм автопоиска mysql (уж очень заебали)
++ создан механизм автопоиска куда установлены apache и squid (за компанию с mysql)
+- исправлены ворнинги компилятора при сборке на линуксе FC5, для красоты.
++ добавлен ключик который позволяет по существующему логу создать всех юзеров с дефолтными настройками, и в последствии создавать новых автоматически.
++ теперь пхп подхватывает registerglobals из .htaccess, правда для этого надо включить "AllowOverride All" в настройках апача
+
+24-03-2006 1.80pre4
+- добавлена совместимость с solaris
+- исправлены потенциально несовместимые с другими платформами места кода
+- исправлена логика ухода в daemon mode
+- исправлено падение при отсутсвии в записей в таблице uhistory
+- исправлено обновление БД с версии 1.704
+
+18-01-2006 1.80pre3
++ добавлен вывод статистики по дням
+- при чистой установке происходил сбой
+
+5-11-2005 1.80pre2
+! изменен формат таблиц.
+* создан кэш идентификаторов пользователей, уменьшает нагрузку на субд.
++ добавлена возможность редактирования списков доступа.
++ добавлена история за прошлые месяцы.
++ добавлена статистика эффективности кэша за этот месяц.
++ теперь возможна настройка системы через веб.
++ теперь возможно управлять демоном через веб, а не только сигналами.
+
+05-05-2005 1.80pre1
+- compilable under mandrake 10
+- web interface, NCSA mode, now administrator can reset user password
+- web interface, NCSA mode, now administrator can't change user login
+* can use remote mysql server, see configure --help for details
+
+08-12-2004 1.72-stable4
+- компилируется под freebsd 5.3
+- убрано ограничение на пользователей с "-" в имени. (возможно будут записи о пользователе - в логе)
+- теперь все аутентификаторы устанавливаются по умолчанию, ключи configure не играют роли, оставлены для настройки вебконсоли.
+
+10-11-2004 1.72-stable3
+- исправлены ошибки в обработке строк.
+! обработка строк немного оптимизирована.
+- исправлена проблема с неправильным кэшированием чтения на некоторых системах.
+- исправлена проблема в конфигурационном скрипте, в подсказке было написано "--enable-mysql-prefix" реально ожидалось "--with-mysql-prefix"
+! изменены ключи отладки, смотри --help для подробностей.
++ немного расширена документация и FAQ.
+- исправлен косяк с неправильным отображением ip на детальной статистике, правда для этого нужно не просто апгрейдить исполняемый файл, а базу пересоздать...
+
+20-08-2004 1.72-stable2
+- Исправлено (в двух местах) вылетание при некорректных строках.
+- Исправлена ошибка с необработкой ошибки EINTR, из-за которой слетал оффсет в некоторых случаях.
+- Исправлена ошибка в инсталляционном скрипте.
+
+2004-06-07 1.72-stable1
+! initial release
+
+28-05-2004 1.72-pre8
+! doc's
+- Setproctitle not used if not exist.
++ Added check for incorrect strings in ACCESS.LOG
+* Now if pid of squid is incorrect - we silently skip managing.
+* shorted application name for syslog.
+* added reason for "incorrect string". (for testing)
+
+13-04-2004 1.72-pre6
+* better daemonization and fault control
+- fixed broken web interface in pre5-p1
+- error "<varargs.h> is obsolete with this version of GCC."
+- some fixes in web interface
+* ncsa - added password changing by SA (not tested)
+! freezed developing sendmail maillog processing.
+
+17-02-2004 1.72-pre5
+- en.php line 84 parse error fixed.
+- fix "[" and "]" bad character in password. Must work with all symbols
+
+4-02-2004 1.72 pre4-p4
+- fix with subnet3="" issue
+- fix error username contains "-"
+- fix with "version.php" fixed path
+* You may change MySQL user for database connection.
+* Now you can run SAcc WITHOUT root rights. (not tested yet)
+* some small bugfixes and innovations.
+
+15-01-2004 1.72 pre4-p1
+- Fix counting CONNECT records.
+- Fixed \n on linux\freebsd in ./etc/pref.php
+- some changes in documentation (./doc)
+* webADMIN changes.
+- traf table fix for "NULL in timecl column" issue... use "update traf set timeacl='' where timeacl is null" for hotfix.
++ System config web checker.
+* autoconf/automake versions changed
+* squid libmiscutil & NCSA auth updated from squid-3.0-PRE3
+- makefile for web interface fixed (error only in 1.72PRE3)
+- NCSA web/stat incorrect password.
+
+09-12-2003 1.72 pre3
+- double counting on EOF.
+* reporter improved
++ SAcc eventlog
+- webSA, modify user
+
+08-12-2003 1.72 pre2
+! database structure changed (column description added to ADMONS table)
++ SA web interface (manage System Administrators accounts)
+- autoconf issues
+- added chpasswd-ru to distribution
+- SMB and NCSA mode now configures via autoconf (generally) [default - SMB]
+- full support of SMB and NCSA compiling
+- "MySQL: to many connection" on slow CPU
+
+30-11-2003 1.71 stable
+! database structure changed (type of ip column in detail table)
+- autoconf issues
+* configuration moved to configure script
+
+07-11-2003 1.6 Dropped, without STABLE release.
+
+06-11-2003 1.6 PRE2
+* autoconf support
+* README changed to current version
+
+19-10-2003 1.6 BETA-2
+- Security issues with detailed mode
+* Improved system model, most components written on C++
++ MultiLanguage support
+
+хх-09-2003 1.5 брошена, так и не завершившись стабильной версией.
+
+22-08-2003 1.5b61
++ Добалена настройка символа разделителя разрядов.
+- При перезапуске counter.php больше не пересчитываем всё поновой.
+* изменены запускающие скрипты, теперь они лежат в sacc/etc/init.d
+
+19-08-2003 1.5b6 tested smb
++ Добавлен режим detail, когда в БД засовываются целиком запросы.
++ добавлен вывод данных режима detail и для административного интерфейса и для пользовательского.
+- при создании пользователя запоминается режим доступа.
+- исправлена ошибка с некорректным созданием пользователя.
+
+27-07-2003 1.5b4 Not tested
+! Полностью отказался от идеи хранить юзеров в SQL. Части остались.
+* Теперь конфиг находится в sacc/etc/pref.php
+* в зависимости от режима авторизации прячутся ненужные элементы.
+! squid.conf всё равно нужно править на режим.
+* изменён report-ер. берёт настройки из sacc/etc/pref.php пишет докучи вывод от `du -h` =)
+
+24-06-2003 1.5b3
+* Теперь по умолчанию авторизация в ncsa.
+* Переделано немного создание пользователя, теперь пароль вводится тамже (для ncsa)
+! идёт работа по переделыванию в режим globals=off
++ приделана цена мегабайта, а также расчёт сколько осталось на счету, и сколько положить
+- исправлены мелкие огрехи в расчётах и интерфейсе
+* переделаны функции, всё что одинаково - скидано в один файл.
+
+1.15 брошена, так и не завершившись стабильной версией.
+
+1.15 alpha patchlevel 3, prerelease
++ написан скрипт инсталляции.
++ сделан авторизатор по SQL базе
+- пользователей в SQL базу добавлять нельзя через веб.
+! диплом ;)
+
+1.15 alpha patchlevel 2, prerelease
++ иправлен sacc.control
++ proxyauth положен в дистрибутив, описано куда его сувать ;))
+
+1.15 alpha, prerelease
+! доведено до ума и выложено в люд

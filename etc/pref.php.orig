@@ -1,0 +1,92 @@
+<?php
+//
+//    SQUID Acconting                                            [SAcc system] 
+//    Copyright (C) 2003  the.Virus
+//
+//    This program is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program; if not, write to the Free Software
+//    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+//--------------------------------------------------------- 
+// Типа конфиг. Сделан с особым цинизмом.
+// (C) the.Virus icq#210990
+// Тута всяка хрень понаписана, можете почитать, 
+// если нихрена непонятно - попробуйте изучить PHP, MySQL 
+// основы IT security и всякую такую ботву... 
+// говорят помогает ;)
+// --------------------------------------------------------
+// SAcc Web interface and authorization config.
+//
+// Web interface lang (by default)
+// 0 - russian
+// 1 - english (in develop)
+$language=0;
+// Версия, можно сменить чтобы враги ебались дико, пытаясь похачить
+$version="1.71";
+//$origin="в то время когда все остальные аномально размножались, мы - строили светлое будущее! и неважно какое, важно что для нас оно светлое!";
+$origin="SAcc ".$version;
+// megabyte cost, if == 0 -> invisible.
+// сколько стоит мегабайт, если 0 - то мегабайты ничё не стоят 
+// и нигде про цену ничего не пишется, useful для фирм где на месяц например выделяют 100 мб на рыло.
+$megabyte_cost=0;
+// Authorization mode
+// 1 - htpasswd
+// 2 - smb
+// 3 - MySQL (reserved for backward compat.)
+$auth_mode=2;
+// Ё-мыло... Везде будет писаться. На него будут падать все ерроры и отчёты
+// @mail for error and daily reports, I belive... =)
+$admin_mail="s@econ.psu.ru";
+// squid log's place
+$logdir="/usr/local/squid/var/logs";
+// NT/2k/2k3 Domain (only for $auth_mode=2!!!)
+$domain="PROGNOZ";
+// NT/2k/2k3 Domain Controller IP (only for $auth_mode=2!!!)
+//$dc_ip="10.0.0.7";
+// squid passwd location  (only for $auth_mode=1!!!)
+$ncsa_passwd="/usr/local/squid/etc/passwd";
+// apache htpasswd location
+$bin_prefix="/usr/local/bin";
+// Ограничение для всего подразделения в целом. Будет выделяться красным цифра 
+// общего траффика в отчёте (т.е. траффик через прокси и почтовый траффик)
+//если данная цифра превышена. (вроде понятно описал)
+// в данном конкретном случае - 3 МИЛЛИОНА КИЛОБАЙТ
+// DEPRECATED
+$month_limit=3000*1024*1000;
+// Детализированные логи, mean что ВСЕ данные будут скидываться в БД
+// useful для ловли "крыс" =)
+// Внимание в этой версии влияет ТОЛЬКО на веб интерфейс. 
+// Вести детализированные логи или нет настраивается в main.c [!!!]
+// !only for web!
+$detailed=1;
+// Символ разделения разрядов
+$delimiter=" ";
+// default timeacl
+$def_timeacl="time1900";
+// default limit
+$std_limit=20000000;
+// НЕ показывать почтовую статистику, если необходимо показывать - закомментировать
+//$no_mail="true";
+// далее идут системные фишки.
+// признак загруженности конфига ;)
+$cfg_loaded=1;
+// web mysql connection pref's
+$mysql_server="";
+$mysql_login="slavik";
+$mysql_passwd="slavik";
+$mysql_database="trf";
+
+if (isset($debug)) {echo "config loaded...";};
+if ($_COOKIE['lang']==0) {include "/usr/local/sacc/etc/ru.php";} else
+{include "/usr/local/sacc/etc/en.php";};
+?>

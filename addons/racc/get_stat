@@ -1,0 +1,8 @@
+#!/bin/sh
+# Запускается с периодичностью (у меня раз в день) и закидывает данные в базу.
+_date=`date +%y%m%d%H%M%S`
+cd ./data
+/usr/bin/rsh -l traffic xxx.xxx.xxx.xxx clear ip accounting
+/usr/bin/rsh -l traffic xxx.xxx.xxx.xxx sh ip accounting checkpoint >$_date
+/usr/bin/rsh -l traffic xxx.xxx.xxx.xxx clear ip accounting checkpoint
+

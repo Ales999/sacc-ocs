@@ -1,0 +1,35 @@
+#!/bin/sh
+# full version
+# -----------------------------------------------------------------------------
+# Все копирайты принадлежат Virus-у
+# Сделано с особым цинизмом.
+# -----------------------------------------------------------------------------
+SACCDIR="/usr/local/sacc"
+RETVAL=0
+PID=`cat $SACCDIR/var/sacc.pid`
+
+case "$1" in
+  start)
+                $SACCDIR/bin/sacc
+                RETVAL=$?
+        ;;
+  stop)
+		kill -TERM $PID
+#                killall -TERM sacc
+        ;;
+  reconfigure)
+		kill -HUP $PID
+#                killall -HUP sacc
+        ;;
+  logrotate)
+		kill -USR1 $PID
+#                killall -USR1 sacc
+        ;;
+
+
+  *)
+        echo "Usage: $0 start stop reconfigure "
+        RETVAL=1
+esac
+
+exit $RETVAL

@@ -1,0 +1,777 @@
+dnl Process this file with autoconf to produce a configure script.
+dnl $Author: slavik $ $Date: 2008-01-16 14:25:35 +0500 (Срд, 16 Янв 2008) $
+dnl $Id: configure.in 17 2008-01-16 09:25:35Z slavik $
+AC_INIT([sacc],[1.80-stable3],[ven@cybersec.ru])
+sinclude(mysql.m4)
+sinclude(check_cpu.m4)
+sinclude(squid.m4)
+sinclude(apache.m4)
+AC_REVISION($Revision: 17 $)
+AC_CONFIG_HEADERS([config.h])
+AC_CACHE_LOAD
+AC_CANONICAL_TARGET
+AC_SYS_LARGEFILE
+AM_INIT_AUTOMAKE
+AC_FUNC_FSEEKO
+dnl AC_CONFIG_AUX_DIR()
+AC_PREFIX_DEFAULT(/usr/local/squid)
+dnl AM_MAINTAINER_MODE
+AC_CONFIG_SRCDIR(./src/main.cpp)
+dnl This ksh/zsh feature conflicts with `cd blah ; pwd`
+unset CDPATH
+# This is need before AC_PROG_CC
+#
+SAVE_ASFLAGS="$ASFLAGS"
+SAVE_CFLAGS="$CFLAGS"
+SAVE_CXXFLAGS="$CXXFLAGS"
+SAVE_LDFLAGS="$LDFLAGS"
+SAVE_CXXLDFLAGS="$CXXLDFLAGS"
+# The following hack should ensure that configure doesn't add optimizing
+# or debugging flags to CFLAGS or CXXFLAGS
+# C_EXTRA_FLAGS are flags that are automaticly added to both
+# CFLAGS and CXXFLAGS
+CFLAGS="$CFLAGS $C_EXTRA_FLAGS "
+CXXFLAGS="$CXXFLAGS $C_EXTRA_FLAGS "
+
+if test "x${CFLAGS-}" = x ; then
+  cflags_is_set=no
+else
+  cflags_is_set=yes
+fi
+
+if test "x${CPPFLAGS-}" = x ; then
+  cppflags_is_set=no
+else
+  cppflags_is_set=yes
+fi
+
+if test "x${LDFLAGS-}" = x ; then
+  ldflags_is_set=no
+else
+  ldflags_is_set=yes
+fi
+
+AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_CC
+AM_PROG_CC_C_O
+
+AC_PROG_CPP
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+AC_FUNC_ALLOCA
+AC_HEADER_STDC
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h limits.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h])
+
+AC_HEADER_STAT
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_UID_T
+AC_C_INLINE
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_CHECK_TYPES([ptrdiff_t])
+AC_PATH_PROG(MV, mv, mv)
+AC_PATH_PROG(TOUCH, touch, touch)
+AC_PATH_PROG(RM, rm, rm)
+AC_PATH_PROG(CP, cp, cp)
+AC_PATH_PROG(CHMOD, chmod, chmod)
+AC_PATH_PROG(CAT,cat,cat,,,REJECT)
+AC_CHECK_PROG(CMYSQL, mysql, mysql, , , REJECT)
+AC_CHECK_PROG(MYSQLDUMP, mysqldump, mysqldump, , , REJECT)
+AC_PATH_PROG(ECHO, echo, echo)
+AC_PATH_PROG(CHOWN, chown, chown)
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
+AC_FUNC_MKTIME
+AC_FUNC_MMAP
+AC_FUNC_REALLOC
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_SETVBUF_REVERSED
+AC_TYPE_SIGNAL
+AC_FUNC_STAT
+AC_FUNC_STRFTIME
+AC_CHECK_FUNCS([floor gethostbyname gethostname getpagesize inet_ntoa memset modf munmap putenv regcomp rint select socket strcasecmp strchr strdup strerror strstr])
+
+AC_TYPE_SIGNAL
+AC_TYPE_PID_T
+# make /usr/local the default for the installation
+AC_PREFIX_DEFAULT(/usr/local)
+if test "x$prefix" = "xNONE"; then
+  prefix=$ac_default_prefix
+  ac_configure_args="$ac_configure_args --prefix $prefix"
+fi
+
+# Build optimized or debug version ?
+MAX_C_OPTIMIZE="-O3 -fomit-frame-pointer"
+MAX_CXX_OPTIMIZE="-O3 -fomit-frame-pointer"
+# First check for gcc and g++
+if test "$ac_cv_c_compiler_gnu" = "yes"
+then
+  DEBUG_CFLAGS="-g"
+  DEBUG_OPTIMIZE_CC="-O"
+  OPTIMIZE_CFLAGS="$MAX_C_OPTIMIZE"
+else
+  DEBUG_CFLAGS="-g"
+  DEBUG_OPTIMIZE_CC=""
+  OPTIMIZE_CFLAGS="-O"
+fi
+if test "$ac_cv_prog_cxx_g" = "yes"
+then
+  DEBUG_CXXFLAGS="-g"
+  DEBUG_OPTIMIZE_CXX="-O"
+  OPTIMIZE_CXXFLAGS="$MAX_CXX_OPTIMIZE"
+else
+  DEBUG_CXXFLAGS="-g"
+  DEBUG_OPTIMIZE_CXX=""
+  OPTIMIZE_CXXFLAGS="-O"
+fi
+
+AC_ARG_WITH(debug,
+[  --with-debug=yes             activate built-in debug ("full" for developers)],
+[ 
+if test "$with_debug" = "full" ; then
+   echo "DEBUG MODE ENABLED"
+   AC_DEFINE(DEBUG, 1, [ define for built-in debug ])
+  CFLAGS="$DEBUG_CFLAGS $DEBUG_OPTIMIZE_CC $CFLAGS"
+  CXXFLAGS="$DEBUG_CXXFLAGS $DEBUG_OPTIMIZE_CXX $CXXFLAGS"
+elif test "$with_debug" = "yes"
+then
+  AC_DEFINE(LDEBUG, 1, [light debugging])
+  CFLAGS="$DEBUG_CFLAGS $DEBUG_OPTIMIZE_CC -DDBUG_ON -DSAFE_MUTEX $CFLAGS"
+  CXXFLAGS="$DEBUG_CXXFLAGS $DEBUG_OPTIMIZE_CXX -DSAFE_MUTEX $CXXFLAGS"
+else
+  # Optimized version. No debug
+  CFLAGS="$OPTIMIZE_CFLAGS -DDBUG_OFF $CFLAGS"
+  CXXFLAGS="$OPTIMIZE_CXXFLAGS -DDBUG_OFF $CXXFLAGS"
+fi
+
+])
+
+AC_DEFINE(SAFE_LOGROTATE, 1, [ undefine for unsafe logrotate ])
+AC_ARG_ENABLE(safe-logrotate,  
+[  --disable-safe-logrotate   safe logrotate, logrotate ONLY in 00:00 at first day of month else logrotate all 1 day],
+[ if test "$enableval" = "no" ; then
+    echo "SAFE logrotation disabled"
+    AC_DEFINE(SAFE_LOGROTATE, 0, [ undefine for unsafe logrotate ])
+  fi
+])
+auth_plg=SMB
+auth_mode=2
+AC_ARG_ENABLE(ncsa-auth,
+[  --enable-ncsa-auth         Use NCSA auth (set SMB auth helper disable) ],
+[ if test "$enableval" = "yes" ; then
+    echo "NCSA MODE ENABLED"
+    auth_plg=NCSA
+    auth_mode=1
+  fi
+])
+AC_SUBST(auth_plg)
+AC_SUBST(auth_mode)
+
+AC_ARG_ENABLE(fast,
+[  --enable-fast             don't test input for incorrect data (speed's up) ],
+[ if test "$enableval" = "yes" ; then
+    echo "FAST MODE ENABLED"
+    AC_DEFINE(FAST, 1, [ define for unsafe mode ])
+  fi
+])
+
+AC_ARG_ENABLE(broken-cache,
+[  --enable-broken-cache     read symbol by symbol, useful if standart way fail, or produce lot of errors. ],
+[ if test "$enableval" = "yes" ; then
+    echo "BROKEN CACHE MODE ENABLED"
+    AC_DEFINE(BROKEN_CACHE, 1, [ define for BROKEN CACHE mode ])
+  fi
+])
+
+AC_ARG_ENABLE(ipstat,
+[  --enable-ipstat             IP statistic only ],
+[ if test "$enableval" = "yes" ; then
+    echo "IPSTAT MODE ENABLED"
+    AC_DEFINE(IP_STAT, 1, [ define for ipstat mode ])
+  fi
+])
+
+AC_ARG_ENABLE(cheat,
+[  --enable-cheat             count HIT's ],
+[ if test "$enableval" = "yes" ; then
+    echo "CHEAT MODE ENABLED"
+    AC_DEFINE(CHEAT_MODE, 1, [ define for cheat ])
+  fi
+])
+AC_DEFINE(FREE_HTTPS, 1, [ define for ICQ ])
+AC_ARG_ENABLE(icq,  
+[  --disable-icq              allow HTTPS traffic only for allowed time],
+[ if test "$enableval" = "no" ; then
+    echo "HTTPS fulltime disabled"
+    AC_DEFINE(FREE_HTTPS, 0, [ define for ICQ ])
+  fi
+])
+
+dnl --enable-cgidir=$ncsa_cgi
+dnl AC_ARG_ENABLE(cgidir,  
+dnl [  --enable-cgidir=DIR		Apache CGI-BIN directory],[ cgidir="$enableval"], [cgidir=$www/cgi-bin])
+
+AC_ARG_WITH([www],   
+[  --with-www=DIR			Location where link to web interface], [www="$withval"], [www=AUTO])
+AC_SUBST(www)
+AC_ARG_WITH([squid-orig-conf],
+[  --with-squid-orig-conf=FILE		Location of SquiD master config (squid.orig.conf)], [squid_orig_conf="$withval"], [squid_orig_conf=$prefix/sacc/etc/squid.orig.conf])
+AC_ARG_WITH([squid-conf],
+[  --with-squid-conf=FILE		Location of squid.conf for write to... (/usr/local/squid/etc/squid.conf)], [squid_conf="$withval"], [squid_conf=AUTO])
+AC_ARG_WITH([squid-pid],
+[  --with-squid-pid=FILE		Location of squid.pid (/usr/local/squid/var/logs/squid.pid)], [squid_pid="$withval"], [squid_pid=AUTO])
+AC_ARG_WITH([squid-log],
+[  --with-squid-log=FILE		Location of access.log (/usr/local/squid/var/logs/access.log)], [squid_log="$withval"], [squid_log=AUTO])
+AC_ARG_ENABLE([sacc-pid],
+[  --enable-sacc-pid=FILE		Location of sacc.pid (/usr/local/sacc/var/sacc.pid)], [sacc_pid="$enableval"], [sacc_pid=$prefix/sacc/var/sacc.pid])
+AC_ARG_ENABLE([mysql-root],
+[  --enable-mysql-root=root		mysql manager username, default is root.], [mysql_root="$enableval"], [mysql_root="root"])
+AC_ARG_ENABLE([mysql-rp],
+[  --enable-mysql-rp=pass		mysql root's password, default is empty.], [mysql_rp="$enableval"], [mysql_rp=""])
+AC_ARG_ENABLE([mysql-host],   
+[  --enable-mysql-host=HOST_NAME	mysql database host, default is localhost], [mysql_host="$enableval"], [mysql_host="localhost"])
+AC_ARG_ENABLE([mysql-sacc],   
+[  --enable-mysql-sh=HOST_NAME		mysql sacc hostname, default is localhost], [mysql_sh="$enableval"], [mysql_sh="localhost"])
+AC_ARG_ENABLE([mysql-db],
+[  --enable-mysql-db=DATABASE_NAME	mysql database name (for developers)], [mysql_db="$enableval"], [mysql_db="sacc"])
+AC_ARG_ENABLE([mysql-user],   
+[  --enable-mysql-user=USER_NAME   	mysql database user (for developers)], [mysql_user="$enableval"], [mysql_user="slavik"])
+AC_ARG_ENABLE([mysql-passwd], 
+[  --enable-mysql-passwd=PASSWORD	mysql database password (for developers)], [mysql_passwd="$enableval"], [mysql_passwd="slavik"])
+AC_ARG_WITH([mysql-prefix], 
+[  --with-mysql-prefix=DIR		mysql install prefix (AUTO)], [mysql_prefix="$withval"], [mysql_prefix="AUTO"])
+AC_ARG_ENABLE([free-subnet1], 
+[  --enable-free-subnet1=IP		Free subnet 1 (10.0.0. by default)], [free_subnet1="$enableval"], [free_subnet1="10.0.0."])
+AC_ARG_ENABLE([free-subnet2], 
+[  --enable-free-subnet2=IP		Free subnet 2 (192.168. by default)], [free_subnet2="$enableval"], [free_subnet2="192.168."])
+AC_ARG_ENABLE([free-subnet3], 
+[  --enable-free-subnet3=IP		Free subnet 3 (1.2.3. by default)], [free_subnet3="$enableval"], [free_subnet3="1.2.3."])
+AC_ARG_WITH([samba-prefix],   
+[  --with-samba-prefix=DIR		Samba installation dir (for SMB auth)], [smb_prefix="$withval"], [smb_prefix="/usr/local/samba"])
+AC_ARG_WITH([smb-domain],   
+[  --with-smb-domain=NAME		Domain name (for SMB auth)], [smb_domain="$withval"], [smb_domain="RU"])
+AC_ARG_WITH([ncsa-passwd],
+[  --with-ncsa-passwd=FILE		Filename & location of hash file (for NCSA auth)], [ncsa_passwd="$withval"], [ncsa_passwd="$prefix/sacc/etc/passwd"])
+
+AC_DEFINE_UNQUOTED(SQUID_ORIG_CONF,[ "$squid_orig_conf" ],[define to path to squid.orig.conf])
+AC_DEFINE_UNQUOTED(INT_SUBNET1,[ "$free_subnet1" ],[define free subnet 1])
+AC_DEFINE_UNQUOTED(INT_SUBNET2,[ "$free_subnet2" ],[define free subnet 2])
+AC_DEFINE_UNQUOTED(INT_SUBNET3,[ "$free_subnet3" ],[define free subnet 3])
+AC_DEFINE_UNQUOTED(DB_DATABASE,[ "$mysql_db" ],[define MySQL database name])
+AC_DEFINE_UNQUOTED(DB_USERNAME,[ "$mysql_user" ],[define MySQL username])
+AC_DEFINE_UNQUOTED(DB_HOSTNAME,[ "$mysql_host" ],[define MySQL hostname])
+AC_DEFINE_UNQUOTED(DB_PASSWORD,[ "$mysql_passwd" ],[define MySQL password])
+
+AC_DEFINE_UNQUOTED(SMB_DOMAIN,[ "$smb_domain" ],[domain for smb auth])
+AC_DEFINE_UNQUOTED(PREFIX,[ "$prefix" ],[define program prefix])
+AC_SUBST(smb_domain)
+AC_SUBST(smb_prefix)
+AC_SUBST(mysql_db)
+AC_SUBST(mysql_user)
+AC_SUBST(mysql_host)
+AC_SUBST(mysql_passwd)
+SACC_PID=$sacc_pid
+AC_SUBST(SACC_PID)
+AC_DEFINE_UNQUOTED(PID_FILE,[ "$SACC_PID" ],[define SAcc PID file])
+AC_SUBST(mysql_root)
+AC_SUBST(mysql_rp)
+AC_SUBST(mysql_sh)
+
+dnl AC_SUBST(SACC_PID, [ "$sacc_pid" ])
+dnl AC_SUBST(mysql_db)
+dnl AC_SUBST(mysql_user)
+dnl AC_SUBST(mysql_host)
+dnl AC_SUBST(mysql_passwd)
+
+dnl /usr/local/squid/var/logs/access.log
+dnl /usr/local/sacc/var/counter.pid
+all_libraries="$all_libraries $USER_LDFLAGS"
+all_includes="$all_includes $USER_INCLUDES"
+
+AC_SUBST(all_includes)
+AC_SUBST(all_libraries)
+AC_SUBST(AUTODIRS)
+dnl AC_STRUCT_TM
+dnl AC_DEFINE([SACC_AUTO], [1], [])
+AC_CHECK_HEADERS( \
+        varargs.h \
+        stdarg.h)
+AC_CHECK_LIB(m, cos)
+AC_CHECK_FUNCS(ntohl \
+inet_addr)
+AC_CHECK_FUNCS(setproctitle)
+AC_CHECK_FUNCS(strsep)
+AC_CHECK_FUNCS(mysql_set_character_set)
+dnl Checks for integer sizes - squid   === FROM SQUID === *****************************
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+
+AC_CHECK_HEADERS( \
+        arpa/inet.h \
+        arpa/nameser.h \
+        assert.h \
+        bstring.h \
+        crypt.h \
+        ctype.h \
+        errno.h \
+        execinfo.h \
+        fcntl.h \
+        getopt.h \
+        gnumalloc.h \
+        grp.h \
+        ip_compat.h \
+        ip_fil_compat.h \
+        ip_fil.h \
+        ip_nat.h \
+        libc.h \
+        limits.h \
+        malloc.h \
+        math.h \
+        memory.h \
+        mount.h \
+        netdb.h \
+        netinet/in.h \
+        netinet/tcp.h \
+        netinet/ip_fil_compat.h \
+        openssl/err.h \
+        openssl/md5.h \
+        openssl/ssl.h \
+        openssl/engine.h \
+        poll.h \
+        pwd.h \
+        regex.h \
+        sched.h \
+        signal.h \
+        stdarg.h \
+        stddef.h \
+        stdio.h \
+        stdlib.h \
+        string.h \
+        strings.h \
+        sys/bitypes.h \
+        sys/bswap.h \
+        sys/endian.h \
+        sys/file.h \
+        sys/ioctl.h \
+        sys/param.h \
+        sys/msg.h \
+        sys/resource.h \
+        sys/select.h\
+        sys/socket.h \
+        sys/stat.h \
+        sys/statvfs.h \
+        syscall.h \
+        sys/syscall.h \
+        sys/time.h \
+        sys/types.h \
+        sys/un.h \
+        sys/vfs.h \
+        sys/wait.h \
+        syslog.h \
+        time.h \
+        unistd.h \
+        utime.h \
+        varargs.h \
+        byteswap.h \
+        glib.h \
+        stdint.h \
+        inttypes.h \
+        grp.h \
+        nss_common.h \
+        nss.h
+)
+AC_CHECK_FUNCS(\
+        backtrace_symbols_fd \
+        bcopy \
+        bswap_16 \
+        bswap_32 \
+        bswap16 \
+        bswap32 \
+        crypt \
+        fchmod \
+        getdtablesize \
+        getpagesize \
+        getpass \
+        getrlimit \
+        getrusage \
+        getspnam \
+        htobe16 \
+        htole16 \
+        lrand48 \
+        mallinfo \
+        mallocblksize \
+        mallopt \
+        memcpy \
+        memmove \
+        memset \
+        mkstemp \
+        mktime \
+        mstats \
+        poll \
+        pthread_attr_setschedparam \
+        pthread_attr_setscope \
+        pthread_setschedparam \
+        pthread_sigmask \
+        putenv \
+        random \
+        regcomp \
+        regexec \
+        regfree \
+        res_init \
+        rint \
+        sbrk \
+        select \
+        seteuid \
+        setgroups \
+        setpgrp \
+        setrlimit \
+        setsid \
+        sigaction \
+        snprintf \
+        socketpair \
+        srand48 \
+        srandom \
+        statfs \
+        sysconf \
+        syslog \
+        timegm \
+        vsnprintf \
+)
+
+CRYPTLIB=''
+dnl Check for libcrypt
+dnl Some of our helpers use crypt(3) which may be in libc, or in
+dnl libcrypt (eg FreeBSD)
+AC_CHECK_LIB(crypt, crypt, [CRYPTLIB="-lcrypt"])
+AC_SUBST(CRYPTLIB)
+
+dnl Check for typedefs
+AC_CHECK_SIZEOF(void *)
+dnl ******************************************
+dnl AC_DEFINE([SIZEOF_INT16_T], [], [Description])
+dnl AC_DEFINE([SIZEOF_INT32_T], [], [Description])
+AC_DEFINE([SIZEOF_INT64_T], [], [Description])
+AC_DEFINE([SIZEOF_OFF_T], [], [Description])
+AC_DEFINE([SIZEOF_SIZE_T], [], [Description])
+AC_DEFINE([SIZEOF_UINT16_T], [], [Description])
+AC_DEFINE([SIZEOF_UINT32_T], [], [Description])
+AC_DEFINE([SIZEOF_UINT64_T], [], [Description])
+AC_DEFINE([SIZEOF_U_INT16_T], [], [Description])
+AC_DEFINE([SIZEOF_U_INT32_T], [], [Description])
+AC_DEFINE([SIZEOF_U_INT64_T], [], [Description])
+AC_DEFINE([SIZEOF___INT64], [], [Description])
+
+AC_CHECK_SIZEOF_SYSTYPE(__int64)
+AC_CHECK_SIZEOF_SYSTYPE(int16_t)
+AC_CHECK_SIZEOF_SYSTYPE(uint16_t)
+AC_CHECK_SIZEOF_SYSTYPE(u_int16_t)
+AC_CHECK_SIZEOF_SYSTYPE(int32_t)
+AC_CHECK_SIZEOF_SYSTYPE(uint32_t)
+AC_CHECK_SIZEOF_SYSTYPE(u_int32_t)
+AC_CHECK_SIZEOF_SYSTYPE(int64_t)
+AC_CHECK_SIZEOF_SYSTYPE(uint64_t)
+AC_CHECK_SIZEOF_SYSTYPE(u_int64_t)
+
+dnl int16_t
+if test "x$ac_cv_sizeof_short" = "x2"; then
+        AC_CHECK_SYSTYPE(int16_t,short)
+elif test "x$ac_cv_sizeof_int" = "x2"; then
+        AC_CHECK_SYSTYPE(int16_t,int)
+fi
+dnl u_int16t_t
+if test "x$ac_cv_sizeof_uint16_t" = "x2"; then
+        AC_CHECK_SYSTYPE(u_int16_t,uint16_t)
+elif test "x$ac_cv_sizeof_short" = "x2"; then
+        AC_CHECK_SYSTYPE(u_int16_t,unsigned short)
+elif test "x$ac_cv_sizeof_int" = "x2"; then
+        AC_CHECK_SYSTYPE(u_int16_t,unsigned int)
+fi
+dnl int32_t
+if test "x$ac_cv_sizeof_int" = "x4"; then
+        AC_CHECK_SYSTYPE(int32_t,int)
+elif "x$ac_cv_sizeof_long" = "x4"; then
+        AC_CHECK_SYSTYPE(int32_t,long)
+fi
+dnl u_int32_t
+if test "x$ac_cv_sizeof_uint32_t" = "x4"; then
+        AC_CHECK_SYSTYPE(u_int32_t,uint32_t)
+elif test "x$ac_cv_sizeof_int" = "x4"; then
+        AC_CHECK_SYSTYPE(u_int32_t,unsigned int)
+elif test "x$ac_cv_sizeof_long" = "x4"; then
+        AC_CHECK_SYSTYPE(u_int32_t,unsigned long)
+
+fi
+dnl int64_t
+if test "x$ac_cv_sizeof_long" = "x8"; then
+        AC_CHECK_SYSTYPE(int64_t,long)
+elif test "x$ac_cv_sizeof_long_long" = "x8"; then
+        AC_CHECK_SYSTYPE(int64_t,long long)
+elif test "x$ac_cv_sizeof___int64" = "x8"; then
+        AC_CHECK_SYSTYPE(int64_t,__int64)
+fi
+dnl u_int64_t
+if test "x$ac_cv_sizeof_uint64_t" = "x8"; then
+        AC_CHECK_SYSTYPE(u_int64_t,uint64_t)
+elif test "x$ac_cv_sizeof_long" = "x8"; then
+        AC_CHECK_SYSTYPE(u_int64_t,unsigned long)
+elif test "x$ac_cv_sizeof_long_long" = "x8"; then
+        AC_CHECK_SYSTYPE(u_int64_t,unsigned long long)
+elif test "x$ac_cv_sizeof___int64" = "x8"; then
+        AC_CHECK_SYSTYPE(int64_t,unsigned __int64)
+fi
+
+_AC_CHECK_TYPE_OLD(pid_t, int)
+_AC_CHECK_TYPE_OLD(size_t, unsigned int)
+_AC_CHECK_TYPE_OLD(ssize_t, int)
+_AC_CHECK_TYPE_OLD(off_t, int)
+_AC_CHECK_TYPE_OLD(mode_t, u_short)
+_AC_CHECK_TYPE_OLD(fd_mask, int)
+
+AC_CHECK_SIZEOF_SYSTYPE(off_t, 4)
+AC_CHECK_SIZEOF_SYSTYPE(size_t, 4)
+
+dnl Check for special functions
+AC_FUNC_ALLOCA
+
+AC_CHECK_TYPE(socklen_t,AC_DEFINE(HAVE_SOCKLEN_T,1,[socklen_t is defined by the system headers]),,[
+#include <sys/types.h>
+#include <sys/socket.h>
+#if STDC_HEADERS
+#include <stdlib.h>
+#include <stddef.h>
+#endif])
+
+AC_CHECK_TYPE(mtyp_t,AC_DEFINE(HAVE_MTYP_T,1,[mtyp_t is defined by the system headers]),,[#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>])
+
+dnl Check for needed libraries
+AC_CHECK_LIB(nsl, main)
+AC_CHECK_LIB(socket, main)
+
+dnl ******************************************
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(unsigned char)
+AC_CHECK_SIZEOF(unsigned short)
+AC_CHECK_SIZEOF(unsigned int)
+AC_CHECK_SIZEOF(unsigned long)
+AM_CONDITIONAL(NEED_OWN_MD5, true)
+
+AC_ARG_WITH(openssl,
+[  --with-openssl[=prefix]
+                          Compile with the OpenSSL libraries. The path to
+                          the OpenSSL development libraries and headers
+                          installation can be specified if outside of the
+                          system standard directories],
+[
+  case "$with_openssl" in
+  yes)
+    USE_OPENSSL=1
+    ;;
+  no)
+    USE_OPENSSL=
+    ;;
+  *)
+    PKG_CONFIG_PATH="$with_openssl/lib/pkgconfig${PKG_CONFIG_PATH:+:}${PKG_CONFIG_PATH}"
+    export PKG_CONFIG_PATH
+    SSLLIB="-L$with_openssl/lib -lssl -lcrypto"
+    SSLFLAGS="-I$with_openssl/include"
+    USE_OPENSSL=1
+  esac
+])
+
+if test -n "$USE_OPENSSL"; then
+  echo "Using OpenSSL MD5 implementation"
+  AC_DEFINE(USE_OPENSSL,1,Using OpenSSL MD5 implementation)
+  AM_CONDITIONAL(NEED_OWN_MD5, false)
+  if test -z "$SSLLIB"; then
+    SSLLIB="-lcrypto" # for MD5 routines
+  fi
+  if $PKGCONFIG --exists openssl; then
+    SSLLIB="`$PKGCONFIG --libs openssl`"
+    SSLFLAGS="`$PKGCONFIG --cflags openssl`"
+  fi
+  CPPFLAGS="${SSLFLAGS} $CPPFLAGS"
+fi
+AC_SUBST(SSLLIB)
+
+
+AM_CONDITIONAL(NEED_OWN_SNPRINTF, false)
+if test "$ac_cv_func_snprintf" = "no" || test "$ac_cv_func_vsnprintf" = "no" ; then
+  AM_CONDITIONAL(NEED_OWN_SNPRINTF, true)
+fi
+AC_SUBST(LIBDLMALLOC)
+AC_SUBST(LIB_MALLOC)
+
+
+dnl Enable Large file support
+buildmodel=""
+needlargefiles=
+
+AC_ARG_WITH(large-files,
+[  --with-large-files      Enable support for large files (logs etc).],
+[ if test "$withval" = yes; then
+        needlargefiles=1
+  fi
+])
+
+
+dnl UNIX Build environment
+AC_ARG_WITH(build-environment,
+[  --with-build-environment=model
+                          The build environment to use. Normally one of
+                          POSIX_V6_ILP32_OFF32   32 bits
+                          POSIX_V6_ILP32_OFFBIG  32 bits with large file support
+                          POSIX_V6_LP64_OFF64    64 bits
+                          POSIX_V6_LPBIG_OFFBIG  large pointers and files
+                          XBS5_ILP32_OFF32       32 bits (legacy)
+                          XBS5_ILP32_OFFBIG      32 bits with large file support (legacy)
+                          XBS5_LP64_OFF64        64 bits (legacy)
+                          XBS5_LPBIG_OFFBIG      large pointers and files (legacy)
+                          default                The default for your OS],
+[ case "$withval" in
+  yes|no)
+        echo "--with-build-environment expects a build environment string as used by getconf"
+        exit 1
+        ;;
+  *)
+        buildmodel="$withval"
+        ;;
+  esac
+])
+
+
+
+if test $needlargefiles && test -z "$buildmodel"; then
+        for model in POSIX_V6_ILP32_OFFBIG XBS5_ILP32_OFFBIG POSIX_V6_LP64_OFF64 XBS5_LP64_OFF64 POSIX_V6_LPBIG_OFFBIG XBS5_LPBIG_OFFBIG; do
+                if test "`getconf _$model 2>/dev/null || true`" = 1 || test "`getconf $model 2>/dev/null || true`" ; then
+                        buildmodel=$model
+                        break
+                fi
+        done
+        if test -z "$buildmodel"; then
+                echo "WARNING: No suitable build environment found for large files. Trying to use _FILE_OFFSET_BITS=64"
+                sleep 1
+                CFLAGS="-D_FILE_OFFSET_BITS=64 $CFLAGS"
+        fi
+fi
+if test -n "$buildmodel" && test "$buildmodel" != "default"; then
+        echo "Using $buildmodel build environment"
+        if test "`getconf _$buildmodel 2>/dev/null || true`" = 1 || test "`getconf $buildmodel 2>/dev/null || true`" ; then
+            : # All fine
+        else
+            echo "ERROR: Build environment $buildmodel not known to getconf."
+            exit 1
+        fi
+        CFLAGS="`getconf ${buildmodel}_CFLAGS` $CFLAGS"
+        LIBS="`getconf ${buildmodel}_LIBS` $LIBS"
+        LDFLAGS="`getconf ${buildmodel}_LDFLAGS` $LDFLAGS"
+        case "$host" in
+dnl
+dnl On Solaris getconf returns for CFLAGS -Xa and -Usun options, but:
+dnl   -Xa is supported only by Sun cc, so we need to remove it when using gcc
+dnl   The 'sun' define is needed by ipfilter includes, so we must remove -Usun
+            *-solaris*)
+                if test "$GCC" = "yes"; then
+                    echo "Removing -Xa for gcc on $host"
+                    CFLAGS="`echo $CFLAGS | sed -e 's/-Xa//'`"
+                fi
+                echo "Removing -Usun on $host"
+                CFLAGS="`echo $CFLAGS | sed -e 's/-Usun//'`"
+                ;;
+dnl
+dnl On Irix 6.x getconf returns options valid only for the SGI MipsPRO compiler,
+dnl so we must adjust something to avoid gcc errors.
+dnl On Irix 6.x 32/64 bit we must replace "-n32" with "-mabi=n32" in CFLAGS and
+dnl remove "-n32" from LDFLAGS
+dnl On Irix 6.x 64 bit we must replace "-64" with "-mabi=64" in CFLAGS and remove
+dnl "-64" from LDFLAGS
+            *-sgi-irix6.*)
+                if test "$GCC" = "yes"; then
+                    CFLAGS="`echo $CFLAGS | sed -e 's/-n32/-mabi=n32/'`"
+                    LDFLAGS="`echo $LDFLAGS | sed -e 's/-n32//'`"
+                    CFLAGS="`echo $CFLAGS | sed -e 's/-64/-mabi=64/'`"
+                    LDFLAGS="`echo $LDFLAGS | sed -e 's/-64//'`"
+                fi
+                ;;
+            *)
+                ;;
+        esac
+fi
+
+dnl end of squid parts ********************************************************
+if test $mysql_prefix = AUTO; then 
+	echo "using MySQL autodetect"
+else
+	mysql_includes=$mysql_prefix/include
+	mysql_libs=$mysql_prefix/lib/mysql
+fi
+MYSQL_FIND([$mysql_includes], [$mysql_libs])
+all_libraries="$all_libraries -L$MYSQL_LIB"
+all_includes="$all_includes $MYSQL_INCLUDE"
+dnl _AC_ARG_VAR_LDFLAGS($all_libraries)
+dnl _AC_ARG_VAR_CPPFLAGS($all_includes)
+LDFLAGS="-L$MYSQL_LIB $LDFLAGS"
+CFLAGS="$MYSQL_INCLUDE $CFLAGS"
+
+dnl echo "$all_libraries $all_includes"
+AC_CHECK_LIB([mysqlclient],[main],[mysql=true],[mysql=NOT_FOUND],[])ac_cv_lib_mysqlclient=ac_cv_lib_mysqlclient_main
+
+if test $mysql = NOT_FOUND; then
+  AC_MSG_ERROR([no mysql library found])
+fi
+dnl AC_CHECK_FUNC(mysql_ping)
+dnl AC_CHECK_FUNC(mysql_commit)
+AC_CHECK_HEADERS(mysql/mysql.h)
+dnl AC_CHECK_LIB(mysqlclient, mysql_ping, HAVE_MYSQL_PING=1,)
+dnl AC_CHECK_LIB(mysqlclient, mysql_commit, HAVE_MYSQL_COMMIT=1,)
+dnl AC_CHECK_LIB(mysqlclient, mysql_rollback, HAVE_MYSQL_ROLLBACK=1,)
+OLD_LD=$LDFLAGS
+LDFLAGS="-L$MYSQL_LIB $LDFLAGS -lmysqlclient"
+AC_CHECK_FUNCS(mysql_ping mysql_commit mysql_rollback mysql_init mysql_query atol)
+LDFLAGS=$OLD_LD
+dnl --------------------------------------------- find apache instalation
+unset ahtdocs
+APACHE_FIND([$www])
+dnl ---------------------------------------------- find squid parts
+FILE_FIND([squid_pid], $squid_pid, squid.pid, [/var/run /usr/local/squid/var/logs /usr/squid/var/logs /opt/freeware/squid/var/logs /opt/gnu/squid/var/logs])
+dnl ---------------------------------------------- find squid parts
+FILE_FIND([squid_log], $squid_log, access.log, [/var/log/squid /usr/local/squid/var/logs /usr/squid/var/logs /opt/freeware/squid/var/logs /opt/gnu/squid/var/logs])
+dnl ---------------------------------------------- find squid parts
+FILE_FIND([squid_conf], $squid_conf, squid.conf, /etc/squid /usr/local/etc/squid /usr/local/squid/etc /usr/squid/etc /opt/freeware/squid/etc /opt/gnu/squid/etc)
+dnl ---------------------------------------------- find squid parts
+AC_DEFINE_UNQUOTED(SQUID_PID_FILE,[ "$squid_pid" ],[define SquiD PID file])
+AC_DEFINE_UNQUOTED(SQUID_CONF,[ "$squid_conf" ],[define to path to squid.conf])
+AC_SUBST(squid_log)
+AC_DEFINE_UNQUOTED(SQUID_LOGNAME,[ "$squid_log" ],[define SquiD access.log file])
+AC_SUBST(ncsa_passwd)
+
+dnl MYSQL_CHECK_CPU
+dnl AC_PATH_PROG(SQUID, squid, /usr/local/squid/sbin/squid)
+dnl AC_CHECK_FUNC(mysql_commit)
+AC_CONFIG_FILES([Makefile \
+                 src/Makefile \
+                 src/auth/Makefile \
+                 src/auth/NCSA/Makefile \
+                 src/auth/SMB/Makefile \
+                 src/auth/MySQL/Makefile \
+                 src/auth/lib/Makefile \
+                 etc/Makefile \
+                 web/Makefile ])
+AC_PROG_CXX($all_includes $all_libraries)
+AC_CACHE_SAVE
+dnl if test $auth_mode=1; then 
+dnl addons="chpasswd-ru"
+dnl fi
+AC_SUBST(addons)
+AC_OUTPUT

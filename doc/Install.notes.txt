@@ -1,0 +1,61 @@
+#		$Author: slavik $ $Date: 2008-01-16 14:25:35 +0500 (п║я─п╢, 16 п╞п╫п╡ 2008) $
+#		$Id: Install.notes.txt 17 2008-01-16 09:25:35Z slavik $
+
+--- For bug reports and commits - mail#slavik@cybersec.ru ---
+
+version notes:
+ STABLE releases was tested with default values. (on OpenBSD and maybe on linux),
+ PRE partially tested (I think much more then CURRENT)
+ CURRENT may have some bugs, may not works, but some tests passed.
+ CVS - UNTESTED version. Maybe incorrect
+
+install notes:
+0) You must have installed:
+	0.1 Apache=>1.3.27 with so enabled [http://httpd.apache.org]
+	0.2 PHP =>4.3.3 (5.0.x and 5.1.x is ok) *with* mysql support [http://www.php.net]
+	0.3 MySQL =>4.0.16 (4.1.x and 5.0.x is ok) [http://www.mysql.com]
+	0.4 Squid =>2.5 (3.0 is ok) [http://www.squid-cache.org]
+	0.4.1 Squid auth helpers. [http://www.squid-cache.org/Doc/FAQ/FAQ-19.html#configuring-proxy-auth]
+	0.4.2 Squid access.log MUST be in NATIVE format [http://www.squid-cache.org/Doc/FAQ/FAQ-6.html#ss6.6]
+	0.4.3 Squid cache dir (setted in squid.orig.conf) MUST be! (squid -z for details)
+	0.5 Check that Squid & apache works, and works under "nobody" account
+	0.6 Smb helper needs Samba =>2.2.8a (3.0.x is ok)
+1) Prepare:
+	1.1 skip.
+	1.2 You MUST check that php support enabled in apache.
+	check httpd.conf for "AddType application/x-httpd-php .php"
+	if not found - maybe you need to add this ^^^
+	1.3 check LD settings for mysqlclient.so
+		1.3.1 Linux. check /etc/ld.so.conf for mysql library directory
+		1.3.2 OpenBSD. execute "ldconfig -r|grep mysql"
+		if you have something like that: 
+		"search directories: /usr/lib:/usr/local/lib:/usr/local/lib/mysql
+		50:-lmysqlclient.12.0 => /usr/local/lib/mysql/libmysqlclient.so.12.0"
+		it's mean that all ok.
+        if mysqlclient.so not found, you must add it. (Read "man 8 ldconfig" for details)
+        1.4 You MUST check that MySQL database engine is running.
+2) unpack
+3) ./configure --help
+4) ./configure [options]
+5) make&&make install
+6) check $prefix/sacc/sql.log for database creation&init errors.
+7) check $prefix/sacc/etc for your configurations (squid.orig.conf & pref.php)
+ (you may want to compile&&install /addons/chpasswd-ru for NTSC authentication)
+10) you may want to install etc/init.d to your system (Linux) for autostart
+11) you may want to shedule addons/report or(and) addons/backup
+12) Note about start seq.
+	12.1 MySQL
+	12.2 Apache
+	12.3 SAcc
+13) Enter to http(s)://hostname/sacc/sa/ with default account "admin/password"
+add new System Administrator with your preferred login and delete "admin" (recommended)
+	13.5 If error(s) occured, go to http(s)://hostname/sacc/sa/check.php for system check
+14) Enter to http(s)://hostname/sacc/admin/ with your account, there you can manage users
+15) I recommend that you fix yours firewall rules to deny non-local MySQL use [SECURITY]
+16) Auth post configuration
+	16.1 NCSA auth: plz create password file
+	16.2 SMB place proxyauth to your \\DC\NETLOGON, allow to "all" read them
+
+I'll think it's all......
+                                [.ну вот,  вроде всё.]
+                            Vyacheslav Nikitin 27-03-2006

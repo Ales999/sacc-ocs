@@ -1,0 +1,25 @@
+Patch authors: Michal Matusiak, Slivarez
+
+Patch for squid-2.5.STABLE10
+#Tested on squid-2.5.STABLE10... it works :-)
+
+INSTALL:
+
+1. cd squid-2.5.STABLE* (cd to your squid distr)
+
+2. patch -p1 < /path_to_patch/extacclog.diff (apply patch)
+
+3. ./bootstrap.sh (Necessary step!!!)
+
+4. ./configure options (add --enable-extacclog to your options to enable patch) 
+
+5. make
+
+6. make install
+
+
+
+
+Best Regards,
+Slivarez
+

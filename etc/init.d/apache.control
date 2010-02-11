@@ -1,0 +1,26 @@
+#!/bin/sh
+# full version
+# -----------------------------------------------------------------------------
+# Все копирайты принадлежат Virus-у
+# Сделано с особым цинизмом.
+# -----------------------------------------------------------------------------
+
+RETVAL=0
+
+case "$1" in
+  start)
+# Первая строчка - запуск без SSL поддержки, на тот случай если ваш апач не поддерживает.
+               /usr/local/apache/bin/apachectl start  
+# Вторая - SSL версия, я лично сделал всё через ssltunnel
+#                /usr/local/apache/bin/apachectl startssl
+                RETVAL=$?
+        ;;
+  stop)
+                /usr/local/apache/bin/apachectl stop
+        ;;
+  *)
+        echo "Usage: $0 start stop"
+        RETVAL=1
+esac
+
+exit $RETVAL

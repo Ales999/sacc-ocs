@@ -1,0 +1,217 @@
+diff -Nur /acconfig.h /acconfig.h.orig
+--- /acconfig.h		2002-07-01 10:55:11.000000000 +0200
++++ /acconfig.h.orig 	2004-06-26 16:25:34.000000000 +0200
+@@ -95,6 +95,11 @@
+ #undef USE_USERAGENT_LOG
+ 
+ /*
++ * Define this if you want extended access logging support.
++ */
++#undef USE_EXTACCLOG
++
++/*
+  * If you want to log Referer request header values, define this.
+  * By default, they are written to referer.log in the Squid log
+  * directory.
+diff -Nur /configure.in /configure.in.orig
+--- /configure.in	2004-02-29 23:30:21.000000000 +0100
++++ /configure.in.orig	2004-06-27 21:17:00.000000000 +0200
+@@ -460,6 +460,16 @@
+   fi
+ ])
+ 
++AM_CONDITIONAL(USE_EXTACCLOG, false)
++AC_ARG_ENABLE(extacclog,
++[  --enable-extacclog  Enable extended access logging],
++[ if test "$enableval" = "yes" ; then
++    echo "Extended access logging enabled"
++    AC_DEFINE(USE_EXTACCLOG)
++    AM_CONDITIONAL(USE_EXTACCLOG, true)
++  fi
++])
++
+ AC_ARG_ENABLE(referer-log,
+ [  --enable-referer-log    Enable logging of Referer header],
+ [ if test "$enableval" = "yes" ; then
+diff -Nur /include/autoconf.h.in /include/autoconf.h.in.orig
+--- /include/autoconf.h.in	2003-01-18 02:46:33.000000000 +0100
++++ /include/autoconf.h.in.orig	2004-06-27 21:17:39.000000000 +0200
+@@ -132,6 +132,11 @@
+ #undef USE_USERAGENT_LOG
+ 
+ /*
++ * Define this if you want extended access logging support.
++ */
++#undef USE_EXTACCLOG
++
++/*
+  * If you want to log Referer request header values, define this.
+  * By default, they are written to referer.log in the Squid log
+  * directory.
+diff -Nur /src/access_log.c /src/access_log.c.orig
+--- /src/access_log.c		2003-07-28 10:59:28.000000000 +0200
++++ /src/access_log.c.orig	2004-06-26 17:57:22.000000000 +0200
+@@ -245,7 +245,11 @@
+ 	client = inet_ntoa(al->cache.caddr);
+     user = accessLogFormatName(al->cache.authuser ?
+ 	al->cache.authuser : al->cache.rfc931);
++#if USE_EXTACCLOG
++    logfilePrintf(logfile, "%9ld.%03d %6d %s %s/%03d %" PRINTF_OFF_T " %s %s %s %s%s/%s %s %d",
++#else
+     logfilePrintf(logfile, "%9ld.%03d %6d %s %s/%03d %" PRINTF_OFF_T " %s %s %s %s%s/%s %s",
++#endif
+ 	(long int) current_time.tv_sec,
+ 	(int) current_time.tv_usec / 1000,
+ 	al->cache.msec,
+@@ -259,7 +263,12 @@
+ 	al->hier.ping.timedout ? "TIMEOUT_" : "",
+ 	hier_strings[al->hier.code],
+ 	al->hier.host,
++#if USE_EXTACCLOG
++	al->http.content_type,
++	al->cache.cport);
++#else
+ 	al->http.content_type);
++#endif
+     safe_free(user);
+ }
+
+diff -Nur /src/cf.data.pre /src/cf.data.pre.orig
+--- /src/cf.data.pre		2004-02-10 22:01:21.000000000 +0100
++++ /src/cf.data.pre.orig	2004-06-27 21:10:53.000000000 +0200
+@@ -843,6 +843,16 @@
+ 	every HTTP and ICP queries received. To disable, enter "none".
+ DOC_END
+ 
++NAME: accloggran
++COMMENT: (KB)
++TYPE: kb_size_t
++DEFAULT: 1024 KB
++IFDEF: USE_EXTACCLOG
++LOC: Config.Log.accloggranulation
++DOC_START
++	How often squid access-logs.
++DOC_END
++
+ 
+ NAME: cache_log
+ TYPE: string
+diff -Nur /src/client_side.c /src/client_side.c.orig
+--- /src/client_side.c		2004-02-18 19:51:16.000000000 +0100
++++ /src/client_side.c.orig	2004-07-02 00:12:01.000000000 +0200
+@@ -845,8 +845,15 @@
+ 	    http->al.http.code = mem->reply->sline.status;
+ 	    http->al.http.content_type = strBuf(mem->reply->content_type);
+ 	}
++#if USE_EXTACCLOG
++  http->al.cache.cport = ntohs(conn->peer.sin_port);
++#endif
+ 	http->al.cache.caddr = conn->log_addr;
++#if USE_EXTACCLOG
++	http->al.cache.size = http->out.last_size;
++#else
+ 	http->al.cache.size = http->out.size;
++#endif
+ 	http->al.cache.code = http->log_type;
+ 	http->al.cache.msec = tvSubMsec(http->start, current_time);
+ 	if (request) {
+@@ -2187,8 +2194,16 @@
+ {
+     clientHttpRequest *http = data;
+     StoreEntry *entry = http->entry;
++#if USE_EXTACCLOG
++    MemObject *mem = NULL;
++    ConnStateData *conn = http->conn;
++    request_t *request = http->request;
++#endif
+     int done;
+     http->out.size += size;
++#if USE_EXTACCLOG
++    http->out.last_size += size;
++#endif
+     debug(33, 5) ("clientWriteComplete: FD %d, sz %d, err %d, off %" PRINTF_OFF_T ", len %" PRINTF_OFF_T "\n",
+ 	fd, (int) size, errflag, http->out.offset, entry ? objectLen(entry) : (squid_off_t) 0);
+     if (size > 0) {
+@@ -2196,6 +2211,49 @@
+ 	if (isTcpHit(http->log_type))
+ 	    kb_incr(&statCounter.client_http.hit_kbytes_out, size);
+     }
++#if USE_EXTACCLOG
++    if (http->out.last_size > (Config.Log.accloggranulation << 10))
++  {
++    if (http->entry)
++ mem = http->entry->mem_obj;
++    if (http->out.size || http->log_type) {
++ http->al.icp.opcode = ICP_INVALID;
++ http->al.url = http->log_uri;
++ if (mem) {
++     http->al.http.code = mem->reply->sline.status;
++     http->al.http.content_type = strBuf(mem->reply->content_type);
++ }
++ http->al.cache.cport = ntohs(conn->peer.sin_port);
++ http->al.cache.caddr = conn->log_addr;
++ http->al.cache.size = http->out.last_size;
++ http->out.last_size = 0;
++ http->al.cache.code = http->log_type;
++ http->al.cache.msec = tvSubMsec(http->start, current_time);
++ if (request) {
++     Packer p;
++     MemBuf mb;
++     memBufDefInit(&mb);
++     packerToMemInit(&p, &mb);
++     httpHeaderPackInto(&request->header, &p);
++     http->al.http.method = request->method;
++     http->al.http.version = request->http_ver;
++     http->al.headers.request = xstrdup(mb.buf);
++     http->al.hier = request->hier;
++     if (request->auth_user_request) {
++   if (authenticateUserRequestUsername(request->auth_user_request))
++       http->al.cache.authuser = xstrdup(authenticateUserRequestUsername(request->auth_user_request));
++   authenticateAuthUserRequestUnlock(request->auth_user_request);
++   request->auth_user_request = NULL;
++     }
++     if (conn->rfc931[0])
++   http->al.cache.rfc931 = conn->rfc931;
++     packerClean(&p);
++     memBufClean(&mb);
++ }
++ accessLogLog(&http->al);
++  }
++}
++#endif
+ #if SIZEOF_SQUID_OFF_T <= 4
+     if (http->out.size > 0x7FFF0000) {
+ 	debug(33, 1) ("WARNING: closing FD %d to prevent counter overflow\n", fd);
+diff -Nur /src/structs.h /src/structs.h.orig
+--- /src/structs.h	2004-02-04 18:42:28.000000000 +0100
++++ /src/structs.h.orig	2004-07-01 23:57:59.000000000 +0200
+@@ -478,6 +478,9 @@
+ 	char *forward;
+ #endif
+ 	int rotateNumber;
++#if USE_EXTACCLOG
++  size_t accloggranulation;
++#endif
+     } Log;
+     char *adminEmail;
+     char *effectiveUser;
+@@ -1042,6 +1045,9 @@
+ 	icp_opcode opcode;
+     } icp;
+     struct {
++#if USE_EXTACCLOG
++  unsigned short cport;
++#endif
+ 	struct in_addr caddr;
+ 	squid_off_t size;
+ 	log_type code;
+@@ -1069,6 +1075,9 @@
+     struct {
+ 	squid_off_t offset;
+ 	squid_off_t size;
++#if USE_EXTACCLOG
++	size_t last_size;
++#endif
+     } out;
+     HttpHdrRangeIter range_iter;	/* data for iterating thru range specs */
+     size_t req_sz;		/* raw request size on input, not current request size */

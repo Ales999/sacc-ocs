@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+for i in `ls ./data`
+do
+./racc -f ./data/$i
+done

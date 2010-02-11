@@ -1,0 +1,117 @@
+chpasswd.cgi was adapted from htpasswd for use with Squid Cache Proxy.
+
+Special thanks to:
+Luigi Gangitano <lgangitano@netscape.net> 	- Italian Language
+Juergen Scheiderer <jsch@odin.de> 		- German Language
+kurt.keller@raiffeisen.ch                       - German Language
+Richard Baselier <baselier@baselier.demon.nl> 	- Dutch Language
+Robert Szabo <rob@freemail.c3.hu> 		- Hungarian Language
+Domonkos Sandor <domonkos@npp.hu> 		- Hungarian Language
+Horacio Diaz Requejo <horacio@edg.net.mx>	- Spanish Language
+Alexandre Allien <aallien@teaser.fr>            - French Language
+Andrew <andrew@extrim.ru>                       - Russian Language
+
+1. run ./configure
+
+   configure options: --prefix=where the config file is
+				default: /usr/local/etc/chpasswd
+
+                      --enable-language=English, Dutch, French, German, Hungarian, Italian,
+                                         Portuguese, Russian, Spanish
+				default: Russian
+
+                      --enable-cgidir=where your cgi-bin is 
+				default: /usr/local/apache/cgi-bin
+
+
+2. make
+
+3. make install
+
+4. Go to /usr/local/etc/chpasswd (or file entered with --prefix on configure)
+   and change chpasswd.conf as you need.
+
+
+
+   chpasswd.conf
+  
+   TAG:	passwd_file
+   	Where the password file is.
+
+   TAG:	ip_auth
+   	File with IP address or subnet address allowed to use.
+             Eg.: 192.168.82.10 - only this IP will use
+                  192.168.82.0  - IP's from 1 to 255   
+                  192.168.0.0   - ...
+                  192.0.0.0     - ...
+                  0.0.0.0       - allow everybody. A bad choice...  
+
+   TAG:	header
+   	Especify the header for html page.
+  
+   TAG:	minimum_length
+   	Especify the password minimum lenght.
+  
+   TAG:	maximum_length
+   	Especify the password maximum lenght.
+  
+   TAG:	minimum_char
+   	Force minimum characters (a-z, A-Z) on the new password.
+  
+   TAG:	minimum_num
+   	Force minimum numbers (0-9) on the new password.
+ 
+   TAG:	minimum_spec
+   	Force minimum special characters (keyboard) on the new password.
+  
+   TAG:	enable_log
+  	chpasswd will write a log from users request
+         to the filename specified here.
+         By default enable_log is disabled.
+  
+   TAG:	show_pwd
+  	Show new pwd in clear text on log.
+  
+   TAG:	background_color
+  	Html page background color
+  
+   TAG:	text_color
+  	Html page text color
+  
+   TAG:	title_color
+  	Html page title color
+  
+   TAG:	rules_color
+  	Html page rules color
+  
+   TAG:	logo_image
+  	Html page logo.
+  
+   TAG:	logo_image_size
+  	Html page logo image size. 
+         width height
+  
+   TAG:	background_image
+  	Html page background image
+  
+   TAG:  alert_mail_user
+         SMTP userid
+         Message will be sent when chpasswd fail.
+  
+   TAG:  alert_mail_subject
+         SMTP subject
+         Message will be sent when chpasswd fail.
+  
+
+Remember, passwd and log file must be owned by httpd user, or chmod 777
+
+Notes to translation:
+ - edit chpasswd.h
+ - copy block lines from #if defined(English) to #endif at the buttom file.
+ - translate
+ - send chpasswd.h to porso@usa.net to implement the new language and share with many peoples.
+		
+
+chepasswd source: http://www.geocities.com/SiliconValley/Campus/5230/index.html
+
+Any suggestions and/or comments: porso@usa.net

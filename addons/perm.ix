@@ -1,0 +1,13 @@
+acl perm dst 195.222.128.0/19
+acl perm dst 195.42.134.0/24
+acl perm dst 195.42.148.0/24
+acl perm dst 195.42.150.0/23
+acl perm dst 212.120.160.0/19
+acl perm dst 195.19.160.0/19
+acl perm dst 212.192.64.0/19
+acl perm dst 195.161.84.0/23
+acl perm dst 195.161.92.0/25
+acl perm dst 212.33.224.0/19
+acl perm dst 212.192.193.0/24
+acl perm dst 62.76.204.0/22
+always_direct allow perm

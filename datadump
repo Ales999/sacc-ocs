@@ -1,0 +1,3 @@
+#!/bin/sh
+#$id$
+mysqldump --default-character-set=koi8r sacc options acl >data.sql

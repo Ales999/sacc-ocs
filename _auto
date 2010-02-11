@@ -1,0 +1,6 @@
+#!/bin/sh
+rm config.sub depcomp install-sh missing compile config.guess configure config.h.in
+autoheader
+aclocal
+automake --add-missing --copy
+autoreconf

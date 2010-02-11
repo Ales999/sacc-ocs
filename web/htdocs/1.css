@@ -1,0 +1,110 @@
+<!--
+A:link { color:#6300C6; }
+A:visited { color:#6300C6 }
+A:active  { color:#400080 }
+A { text-decoration:none }
+
+.inputsubmit 
+{ font-family:tahoma,sans-serif;
+  font-size:11px;
+  background: #D6E7EF;
+  border-bottom: 1px solid #104A7B;
+  border-right: 1px solid #104A7B;
+  border-left: 1px solid #AFC4D5;
+  border-top:1px solid #AFC4D5;
+  color:#000066;
+  height:19px;
+  text-decoration:none;
+  cursor: hand
+}
+
+#bg_red   { background:#FF0000; }
+#bg_pink  { background:#FFA0A0; }
+#bg_green { background:#A0FFA0; }
+#bg_blue  { background:#A0A0FF; }
+
+.errmsg
+{ color:#FF0000;
+  font-size:10pt;
+}
+
+.tahoma11px 
+{ font-family:tahoma;
+  font-size:11px;
+}
+
+.verdanabold11px 
+{ font-weight:bold;
+  font-family:verdana;
+  font-size:11px;
+}
+
+.sys {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 10px;
+        font-style: normal;
+        color: #9f9f9f;
+        margin: 0px;
+        padding: 0px;
+}
+
+.input
+{ background: #FFFFFF;
+  border-style: groove;
+  font-family:tahoma, sans-serif;
+  font-size:11px;
+  height:19px;
+  width:200px;
+  text-decoration:none;
+}
+
+#smallinput
+{ 
+  text-align: right;
+  width: 70px;
+}
+
+#smalltxtinput { width: 70px; }
+
+#smalltxtinput1 { width: 140px; }
+
+TABLE TD { font-size:10pt }
+
+TD { font-size:10pt }
+
+TD P { font-size:10pt }
+
+H1 
+{ font-size:14pt; 
+  color:#400080;
+  font-family:'Times New Roman'; 
+  text-align:center;
+  font-weight:bold 
+}
+
+H2 
+{ font-size:12pt; 
+  color:#400080; 
+  font-family:'Times New Roman'; 
+  font-weight:bold
+}
+
+H3 
+{ font-size:10pt; 
+  color:#400080; 
+  font-family:'Times New Roman'; 
+  font-weight:bold
+}
+
+P
+{ font-size:10pt; 
+  color:#000001; 
+  font-family:'Times New Roman'
+}
+
+SPAN.smalltext 
+{ font-size:10pt; 
+  font-family:'Times New Roman'
+}
+
+-->

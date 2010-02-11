@@ -1,0 +1,31 @@
+#!/bin/sh
+# for LINUX ONLY!!!
+# -----------------------------------------------------------------------------
+# Все копирайты принадлежат Virus-у и некоторая часть CS-y.
+# Сделано с особым цинизмом.
+# -----------------------------------------------------------------------------
+#
+# Основной запускающий файл, на него нужно сделать симлинк в /etc/rc3.d с номером 92-95
+# А все файлики из этой папки нужно скопировать в /etc/init.d
+RETVAL=0
+
+case "$1" in
+  start)
+                /etc/init.d/MySQL.control start
+                /etc/init.d/apache.control start
+                /etc/init.d/SquiD.control start
+                /etc/init.d/SAcc_counter.control start
+                RETVAL=$?
+        ;;
+  stop)
+                /etc/init.d/SquiD.control stop
+                /etc/init.d/SAcc_counter.control stop
+                /etc/init.d/apache.control stop
+                /etc/init.d/MySQL.control stop
+        ;;
+  *)
+        echo "Usage: $0 start stop"
+        RETVAL=1
+esac
+
+exit $RETVAL
