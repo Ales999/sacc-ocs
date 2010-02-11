@@ -141,7 +141,7 @@ void ap_to64(char *s, unsigned long v, int n)
  * Get a line of input from the user, not including any terminating
  * newline.
  */
-static int getline(char *s, int n, FILE *f)
+static int mygetline(char *s, int n, FILE *f)
 {
     register int i = 0;
 
@@ -552,7 +552,7 @@ int main(int argc, char *argv[])
 	char scratch[MAX_STRING_LEN];
 
 	fpw = fopen(pwfilename, "r");
-	while (! (getline(line, sizeof(line), fpw))) {
+	while (! (mygetline(line, sizeof(line), fpw))) {
 	    char *colon;
 
 	    if ((line[0] == '#') || (line[0] == '\0')) {
