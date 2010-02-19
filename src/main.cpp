@@ -765,6 +765,7 @@ int squid_logrotate(void)
 			logmsg(temp);
 			//sys_nerr
 		} else {
+			logmsg(_T("Wait for squid log rotated and file access.log is 0 size ..."));
 			while ((finfo.st_size != 0)
 			       || (!(finfo.st_size < logsize))) {
 				sleep(1);

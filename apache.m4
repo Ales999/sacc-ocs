@@ -6,7 +6,7 @@ unset www
 dnl echo "apache www, parameter $1"
   case "$HTDOCS" in
     AUTO)
-      for d in /var/www/html /usr/local/apache/htdocs /var/www/htdocs /usr/local/apache/htdocs /usr/local/apache2/htdocs /usr/local/www ; do
+      for d in /var/www/html /usr/local/apache/htdocs /var/www/htdocs /usr/local/apache/htdocs /usr/local/apache2/htdocs /usr/local/www /var/www ; do
 dnl echo "looking for $d"
        if test -d $d  ; then
          www=$d
