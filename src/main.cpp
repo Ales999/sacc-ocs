@@ -735,6 +735,19 @@ int squid_recount(MYSQL * lmysql)
 	};
 }
 
+// Если в конфиге сквида установлено что ротейтится внешними программами
+// то дожидаться не надо, а надо ловить момент ротации.
+bool squid_logconf(void)
+{
+// В дебиане дефолтом - внешними
+#ifdef DEBIAN
+	return true;
+#else
+	return false;
+#endif
+
+}
+
 /* squid logrotation */
 int squid_logrotate(void)
 {
@@ -766,21 +779,30 @@ int squid_logrotate(void)
 			//sys_nerr
 		} else {
 			logmsg(_T("Wait for squid log rotated and file access.log is 0 size ..."));
-			while ((finfo.st_size != 0)
-			       || (!(finfo.st_size < logsize))) {
-				sleep(1);
-				stat(squid_filename, &finfo);
-			}
+			if( !squid_logconf() ) { // Если собрано в Debian - не ждать.
+				while ((finfo.st_size != 0)
+				       || (!(finfo.st_size < logsize))) {
+					sleep(1);
+					stat(squid_filename, &finfo);
+				} // end while - можем получить бесконечный цикл.
+			} // end !squid_logcong()
 		}
 	};
+
 	/* sleep for 30 sec for rotating purposes */
 	sleep(30);
 	snprintf(temp, STR_MAX_SIZE, "%s/sacc/etc/monthly.sql", PREFIX);
 	if (1 == sql_exec(temp)) {
 		logerr("monthly job: sql execution error");
 		result = 2;
-	} else
-		offset = 0;
+	} else {
+		if( squid_logconf() ) {
+			// Если мы в Debian - вернуть указатель в базе на место.
+			squid_setlogoffset( offset , &mysql );
+		}
+		else
+		  offset = 0;
+	}
 	fseeko(fp, offset, SEEK_SET);
 	logmsg(_T("monthly job: ended."));
 	return result;
