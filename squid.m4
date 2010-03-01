@@ -94,7 +94,7 @@ AC_DEFUN([SQUID_LOG_FIND], [
   LOG="$1"
   case "$LOG---" in
     ---)
-      for d in /var/log/squid /usr/local/squid/var/logs /usr/squid/var/logs /opt/freeware/squid/var/logs /usr/local/squid/logs /opt/gnu/squid/var/logs ; do
+      for d in /var/log/squid /var/log/squid3 /usr/local/squid/var/logs /usr/squid/var/logs /opt/freeware/squid/var/logs /usr/local/squid/logs /opt/gnu/squid/var/logs ; do
        if test -f $d/access.log  ; then
          squid-log-out==$d/access.log
        fi
