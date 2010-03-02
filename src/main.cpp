@@ -306,6 +306,7 @@ int squid_setlogoffset(off_t log_offset, MYSQL * lmysql)
 		 (long long int)log_offset);
 #ifdef DEBUG
 	printf(sql_query);
+	printf("\n");
 #endif
 	if (mysql_query(lmysql, sql_query) != 0) {
 		/* log message about error */
@@ -1827,6 +1828,28 @@ int main(int argc, char *argv[])
 			logerr(_T("Can't get access for read logfile"));
 			exit_all();
 			break;
+		}
+		// Если произошло усечение лога внешними воздействиями.
+		// Ales999
+		if( offset > finfo.st_size) {
+#ifdef DEBUG
+			snprintf(temp, 4096, "Size %llu, Current size: %llu ", offset, finfo.st_size );
+			logmsg(temp);logmsg(_T("- detected EXTERNAL logrotation."));
+#endif
+			fclose(fp);
+			sleep(1);
+			if (NULL == (fp = fopen(squid_filename, "r"))) {
+			  logerr(squid_filename);logerr(_T("Can't open logfile for read."));
+			  exit_all(); // Гм, а если еще идет работа ?
+			  break;
+			}
+			setvbuf(fp, tmpbf, _IOLBF, MAXBUFSIZE);
+			offset = 0;
+			squid_setlogoffset(offset, &mysql);
+			//in case of error, we never reach this line...
+			fseeko(fp, offset, SEEK_SET);
+			squid_loffset = ftello(fp);
+			usleep(SLEEP_TIME);	/* default 50 msec */
 		}
 		/* if we've new cheanges, we must parse log */
 		// BUGGY
