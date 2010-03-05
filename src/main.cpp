@@ -52,7 +52,11 @@
 #ifdef HAVE_STDARG_H		/* gcc 3 */
 #include <stdarg.h>
 #else				/* gcc 2 */
+#ifndef DEBIAN
 #include <varargs.h>
+#else
+#include <stdarg.h>
+#endif				// End DEBIAN
 #endif				/* HAVE_STDARG_H */
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -779,14 +783,15 @@ int squid_logrotate(void)
 			logmsg(temp);
 			//sys_nerr
 		} else {
-			logmsg(_T("Wait for squid log rotated and file access.log is 0 size ..."));
-			if( !squid_logconf() ) { // Если собрано в Debian - не ждать.
+			logmsg(_T
+			       ("Wait for squid log rotated and file access.log is 0 size ..."));
+			if (!squid_logconf()) {	// Если собрано в Debian - не ждать.
 				while ((finfo.st_size != 0)
 				       || (!(finfo.st_size < logsize))) {
 					sleep(1);
 					stat(squid_filename, &finfo);
-				} // end while - можем получить бесконечный цикл.
-			} // end !squid_logcong()
+				}	// end while - можем получить бесконечный цикл.
+			}	// end !squid_logcong()
 		}
 	};
 
@@ -797,12 +802,11 @@ int squid_logrotate(void)
 		logerr("monthly job: sql execution error");
 		result = 2;
 	} else {
-		if( squid_logconf() ) {
+		if (squid_logconf()) {
 			// Если мы в Debian - вернуть указатель в базе на место.
-			squid_setlogoffset( offset , &mysql );
-		}
-		else
-		  offset = 0;
+			squid_setlogoffset(offset, &mysql);
+		} else
+			offset = 0;
 	}
 	fseeko(fp, offset, SEEK_SET);
 	logmsg(_T("monthly job: ended."));
@@ -1314,6 +1318,9 @@ void check_state()
         regfree(&re);
         return (res);
 } */
+
+extern char *ConvertKrbName(char *);
+
 /* main string parsing */
 static bool parse_string(char *s, size_t len)
 {
@@ -1418,9 +1425,16 @@ static bool parse_string(char *s, size_t len)
 		uidcache = 0;	//miss
 		static int uid;
 #ifndef IP_STAT
+#ifndef DEBIAN
 		login_size =
 		    mysql_real_escape_string(&mysql, login, fields[7],
 					     strlen(fields[7]));
+#else
+		char *tmplog = ConvertKrbName(fields[7]);
+		login_size =
+		    mysql_real_escape_string(&mysql, login, tmplog,
+					     strlen(tmplog));
+#endif				// End DEBIAN
 #else
 		login_size =
 		    mysql_real_escape_string(&mysql, login, fields[2],
@@ -1434,12 +1448,12 @@ static bool parse_string(char *s, size_t len)
 
 		for (int i = 0; (i < uccsize) && (0 == uidcache); i++) {
 			_nstrcmp(login, (ucache[i].uname)) {
-			uidcache = 1;
-			uid = ucache[i].uid;
+				uidcache = 1;
+				uid = ucache[i].uid;
 #ifdef STAT
-			cache_hit++;
+				cache_hit++;
 #endif
-			break;
+				break;
 			}
 		}
 
@@ -1831,17 +1845,20 @@ int main(int argc, char *argv[])
 		}
 		// Если произошло усечение лога внешними воздействиями.
 		// Ales999
-		if( offset > finfo.st_size) {
+		if (offset > finfo.st_size) {
 #ifdef DEBUG
-			snprintf(temp, 4096, "Size %llu, Current size: %llu ", offset, finfo.st_size );
-			logmsg(temp);logmsg(_T("- detected EXTERNAL logrotation."));
+			snprintf(temp, 4096, "Size %llu, Current size: %llu ",
+				 offset, finfo.st_size);
+			logmsg(temp);
+			logmsg(_T("- detected EXTERNAL logrotation."));
 #endif
 			fclose(fp);
 			sleep(1);
 			if (NULL == (fp = fopen(squid_filename, "r"))) {
-			  logerr(squid_filename);logerr(_T("Can't open logfile for read."));
-			  exit_all(); // Гм, а если еще идет работа ?
-			  break;
+				logerr(squid_filename);
+				logerr(_T("Can't open logfile for read."));
+				exit_all();	// Гм, а если еще идет работа ?
+				break;
 			}
 			setvbuf(fp, tmpbf, _IOLBF, MAXBUFSIZE);
 			offset = 0;
