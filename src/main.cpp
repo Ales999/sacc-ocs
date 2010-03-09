@@ -179,6 +179,8 @@ off_t get_offset(void);
 pid_t PidFile_read(void);
 int sys_logfile;
 char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
+// From krbconv.cpp:
+extern char *ConvertKrbName(char *, bool);
 /* code itself */
 /* Get time ticket */
 void sys_gettime(time_t * t)
@@ -866,6 +868,7 @@ void squid_reconfig()
 	FILE *fw, *fg;
 	char *line_buffer = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
 	char *out_buffer = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
+	char *conv_buff = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
 	int len;
 	int current_record = 0;
 	int rows_selected = 0, acl_rows = 0;
@@ -994,6 +997,9 @@ http_access allow group_time1900
 #endif				/* FREE_HTTPS */
 
 				}
+				// Ales:
+				// Вот в этом цикле и вносятся сами логины в файл, типа 'squid.conf.fulltime'
+				char *tmpname = _V2PC(malloc(STR_MAX_SIZE));	// login from users
 				for (current_record = 0;
 				     current_record < rows_selected;
 				     current_record++) {
@@ -1005,8 +1011,47 @@ http_access allow group_time1900
 					};
 					snprintf(out_buffer, STR_MAX_SIZE,
 						 "%s\n", row[0]);
+					// его и будем конвертировать.
+					snprintf(conv_buff, STR_MAX_SIZE,
+						 "%s", row[0]);
+
 					fputs(out_buffer, fg);
+					// Тут вносим(добавляем!) наш измененный логин, если было 'domain\username'
+					// то станет 'username@DOMAIN.TIPA.RU', т.е. проведем обратное преобразование.
+					//tmpname = ConvertKrbName(out_buffer, false);
+					//tmpname = ConvertKrbName(strncpy(tmpname, out_buffer, strlen(out_buffer)-1), false);
+					tmpname =
+					    ConvertKrbName(conv_buff, false);
+					snprintf(out_buffer, STR_MAX_SIZE,
+						 "%s\n", tmpname);
+					printf("TmpOrbName: %s\n", tmpname);
+					fputs(out_buffer, fg);
+					/*
+
+					   tmpname = ConvertKrbName(row[0], false);
+
+					   if (strlen(row[0]) > 1) {
+					   snprintf(tmpname, STR_MAX_SIZE,
+					   ConvertKrbName(row[0],
+					   false));
+					   if ((NULL != tmpname) && strlen(tmpname) > 1) {
+					   snprintf(out_buffer,
+					   STR_MAX_SIZE,
+					   "%s\n",
+					   tmpname);
+
+					   loginf(out_buffer);
+					   //loginf("Output!");
+					   //fputs(out_buffer, fg);
+					   }
+					   } */
+
+					//fputs(out_buffer, fg);
+
 				};
+				//free(tmpname);
+				loginf("Afrer for");
+				//free(&tmpname);
 				mysql_free_result(res);
 				fclose(fg);
 
@@ -1319,8 +1364,6 @@ void check_state()
         return (res);
 } */
 
-extern char *ConvertKrbName(char *);
-
 /* main string parsing */
 static bool parse_string(char *s, size_t len)
 {
@@ -1430,7 +1473,7 @@ static bool parse_string(char *s, size_t len)
 		    mysql_real_escape_string(&mysql, login, fields[7],
 					     strlen(fields[7]));
 #else
-		char *tmplog = ConvertKrbName(fields[7]);
+		char *tmplog = ConvertKrbName(fields[7], true);
 		login_size =
 		    mysql_real_escape_string(&mysql, login, tmplog,
 					     strlen(tmplog));

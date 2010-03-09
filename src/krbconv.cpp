@@ -18,7 +18,7 @@
 #   You should have received a copy of the GNU General Public License
 #   along with this program; if not, write to the Free Software
 #
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #include <iostream>
 #include <cstring>
@@ -59,8 +59,9 @@ extern void sql_connect(MYSQL * lpmysql_link);
 
 MYSQL mysql;
 
-char *temp = _V2PC(malloc(MAXLEN));
+char *temp = _V2PC(malloc(MAXLEN + 1));
 char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
+
 void exit_all(void)
 {
 	mysql_close(&mysql);
@@ -105,12 +106,12 @@ void sql_connect(MYSQL * lpmysql_link)
 
 #endif				// End UTEST
 
-char *mysql_kerbname(char *user_check)
+char *mysql_kerbname(char *user_check, bool obratka)
 {
 	MYSQL_RES *result;
 	MYSQL_ROW row;
-	static char login[MAXLEN];
-	static int login_size;
+	char login[STR_MAX_SIZE + 1];
+	int login_size;
 
 #ifdef DEBUG
 	clog << "Проверка домена " << user_check <<
@@ -123,9 +124,10 @@ char *mysql_kerbname(char *user_check)
 #ifdef DEBUG
 	printf("In field %s: login(%d) %s\n", user_check, login_size, login);
 #endif
+
 	snprintf(sql_query, STR_MAX_SIZE,
-		 "select krbname, ntlmname from krbconv where krbname like '%s'",
-		 login);
+		 "select krbname, ntlmname from krbconv where %s like '%s'",
+		 (obratka ? "krbname" : "ntlmname"), login);
 #ifdef DEBUG
 	printf("Sql: %s\n", sql_query);
 #endif
@@ -164,7 +166,13 @@ char *mysql_kerbname(char *user_check)
 		mysql_free_result(result);
 		return NULL;
 	}
-	snprintf(user_check, sizeof(user_check) + 1, row[1]);
+#ifdef DEBUG
+	clog << "row[0] " << row[0] << endl;
+	clog << "row[1] " << row[1] << endl;
+	clog << "sizof: " << (int)(sizeof(user_check) + 1) << endl;
+#endif
+	snprintf(user_check, MAXLEN,	/*sizeof(user_check) + 1, */
+		 (obratka ? row[1] : row[0]));
 #ifdef DEBUG
 	clog << "Результат mysql_kerbname(): " << user_check << endl;
 #endif
@@ -173,26 +181,54 @@ char *mysql_kerbname(char *user_check)
 	return user_check;
 }
 
-char *ConvertKrbName(char *k_name)
+// -----------------------------------------------------------------------------------------
+char *ConvertKrbName(char *k_name, bool preob = true)
 {
 	char *pch = strchr(k_name, '@');
 	int posd = (int)(pch - k_name);	// posd - будет указывать на позицию _перед_ разделителем '@'
+	//static char *dom = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
+	char *dom = _V2PC(malloc(MAXLEN));
+
 	// Если не найден в имени символ '@' - значит оставим без изменений - вероятно(!) это NTLM
 	if (NULL == pch) {
 #ifdef DEBUG
 		clog << "Found NTLM name: " << k_name << endl;
 #endif
-		return k_name;
+		if (preob) {
+			free(dom);
+			return k_name;
+		} else {	// Требуется обратное преобразование, т.е. из ntlm -> kerberos name
+			char *pch = strchr(k_name, '\\');
+			if (NULL != pch) {
+				//char domain[MAXLEN];
+				int poso = (int)(pch - k_name);
+				clog << "Poso: " << poso << endl;	//temp
+				strncpy(dom, k_name, (int)(poso));
+				dom[poso] = '\0';
+				clog << "Domain: " << dom << " pch: " << pch + 1 << endl;	//temp
+
+				char *tmp = mysql_kerbname(dom, preob);
+				snprintf(k_name, STR_MAX_SIZE, "%s%s", pch + 1,
+					 tmp);
+				clog << "NTLM обратка: " << k_name <<
+				    endl;
+				free(dom);
+				return k_name;
+			} else {
+				free(dom);
+				return "#";	//snprintf(k_name, 1, "");
+			}
+		}
 	} else {
 #ifdef DEBUG
 		clog << "Found Kerberos name: " << k_name << " in pos: " << posd
 		    + 1 << endl;
 #endif
 		char login[MAXLEN];	// = NULL;
-		// Выделим из полного имени только само имя, без домена 
+		// Выделим из полного имени только само имя, без домена
 		strncpy(login, k_name, posd);
 		login[posd] = '\0';
-		char *tmp = mysql_kerbname(pch);
+		char *tmp = mysql_kerbname(pch, preob);
 		if (NULL != tmp) {
 			snprintf(k_name, STR_MAX_SIZE, "%s\\%s", tmp, login);
 #ifdef DEBUG
@@ -200,6 +236,7 @@ char *ConvertKrbName(char *k_name)
 #endif
 		}
 	}
+	free(dom);
 	return k_name;
 }				// End ConvertName(...)
 
@@ -231,15 +268,27 @@ int main(void)
 	    ConvertKrbName(tstconv) << endl;
 
 	// Test 4
-	ss = strncpy(qq, "otherdom", 9);
-	ss[4] = '\\';
+	clog << "---------------------------------------" << endl;
+	ss = strncpy(qq, "otherdom", 18);
+	ss[8] = '\\';
 	strcat(ss, "nextuser");
 	snprintf(temp, STR_MAX_SIZE, _T(ss));
 	snprintf(tstconv, STR_MAX_SIZE, temp);
 	clog << "Original: " << temp << " and converted name: " <<
-	    ConvertKrbName(tstconv) << endl;
+	    ConvertKrbName(tstconv, false) << endl;
+	// Test 5
+	snprintf(temp, STR_MAX_SIZE, "ales");
+	snprintf(tstconv, STR_MAX_SIZE, temp);
+	clog << "Original: " << temp << " and converted name: " <<
+	    ConvertKrbName(tstconv, false) << endl;
+	// Test 6
+	snprintf(temp, STR_MAX_SIZE, "bigusername");
+	snprintf(tstconv, STR_MAX_SIZE, temp);
+	clog << "Original: " << temp << " and converted name: " <<
+	    ConvertKrbName(tstconv, false) << endl;
 
 	mysql_close(&mysql);
+	free(tstconv);
 	return EXIT_SUCCESS;
 }
 
