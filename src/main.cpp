@@ -37,6 +37,9 @@
 #include "squid.h"
 #include "mylog.h"
 /* system includes */
+#include <iostream>
+#include <cstring>
+#include <string>
 #include <ctype.h>
 #include <time.h>
 #include <stdio.h>
@@ -180,7 +183,7 @@ pid_t PidFile_read(void);
 int sys_logfile;
 char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
 // From krbconv.cpp:
-extern char *ConvertKrbName(char *, bool);
+extern char *ConvertKrbName(const std::string, bool obr = true);
 /* code itself */
 /* Get time ticket */
 void sys_gettime(time_t * t)
@@ -873,6 +876,8 @@ void squid_reconfig()
 	int current_record = 0;
 	int rows_selected = 0, acl_rows = 0;
 	pid_t squid_pid;
+	char *tmpname;
+	std::string strconv;
 #ifdef DEBUG
 	printf("reconfig: query malloc\n");
 #endif
@@ -1020,16 +1025,17 @@ http_access allow group_time1900
 					// то станет 'username@DOMAIN.TIPA.RU', т.е. проведем обратное преобразование.
 					//tmpname = ConvertKrbName(out_buffer, false);
 					//tmpname = ConvertKrbName(strncpy(tmpname, out_buffer, strlen(out_buffer)-1), false);
-					char *tmpname;	// = new char[MAXLEN];
+					//char *tmpname;        // = new char[MAXLEN];
+					strconv.assign(conv_buff);
 					tmpname =
-					    ConvertKrbName(conv_buff, false);
+					    ConvertKrbName(strconv, false);
 					snprintf(out_buffer, STR_MAX_SIZE,
 						 "%s\n", tmpname);
 #ifdef DEBUG
 					printf("TmpOrbName: %s\n", tmpname);
 #endif
 					fputs(out_buffer, fg);
-					delete[]tmpname;	// Взрыв !!!
+					delete[]tmpname;	// 
 					/*
 
 					   tmpname = ConvertKrbName(row[0], false);
@@ -1380,6 +1386,7 @@ static bool parse_string(char *s, size_t len)
 	int fieldnum = 0;
 	bool cached = false;
 	unsigned long ip = 0;
+	std::string strconv;
 //1040314641.655     36 10.0.0.200 TCP_DENIED/407 1691 GET http://www.wzor.net/ - NONE/- text/html
 //[0]-time
 //[1]-conn_time
@@ -1477,14 +1484,17 @@ static bool parse_string(char *s, size_t len)
 		    mysql_real_escape_string(&mysql, login, fields[7],
 					     strlen(fields[7]));
 #else
-		char *tmplog = ConvertKrbName(fields[7], true);
-		
+		strconv.assign(fields[7]);
+		char *tmplog = ConvertKrbName(strconv);
+
 		login_size =
 		    mysql_real_escape_string(&mysql, login, tmplog,
 					     strlen(tmplog));
 		delete[]tmplog;
+
 #endif				// End DEBIAN
 #else				// Else in IP_STAT
+
 		login_size =
 		    mysql_real_escape_string(&mysql, login, fields[2],
 					     strlen(fields[2]));

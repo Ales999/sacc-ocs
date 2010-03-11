@@ -37,8 +37,7 @@ using namespace std;
 #include <config.h>
 #endif				// End HAVE_CONFIG_H
 
-#include "mylog.h"
-//#define MAXLEN 10*1024*SIZEOF_CHAR
+#define MAXLEN 10*1024*SIZEOF_CHAR
 #define QUERY_BUFSIZE   (MAXLEN-1)
 #define MAXBUFSIZE QUERY_BUFSIZE
 #define STR_MAX_SIZE  QUERY_BUFSIZE-1
@@ -112,8 +111,9 @@ void sql_connect(MYSQL * lpmysql_link)
 
 #endif				// End UTEST
 
-char *mysql_kerbname(char *user_check, bool obratka)
+char *mysql_kerbname(const char *user_check, bool obratka)
 {
+	char *ret = new char[MAXLEN];
 	MYSQL_RES *result;
 	MYSQL_ROW row;
 	char login[STR_MAX_SIZE + 1];
@@ -144,6 +144,7 @@ char *mysql_kerbname(char *user_check, bool obratka)
 #ifdef DEBUG
 		cerr << temp << endl;
 #endif
+		delete[]ret;
 		return NULL;
 	}
 	result = mysql_store_result(&mysql);
@@ -151,6 +152,7 @@ char *mysql_kerbname(char *user_check, bool obratka)
 #ifdef DEBUG
 		cerr << "Нет соединения с базой! " << endl;
 #endif
+		delete[]ret;
 		return NULL;
 	}
 
@@ -159,6 +161,7 @@ char *mysql_kerbname(char *user_check, bool obratka)
 		cerr << "Нет данных в таблице" << endl;
 #endif
 		mysql_free_result(result);
+		delete[]ret;
 		return NULL;
 	}
 
@@ -177,87 +180,109 @@ char *mysql_kerbname(char *user_check, bool obratka)
 	clog << "row[1] " << row[1] << endl;
 	clog << "sizof: " << (int)(sizeof(user_check) + 1) << endl;
 #endif
-	snprintf(user_check, MAXLEN,	/*sizeof(user_check) + 1, */
+	snprintf(ret, MAXLEN,	/*sizeof(user_check) + 1, */
 		 (obratka ? row[1] : row[0]));
 #ifdef DEBUG
 	clog << "Результат mysql_kerbname(): " << user_check << endl;
 #endif
-	row = NULL;
 	mysql_free_result(result);
-	return user_check;
+	return (char *)ret;
 }
 
 // -----------------------------------------------------------------------------------------
-char *ConvertKrbName(char *k_name, bool preob = true)
+char *ConvertKrbName(const string k_name, bool preob = true)
 {
-	char *pch = strchr(k_name, '@');
-	int posd = (int)(pch - k_name);	// posd - будет указывать на позицию _перед_ разделителем '@'
-	int klen = strlen(k_name);
+#ifdef DEBUG
+	clog << endl;
+	clog << "=--->ConvertKrbName(" << k_name << "," << (char *)(preob ?
+								    "True" :
+								    "False")
+	    << ")<---=" << endl;
+#endif
+	// возвращаемая строка. В вызывающей ф. удаляем как: delete [] temp;
+	char *ret = new char[MAXLEN];
+	size_t klen = k_name.length();
+	size_t found = k_name.find('@');
+	string login, domain;
+
 #ifdef DEBUG
 	clog << "Size of " << k_name << " is: " << klen << endl;
+	//clog << "Size of " << ptr << " is: " << strlen(ptr) << endl;
 #endif
-	// возвращаемая строка.
-	char *ret = new char[MAXLEN];
 
 	// Если не найден в имени символ '@' - значит оставим без изменений - вероятно(!) это NTLM
-	if (NULL == pch) {
+	if (found == string::npos) {
 #ifdef DEBUG
 		clog << "Found NTLM name: " << k_name << endl;
 #endif
 		if (preob) {
-			strncpy(ret, k_name, klen);
+			strncpy(ret, k_name.c_str(), klen);
 			ret[klen] = '\0';
 #ifdef DEBUG
-			clog << "1: " << ret << endl;
+			clog << "Оставим как есть: " << ret <<
+			    endl;
 #endif
 			return ret;
 		} else {	// Требуется обратное преобразование, т.е. из ntlm -> kerberos name
-			char *pch = strchr(k_name, '\\');
-			if (NULL != pch) {
-				//char domain[MAXLEN];
-				char *dom = new char[MAXLEN];
-				int poso = (int)(pch - k_name);
+			// В k_name будет типа 'ntlmdom\username'
+			found = k_name.find('\\');
+			if (found != string::npos) {
 #ifdef DEBUG
+				int poso = klen - found;
 				clog << "Poso: " << poso << endl;	//temp
 #endif
-				strncpy(dom, k_name, (int)(poso));
-				dom[poso] = '\0';
+				domain = k_name.substr(0, found);
+				login =
+				    k_name.substr(found + 1,
+						  (klen - found - 1));
 #ifdef DEBUG
-				clog << "Domain: " << dom << " pch: " << pch + 1 << endl;	//temp
+				clog << "Found Domain: " << domain << " in position: " << int (found) << " and login: " << login << endl;	//temp
 #endif
-				char *tmp = mysql_kerbname(dom, preob);
-				snprintf(ret, STR_MAX_SIZE, "%s%s", pch + 1,
-					 tmp);
+				char *tmp =
+				    mysql_kerbname(domain.c_str(), preob);
+				if (NULL != tmp) {
+					snprintf(ret, STR_MAX_SIZE, "%s%s",
+						 login.c_str(), tmp);
 #ifdef DEBUG
-				clog << "NTLM обратка: " << ret << endl;
+					clog << "NTLM обратка: " << ret
+					    << endl;
 #endif
-				delete[]dom;
-				return ret;
+					delete[]tmp;
+					//free(ntpos);  // Взыв
+					return ret;
+				}
+				delete[]tmp;
 			} else {
-				//free(dom);
 				snprintf(ret, STR_MAX_SIZE, "#");
 				return ret;	//snprintf(k_name, 1, "");
 			}
+
 		}
 	} else {
+
 #ifdef DEBUG
-		clog << "Found Kerberos name: " << k_name <<
-		    " in pos: " << posd + 1 << endl;
+		clog << "Found Kerberos name: " << k_name << " in pos: " << found << endl;	//<< (unsigned int)(posd + 1) << endl;
 #endif
-		char login[MAXLEN];	// = NULL;
+		// В k_name будет типа 'username@KERBDOM.MY.RU'
 		// Выделим из полного имени только само имя, без домена
-		strncpy(login, k_name, posd);
-		login[posd] = '\0';
-		char *tmp = mysql_kerbname(pch, preob);
+		login = k_name.substr(0, found);
+		domain = k_name.substr(found, k_name.length() - found);
+#ifdef DEBUG
+		clog << "Kerberos Domain: " << domain << " and login: " << login
+		    << endl;
+#endif
+		char *tmp = mysql_kerbname(domain.c_str(), preob);
 		if (NULL != tmp) {
-			snprintf(ret, STR_MAX_SIZE, "%s\\%s", tmp, login);
+			snprintf(ret, STR_MAX_SIZE, "%s\\%s", tmp,
+				 login.c_str());
 #ifdef DEBUG
 			clog << "Converted to NTLM name: " << ret << endl;
 #endif
+			delete[]tmp;
 			return ret;
 		}
+		delete[]tmp;
 	}
-	//free(dom);
 	ret[0] = '#';
 	ret[1] = '\0';
 	return ret;
@@ -269,54 +294,65 @@ char *ConvertKrbName(char *k_name, bool preob = true)
 */
 int main(void)
 {
-	//char *tstconv = _V2PC(malloc(MAXLEN));
-	char qq[512], *ss = NULL;
+	//char qq[512], *ss = NULL;
 	sql_connect(&mysql);
 	char *tempconv;		// Local !
-	// simple test
-	snprintf(temp, STR_MAX_SIZE, "testuser@KRBD.DOMEN.RU");
-	tempconv = ConvertKrbName(temp);
-	clog << "Original: " << temp << " and converted name: " << tempconv << endl;	//ConvertKrbName(tstconv) << endl;
+	// Test 1
+	string str = "testuser@KRBD.DOMEN.RU";
+	tempconv = ConvertKrbName(str);
+	clog << "Original: " << str << " and converted name: " << tempconv <<
+	    endl;
 	delete[]tempconv;
+	// Test 1-1
+	tempconv = ConvertKrbName(str, false);
+	clog << "Original: " << str << " and converted name: " << tempconv <<
+	    endl;
+	delete[]tempconv;
+
 	// Test 2
-	tempconv = ConvertKrbName("auser@NONE.RU");
-	clog << "Original: " << "auser@NONE.RU" <<
-	    " and converted name: " << tempconv << endl;
+	str.assign("tst@OTHERDOM.TEST.MY");
+	tempconv = ConvertKrbName(str);
+	clog << "Original: " << str << " and converted name: " << tempconv <<
+	    endl;
 	delete[]tempconv;
-	// Test 3
-	tempconv = ConvertKrbName("tst@KRBD.DOMEN.RU");
-	clog << "Original: " << "tst@KRBD.DOMEN.RU" << " and converted name: "
+	// Test 2-1
+	tempconv = ConvertKrbName(str, false);
+	clog << "Original: " << str << " and converted name: "
 	    << tempconv << endl;
 	delete[]tempconv;
-	// Test 4
+
+	// Test 3
 	clog << "---------------------------------------" << endl;
-	ss = strncpy(qq, "otherdom", 18);
-	ss[8] = '\\';
-	strcat(ss, "nextuser");
-	snprintf(temp, STR_MAX_SIZE, _T(ss));
-	//snprintf(tstconv, STR_MAX_SIZE, temp);
-	tempconv = ConvertKrbName(_T(ss), false);
-	clog << "Original: " << temp <<
+	str.assign("otherdom");
+	str += '\\';
+	str += "nextuser";
+	tempconv = ConvertKrbName(str);
+	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
+	// Test 3-1
+	tempconv = ConvertKrbName(str, false);
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
+	delete[]tempconv;
+
 	// Test 5
-	snprintf(temp, STR_MAX_SIZE, "ales");
-	tempconv = ConvertKrbName("ales", false);
-	//snprintf(tstconv, STR_MAX_SIZE, temp);
-	clog << "Original: " << temp <<
+	str.assign("test_true");
+	tempconv = ConvertKrbName(str);
+	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
+
 	// Test 6
-	snprintf(temp, STR_MAX_SIZE, "bigusername");
-	//snprintf(tstconv, STR_MAX_SIZE, temp);
-	tempconv = ConvertKrbName("bigusername", false);
-	clog << "Original: " << "bigusername" <<
+	str.assign("test_false");
+	tempconv = ConvertKrbName(str, false);
+	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
+
 	// ----------------
 	mysql_close(&mysql);
 	//free(tstconv);
 	return EXIT_SUCCESS;
 }
-
 #endif
