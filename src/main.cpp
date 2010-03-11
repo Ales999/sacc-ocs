@@ -999,7 +999,7 @@ http_access allow group_time1900
 				}
 				// Ales:
 				// Вот в этом цикле и вносятся сами логины в файл, типа 'squid.conf.fulltime'
-				char *tmpname = _V2PC(malloc(STR_MAX_SIZE));	// login from users
+				//char *tmpname = _V2PC(malloc(STR_MAX_SIZE));  // login from users
 				for (current_record = 0;
 				     current_record < rows_selected;
 				     current_record++) {
@@ -1020,12 +1020,16 @@ http_access allow group_time1900
 					// то станет 'username@DOMAIN.TIPA.RU', т.е. проведем обратное преобразование.
 					//tmpname = ConvertKrbName(out_buffer, false);
 					//tmpname = ConvertKrbName(strncpy(tmpname, out_buffer, strlen(out_buffer)-1), false);
+					char *tmpname;	// = new char[MAXLEN];
 					tmpname =
 					    ConvertKrbName(conv_buff, false);
 					snprintf(out_buffer, STR_MAX_SIZE,
 						 "%s\n", tmpname);
+#ifdef DEBUG
 					printf("TmpOrbName: %s\n", tmpname);
+#endif
 					fputs(out_buffer, fg);
+					delete[]tmpname;	// Взрыв !!!
 					/*
 
 					   tmpname = ConvertKrbName(row[0], false);
@@ -1050,7 +1054,7 @@ http_access allow group_time1900
 
 				};
 				//free(tmpname);
-				loginf("Afrer for");
+				loginf("Afrer for delete tmpname");
 				//free(&tmpname);
 				mysql_free_result(res);
 				fclose(fg);
@@ -1474,15 +1478,17 @@ static bool parse_string(char *s, size_t len)
 					     strlen(fields[7]));
 #else
 		char *tmplog = ConvertKrbName(fields[7], true);
+		
 		login_size =
 		    mysql_real_escape_string(&mysql, login, tmplog,
 					     strlen(tmplog));
+		delete[]tmplog;
 #endif				// End DEBIAN
-#else
+#else				// Else in IP_STAT
 		login_size =
 		    mysql_real_escape_string(&mysql, login, fields[2],
 					     strlen(fields[2]));
-#endif
+#endif				// End IP_STAT
 
 #ifdef DEBUG
 		printf("field %s login(%d) %s \n", fields[7], login_size,
