@@ -1,7 +1,7 @@
 SUBDIRS		= auth 
 bindir = ${prefix}/sacc/bin
 bin_PROGRAMS = sacc racc
-sacc_SOURCES = main.cpp mylog.cpp
+sacc_SOURCES = main.cpp krbconv.cpp mylog.cpp
 sacc_LDADD   =  -lm -lmysqlclient
 racc_SOURCES = cisco.cpp
 racc_LDADD   =  -lm -lmysqlclient

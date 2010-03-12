@@ -37,6 +37,9 @@
 #include "squid.h"
 #include "mylog.h"
 /* system includes */
+#include <iostream>
+#include <cstring>
+#include <string>
 #include <ctype.h>
 #include <time.h>
 #include <stdio.h>
@@ -52,7 +55,11 @@
 #ifdef HAVE_STDARG_H		/* gcc 3 */
 #include <stdarg.h>
 #else				/* gcc 2 */
+#ifndef DEBIAN
 #include <varargs.h>
+#else
+#include <stdarg.h>
+#endif				// End DEBIAN
 #endif				/* HAVE_STDARG_H */
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -175,6 +182,8 @@ off_t get_offset(void);
 pid_t PidFile_read(void);
 int sys_logfile;
 char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
+// From krbconv.cpp:
+extern char *ConvertKrbName(const std::string, bool obr = true);
 /* code itself */
 /* Get time ticket */
 void sys_gettime(time_t * t)
@@ -779,14 +788,15 @@ int squid_logrotate(void)
 			logmsg(temp);
 			//sys_nerr
 		} else {
-			logmsg(_T("Wait for squid log rotated and file access.log is 0 size ..."));
-			if( !squid_logconf() ) { // Если собрано в Debian - не ждать.
+			logmsg(_T
+			       ("Wait for squid log rotated and file access.log is 0 size ..."));
+			if (!squid_logconf()) {	// Если собрано в Debian - не ждать.
 				while ((finfo.st_size != 0)
 				       || (!(finfo.st_size < logsize))) {
 					sleep(1);
 					stat(squid_filename, &finfo);
-				} // end while - можем получить бесконечный цикл.
-			} // end !squid_logcong()
+				}	// end while - можем получить бесконечный цикл.
+			}	// end !squid_logcong()
 		}
 	};
 
@@ -797,12 +807,11 @@ int squid_logrotate(void)
 		logerr("monthly job: sql execution error");
 		result = 2;
 	} else {
-		if( squid_logconf() ) {
+		if (squid_logconf()) {
 			// Если мы в Debian - вернуть указатель в базе на место.
-			squid_setlogoffset( offset , &mysql );
-		}
-		else
-		  offset = 0;
+			squid_setlogoffset(offset, &mysql);
+		} else
+			offset = 0;
 	}
 	fseeko(fp, offset, SEEK_SET);
 	logmsg(_T("monthly job: ended."));
@@ -862,10 +871,13 @@ void squid_reconfig()
 	FILE *fw, *fg;
 	char *line_buffer = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
 	char *out_buffer = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
+	char *conv_buff = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
 	int len;
 	int current_record = 0;
 	int rows_selected = 0, acl_rows = 0;
 	pid_t squid_pid;
+	char *tmpname;
+	std::string strconv;
 #ifdef DEBUG
 	printf("reconfig: query malloc\n");
 #endif
@@ -990,6 +1002,9 @@ http_access allow group_time1900
 #endif				/* FREE_HTTPS */
 
 				}
+				// Ales:
+				// Вот в этом цикле и вносятся сами логины в файл, типа 'squid.conf.fulltime'
+				//char *tmpname = _V2PC(malloc(STR_MAX_SIZE));  // login from users
 				for (current_record = 0;
 				     current_record < rows_selected;
 				     current_record++) {
@@ -1001,8 +1016,52 @@ http_access allow group_time1900
 					};
 					snprintf(out_buffer, STR_MAX_SIZE,
 						 "%s\n", row[0]);
+					// его и будем конвертировать.
+					snprintf(conv_buff, STR_MAX_SIZE,
+						 "%s", row[0]);
+
 					fputs(out_buffer, fg);
+					// Тут вносим(добавляем!) наш измененный логин, если было 'domain\username'
+					// то станет 'username@DOMAIN.TIPA.RU', т.е. проведем обратное преобразование.
+					//tmpname = ConvertKrbName(out_buffer, false);
+					//tmpname = ConvertKrbName(strncpy(tmpname, out_buffer, strlen(out_buffer)-1), false);
+					//char *tmpname;        // = new char[MAXLEN];
+					strconv.assign(conv_buff);
+					tmpname =
+					    ConvertKrbName(strconv, false);
+					snprintf(out_buffer, STR_MAX_SIZE,
+						 "%s\n", tmpname);
+#ifdef DEBUG
+					printf("TmpOrbName: %s\n", tmpname);
+#endif
+					fputs(out_buffer, fg);
+					delete[]tmpname;	// 
+					/*
+
+					   tmpname = ConvertKrbName(row[0], false);
+
+					   if (strlen(row[0]) > 1) {
+					   snprintf(tmpname, STR_MAX_SIZE,
+					   ConvertKrbName(row[0],
+					   false));
+					   if ((NULL != tmpname) && strlen(tmpname) > 1) {
+					   snprintf(out_buffer,
+					   STR_MAX_SIZE,
+					   "%s\n",
+					   tmpname);
+
+					   loginf(out_buffer);
+					   //loginf("Output!");
+					   //fputs(out_buffer, fg);
+					   }
+					   } */
+
+					//fputs(out_buffer, fg);
+
 				};
+				//free(tmpname);
+				loginf("Afrer for delete tmpname");
+				//free(&tmpname);
 				mysql_free_result(res);
 				fclose(fg);
 
@@ -1314,6 +1373,7 @@ void check_state()
         regfree(&re);
         return (res);
 } */
+
 /* main string parsing */
 static bool parse_string(char *s, size_t len)
 {
@@ -1326,6 +1386,7 @@ static bool parse_string(char *s, size_t len)
 	int fieldnum = 0;
 	bool cached = false;
 	unsigned long ip = 0;
+	std::string strconv;
 //1040314641.655     36 10.0.0.200 TCP_DENIED/407 1691 GET http://www.wzor.net/ - NONE/- text/html
 //[0]-time
 //[1]-conn_time
@@ -1418,14 +1479,26 @@ static bool parse_string(char *s, size_t len)
 		uidcache = 0;	//miss
 		static int uid;
 #ifndef IP_STAT
+#ifndef DEBIAN
 		login_size =
 		    mysql_real_escape_string(&mysql, login, fields[7],
 					     strlen(fields[7]));
 #else
+		strconv.assign(fields[7]);
+		char *tmplog = ConvertKrbName(strconv);
+
+		login_size =
+		    mysql_real_escape_string(&mysql, login, tmplog,
+					     strlen(tmplog));
+		delete[]tmplog;
+
+#endif				// End DEBIAN
+#else				// Else in IP_STAT
+
 		login_size =
 		    mysql_real_escape_string(&mysql, login, fields[2],
 					     strlen(fields[2]));
-#endif
+#endif				// End IP_STAT
 
 #ifdef DEBUG
 		printf("field %s login(%d) %s \n", fields[7], login_size,
@@ -1434,12 +1507,12 @@ static bool parse_string(char *s, size_t len)
 
 		for (int i = 0; (i < uccsize) && (0 == uidcache); i++) {
 			_nstrcmp(login, (ucache[i].uname)) {
-			uidcache = 1;
-			uid = ucache[i].uid;
+				uidcache = 1;
+				uid = ucache[i].uid;
 #ifdef STAT
-			cache_hit++;
+				cache_hit++;
 #endif
-			break;
+				break;
 			}
 		}
 
@@ -1831,17 +1904,20 @@ int main(int argc, char *argv[])
 		}
 		// Если произошло усечение лога внешними воздействиями.
 		// Ales999
-		if( offset > finfo.st_size) {
+		if (offset > finfo.st_size) {
 #ifdef DEBUG
-			snprintf(temp, 4096, "Size %llu, Current size: %llu ", offset, finfo.st_size );
-			logmsg(temp);logmsg(_T("- detected EXTERNAL logrotation."));
+			snprintf(temp, 4096, "Size %llu, Current size: %llu ",
+				 offset, finfo.st_size);
+			logmsg(temp);
+			logmsg(_T("- detected EXTERNAL logrotation."));
 #endif
 			fclose(fp);
 			sleep(1);
 			if (NULL == (fp = fopen(squid_filename, "r"))) {
-			  logerr(squid_filename);logerr(_T("Can't open logfile for read."));
-			  exit_all(); // Гм, а если еще идет работа ?
-			  break;
+				logerr(squid_filename);
+				logerr(_T("Can't open logfile for read."));
+				exit_all();	// Гм, а если еще идет работа ?
+				break;
 			}
 			setvbuf(fp, tmpbf, _IOLBF, MAXBUFSIZE);
 			offset = 0;
