@@ -1,7 +1,7 @@
 SUBDIRS		= auth 
 bindir = ${prefix}/sacc/bin
 bin_PROGRAMS = sacc racc
-sacc_SOURCES = main.cpp krbconv.cpp mylog.cpp
+sacc_SOURCES = main.cpp krbconv.cpp namepair.cpp mylog.cpp
 sacc_LDADD   =  -lm -lmysqlclient
 racc_SOURCES = cisco.cpp
 racc_LDADD   =  -lm -lmysqlclient
@@ -20,6 +20,6 @@ INCLUDES= $(all_includes)
 # the library search path.
 sacc_LDFLAGS = $(all_libraries)
 #sacc_CFLAGS = -pg
-sacc_CXXFLAGS = -Wall -W
+sacc_CXXFLAGS = -Wall -W -Weffc++
 racc_LDFLAGS = $(all_libraries)
 racc_CXXFLAGS = -Wall -W

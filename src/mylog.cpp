@@ -25,7 +25,7 @@
 #include "mylog.h"
 #include <pthread.h>
 
-clog::~clog()
+mylog::~mylog()
 	{
 	if (connected) 
 		{
@@ -34,7 +34,7 @@ clog::~clog()
 		free(log_buffer);
 		}
 	}
-void clog::log(char* app_name, bool insyslog, int mask)
+void mylog::log(char* app_name, bool insyslog, int mask)
 	{
 	openlog(app_name, 0, LOG_USER);
 	connected=true;
@@ -43,7 +43,7 @@ void clog::log(char* app_name, bool insyslog, int mask)
 	syslg=insyslog;
 	}
 /* Log message */
-void clog::msg(char* FileName, int Line, int severity, const char *fmt, ...)
+void mylog::msg(char* FileName, int Line, int severity, const char *fmt, ...)
 {
 	va_list ap;		
 	if (severity>logmask) return;
@@ -67,4 +67,3 @@ void clog::msg(char* FileName, int Line, int severity, const char *fmt, ...)
     };
 	va_end(ap);
 };
-

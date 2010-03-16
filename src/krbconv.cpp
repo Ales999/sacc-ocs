@@ -23,9 +23,13 @@
 #include <iostream>
 #include <cstring>
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <mysql/mysql.h>
+
+#include "namepair.h"
+NamePairList npl;
+
 using namespace std;
 
 #define _V2PC(data) (char*)(data)
@@ -47,6 +51,11 @@ extern char *temp;
 extern char *sql_query;
 extern void exit_all(void);
 extern void sql_connect(MYSQL * lpmysql_link);
+
+//extern void logcrt(const char *msg);
+#include "mylog.h"
+extern mylog logger;
+#define logcrt(mesg) logger.msg(__FILE__, __LINE__, 4, mesg)
 
 #else				// Else UTEST
 
@@ -111,13 +120,21 @@ void sql_connect(MYSQL * lpmysql_link)
 
 #endif				// End UTEST
 
-char *mysql_kerbname(const char *user_check, bool obratka)
+std::string * mysql_kerbname(const string & user_check, bool obratka)
 {
-	char *ret = new char[MAXLEN];
+	//char *ret = new char[MAXLEN];
+	//std::string * ret = new std::string[MAXLEN];
+	size_t inlen = user_check.length();
+	char *login = new char[inlen * 2 + 1];
+	if (!login) {
+		snprintf(temp, STR_MAX_SIZE, "No memory to allocate login");
+		logcrt(temp);
+		exit_all();
+	}
 	MYSQL_RES *result;
 	MYSQL_ROW row;
-	char login[STR_MAX_SIZE + 1];
-	int login_size;
+	//char login[STR_MAX_SIZE + 1]; // High(!): fixed size local buffer
+	size_t login_size;
 
 #ifdef DEBUG
 	clog << "Проверка домена " << user_check <<
@@ -125,8 +142,7 @@ char *mysql_kerbname(const char *user_check, bool obratka)
 #endif
 	// Check user exist in DB
 	login_size =
-	    mysql_real_escape_string(&mysql, login, user_check,
-				     strlen(user_check));
+	    mysql_real_escape_string(&mysql, login, user_check.c_str(), inlen);
 #ifdef DEBUG
 	printf("In field %s: login(%d) %s\n", user_check, login_size, login);
 #endif
@@ -141,18 +157,18 @@ char *mysql_kerbname(const char *user_check, bool obratka)
 		snprintf(temp, STR_MAX_SIZE,
 			 "MySQL Error - %d: %s\n",
 			 mysql_errno(&mysql), mysql_error(&mysql));
-#ifdef DEBUG
-		cerr << temp << endl;
-#endif
-		delete[]ret;
+		logcrt(temp);
+		delete[]login;
 		return NULL;
 	}
+	
+	delete[]login;		// он нам более не нужен.
 	result = mysql_store_result(&mysql);
 	if (result == NULL) {
 #ifdef DEBUG
 		cerr << "Нет соединения с базой! " << endl;
 #endif
-		delete[]ret;
+		//delete[]ret;
 		return NULL;
 	}
 
@@ -161,7 +177,7 @@ char *mysql_kerbname(const char *user_check, bool obratka)
 		cerr << "Нет данных в таблице" << endl;
 #endif
 		mysql_free_result(result);
-		delete[]ret;
+		//delete[]ret;
 		return NULL;
 	}
 
@@ -180,13 +196,19 @@ char *mysql_kerbname(const char *user_check, bool obratka)
 	clog << "row[1] " << row[1] << endl;
 	clog << "sizof: " << (int)(sizeof(user_check) + 1) << endl;
 #endif
-	snprintf(ret, MAXLEN,	/*sizeof(user_check) + 1, */
-		 (obratka ? row[1] : row[0]));
-#ifdef DEBUG
-	clog << "Результат mysql_kerbname(): " << user_check << endl;
-#endif
+	/*
+	   snprintf(ret, MAXLEN,        //sizeof(user_check) + 1,
+	   (obratka ? row[1] : row[0]));
+	 */
+	std::string * ret = new std::string[MAXLEN];
+	(*ret) = obratka ? row[1] : row[0];
+//#ifdef DEBUG
+	clog << "Результат mysql_kerbname(): " << user_check <<
+	    " ==--> " << (*ret) << endl;
+//#endif
 	mysql_free_result(result);
-	return (char *)ret;
+	//return (char *)ret;
+	return ret;
 }
 
 // -----------------------------------------------------------------------------------------
@@ -200,7 +222,17 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 	    << ")<---=" << endl;
 #endif
 	// возвращаемая строка. В вызывающей ф. удаляем как: delete [] temp;
-	char *ret = new char[MAXLEN];
+	char *ret = new char[MAXLEN];	// High(!): fixed size local buffer
+	string ltmp = "";
+	if (npl.GetValue(k_name.c_str(), &ltmp)) {
+#ifdef DEBUG
+		clog << "-------Найдено в кеше: " << ltmp <<
+		    " -------------" << endl;
+#endif
+		snprintf(ret, MAXLEN, "%s", ltmp.c_str());
+		return ret;
+	}
+
 	size_t klen = k_name.length();
 	size_t found = k_name.find('@');
 	string login, domain;
@@ -238,17 +270,18 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 #ifdef DEBUG
 				clog << "Found Domain: " << domain << " in position: " << int (found) << " and login: " << login << endl;	//temp
 #endif
-				char *tmp =
-				    mysql_kerbname(domain.c_str(), preob);
+				std::string * tmp =
+				    mysql_kerbname(domain, preob);
 				if (NULL != tmp) {
 					snprintf(ret, STR_MAX_SIZE, "%s%s",
-						 login.c_str(), tmp);
+						 login.c_str(), (*tmp).c_str());
 #ifdef DEBUG
 					clog << "NTLM обратка: " << ret
 					    << endl;
 #endif
 					delete[]tmp;
 					//free(ntpos);  // Взыв
+					npl.AddPair(k_name, ret);
 					return ret;
 				}
 				delete[]tmp;
@@ -268,17 +301,19 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 		login = k_name.substr(0, found);
 		domain = k_name.substr(found, k_name.length() - found);
 #ifdef DEBUG
-		clog << "Kerberos Domain: " << domain << " and login: " << login
-		    << endl;
+		clog << "Kerberos Domain: " <<
+		    domain << " and login: " << login << endl;
 #endif
-		char *tmp = mysql_kerbname(domain.c_str(), preob);
+		std::string * tmp = mysql_kerbname(domain, preob);
 		if (NULL != tmp) {
-			snprintf(ret, STR_MAX_SIZE, "%s\\%s", tmp,
-				 login.c_str());
+			snprintf(ret, STR_MAX_SIZE,
+				 "%s\\%s", (*tmp).c_str(), login.c_str());
 #ifdef DEBUG
 			clog << "Converted to NTLM name: " << ret << endl;
 #endif
 			delete[]tmp;
+			// Сохранаем пару в кеше
+			npl.AddPair(k_name, ret);
 			return ret;
 		}
 		delete[]tmp;
@@ -300,27 +335,32 @@ int main(void)
 	// Test 1
 	string str = "testuser@KRBD.DOMEN.RU";
 	tempconv = ConvertKrbName(str);
-	clog << "Original: " << str << " and converted name: " << tempconv <<
-	    endl;
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
 	// Test 1-1
 	tempconv = ConvertKrbName(str, false);
-	clog << "Original: " << str << " and converted name: " << tempconv <<
-	    endl;
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
-
 	// Test 2
 	str.assign("tst@OTHERDOM.TEST.MY");
 	tempconv = ConvertKrbName(str);
-	clog << "Original: " << str << " and converted name: " << tempconv <<
-	    endl;
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
 	// Test 2-1
 	tempconv = ConvertKrbName(str, false);
-	clog << "Original: " << str << " and converted name: "
-	    << tempconv << endl;
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
-
+	// Test 2-2
+	str.erase();
+	str.assign("tst@OTHERDOM.TEST.MY");
+	tempconv = ConvertKrbName(str);
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
+	delete[]tempconv;
 	// Test 3
 	clog << "---------------------------------------" << endl;
 	str.assign("otherdom");
@@ -335,24 +375,27 @@ int main(void)
 	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
-
+	// Test 3-2
+	tempconv = ConvertKrbName(str, false);
+	clog << "Original: " << str <<
+	    " and converted name: " << tempconv << endl;
+	delete[]tempconv;
 	// Test 5
 	str.assign("test_true");
 	tempconv = ConvertKrbName(str);
 	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
-
 	// Test 6
 	str.assign("test_false");
 	tempconv = ConvertKrbName(str, false);
 	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
 	delete[]tempconv;
-
 	// ----------------
 	mysql_close(&mysql);
 	//free(tstconv);
+
 	return EXIT_SUCCESS;
 }
 #endif

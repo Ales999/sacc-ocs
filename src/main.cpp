@@ -168,7 +168,7 @@ void exit_all();
 void _logerr(char *, char *, int);
 void _logmsg(char *, char *, int);
 void _logcrit(char *, char *, int);
-clog logger;
+mylog logger;
 //#define logerr(mesg) printf("%s:%d %d %s",__FILE__, __LINE__, 3, mesg)
 //#define logcrt(mesg) printf("%s:%d %d %s",__FILE__, __LINE__, 4, mesg)
 //#define logmsg(mesg) printf("%s:%d %d %s",__FILE__, __LINE__, 5, mesg)

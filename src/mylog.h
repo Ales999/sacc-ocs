@@ -1,12 +1,12 @@
 /********************************************************************************
 #           SAccounting                                            [SAcc system] 
 #			   Copyright (C) 2003-2005  the.Virus
-#		$Author: slavik $ $Date: 2008-01-16 14:25:35 +0500 (п║я─п╢, 16 п╞п╫п╡ 2008) $
+#		$Author: slavik $ $Date: 2008-01-16 14:25:35 +0500 (п©Б∙▒я▐Б■─п©Б∙╒, 16 п©Б∙·п©Б∙╚п©Б∙║ 2008) $
 #		$Id: mylog.h 17 2008-01-16 09:25:35Z slavik $
 #           -----------------------------------------------------
 #   			This file is part of SAcc system.  
 #           -----------------------------------------------------
-#        ----------    сделано с особым цинизмом.   ----------------
+#        ----------    я│п╢п╣п╩п╟п╫п╬ я│ п╬я│п╬п╠я▀п╪ я├п╦п╫п╦п╥п╪п╬п╪.   ----------------
 #                    [http://sacc.cybersec.ru/
 #
 #   This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@
 #define loginf(mesg) logger.msg(__FILE__, __LINE__, 6, mesg)
 #define logdbg(mesg) logger.msg(__FILE__, __LINE__, 7, mesg)
 
-class clog 
+class mylog 
 {
 	bool connected;
 	int logmask;
@@ -50,7 +50,7 @@ class clog
 	bool syslg;
 public:
 	void msg(char* FileName, int Line, int severity, const char *fmt, ...);
-	virtual ~clog(void);
+	virtual ~mylog(void);
 	void log(char* app_name, bool insyslog, int mask);
 };
 #endif

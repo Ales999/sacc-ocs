@@ -56,7 +56,7 @@ racc_DEPENDENCIES =
 racc_LINK = $(CXXLD) $(racc_CXXFLAGS) $(CXXFLAGS) $(racc_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_sacc_OBJECTS = sacc-main.$(OBJEXT) sacc-krbconv.$(OBJEXT) \
-	sacc-mylog.$(OBJEXT)
+	sacc-namepair.$(OBJEXT) sacc-mylog.$(OBJEXT)
 sacc_OBJECTS = $(am_sacc_OBJECTS)
 sacc_DEPENDENCIES =
 sacc_LINK = $(CXXLD) $(sacc_CXXFLAGS) $(CXXFLAGS) $(sacc_LDFLAGS) \
@@ -252,7 +252,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 www = @www@
 SUBDIRS = auth 
-sacc_SOURCES = main.cpp krbconv.cpp mylog.cpp
+sacc_SOURCES = main.cpp krbconv.cpp namepair.cpp mylog.cpp
 sacc_LDADD = -lm -lmysqlclient
 racc_SOURCES = cisco.cpp
 racc_LDADD = -lm -lmysqlclient
@@ -263,7 +263,7 @@ INCLUDES = $(all_includes)
 # the library search path.
 sacc_LDFLAGS = $(all_libraries)
 #sacc_CFLAGS = -pg
-sacc_CXXFLAGS = -Wall -W
+sacc_CXXFLAGS = -Wall -W -Weffc++
 racc_LDFLAGS = $(all_libraries)
 racc_CXXFLAGS = -Wall -W
 all: all-recursive
@@ -354,6 +354,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sacc-krbconv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sacc-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sacc-mylog.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sacc-namepair.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -410,6 +411,20 @@ sacc-krbconv.obj: krbconv.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='krbconv.cpp' object='sacc-krbconv.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sacc_CXXFLAGS) $(CXXFLAGS) -c -o sacc-krbconv.obj `if test -f 'krbconv.cpp'; then $(CYGPATH_W) 'krbconv.cpp'; else $(CYGPATH_W) '$(srcdir)/krbconv.cpp'; fi`
+
+sacc-namepair.o: namepair.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sacc_CXXFLAGS) $(CXXFLAGS) -MT sacc-namepair.o -MD -MP -MF $(DEPDIR)/sacc-namepair.Tpo -c -o sacc-namepair.o `test -f 'namepair.cpp' || echo '$(srcdir)/'`namepair.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sacc-namepair.Tpo $(DEPDIR)/sacc-namepair.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='namepair.cpp' object='sacc-namepair.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sacc_CXXFLAGS) $(CXXFLAGS) -c -o sacc-namepair.o `test -f 'namepair.cpp' || echo '$(srcdir)/'`namepair.cpp
+
+sacc-namepair.obj: namepair.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sacc_CXXFLAGS) $(CXXFLAGS) -MT sacc-namepair.obj -MD -MP -MF $(DEPDIR)/sacc-namepair.Tpo -c -o sacc-namepair.obj `if test -f 'namepair.cpp'; then $(CYGPATH_W) 'namepair.cpp'; else $(CYGPATH_W) '$(srcdir)/namepair.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/sacc-namepair.Tpo $(DEPDIR)/sacc-namepair.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='namepair.cpp' object='sacc-namepair.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sacc_CXXFLAGS) $(CXXFLAGS) -c -o sacc-namepair.obj `if test -f 'namepair.cpp'; then $(CYGPATH_W) 'namepair.cpp'; else $(CYGPATH_W) '$(srcdir)/namepair.cpp'; fi`
 
 sacc-mylog.o: mylog.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(sacc_CXXFLAGS) $(CXXFLAGS) -MT sacc-mylog.o -MD -MP -MF $(DEPDIR)/sacc-mylog.Tpo -c -o sacc-mylog.o `test -f 'mylog.cpp' || echo '$(srcdir)/'`mylog.cpp
