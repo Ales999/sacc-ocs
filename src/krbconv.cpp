@@ -32,8 +32,8 @@ NamePairList npl;
 
 using namespace std;
 
-#define _V2PC(data) (char*)(data)
-#define _T(txt) (char*)(txt)
+//#define _V2PC(data) (char*)(data)
+//#define _T(txt) (char*)(txt)
 
 #ifndef UTEST
 
@@ -73,12 +73,16 @@ extern mylog logger;
 
 MYSQL mysql;
 
-char *temp = _V2PC(malloc(MAXLEN));
-char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
+//char *temp = _V2PC(malloc(MAXLEN));
+char *temp = new char[MAXLEN];
+//char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
+char *sql_query = new char[STR_MAX_SIZE];
 
 void exit_all(void)
 {
 	mysql_close(&mysql);
+	delete[]temp;
+	delete[]sql_query;
 	exit(EXIT_FAILURE);
 }
 
@@ -120,10 +124,11 @@ void sql_connect(MYSQL * lpmysql_link)
 
 #endif				// End UTEST
 
-std::string * mysql_kerbname(const string & user_check, bool obratka)
+std::string mysql_kerbname(const string & user_check, bool obratka)
 {
 	//char *ret = new char[MAXLEN];
 	//std::string * ret = new std::string[MAXLEN];
+	string ret("");		// объявление и инициализация.
 	size_t inlen = user_check.length();
 	char *login = new char[inlen * 2 + 1];
 	if (!login) {
@@ -144,7 +149,8 @@ std::string * mysql_kerbname(const string & user_check, bool obratka)
 	login_size =
 	    mysql_real_escape_string(&mysql, login, user_check.c_str(), inlen);
 #ifdef DEBUG
-	printf("In field %s: login(%d) %s\n", user_check, login_size, login);
+	printf("In field %s: login(%d) %s\n", user_check.c_str(), login_size,
+	       login);
 #endif
 
 	snprintf(sql_query, STR_MAX_SIZE,
@@ -159,17 +165,18 @@ std::string * mysql_kerbname(const string & user_check, bool obratka)
 			 mysql_errno(&mysql), mysql_error(&mysql));
 		logcrt(temp);
 		delete[]login;
-		return NULL;
+		return ret;	//NULL;
 	}
-	
-	delete[]login;		// он нам более не нужен.
+
+	delete[]login;		// более он нам более не нужен.
 	result = mysql_store_result(&mysql);
 	if (result == NULL) {
 #ifdef DEBUG
 		cerr << "Нет соединения с базой! " << endl;
 #endif
 		//delete[]ret;
-		return NULL;
+		//return NULL;
+		return ret;
 	}
 
 	if (mysql_num_rows(result) < 1) {
@@ -178,7 +185,7 @@ std::string * mysql_kerbname(const string & user_check, bool obratka)
 #endif
 		mysql_free_result(result);
 		//delete[]ret;
-		return NULL;
+		return ret;
 	}
 
 	row = mysql_fetch_row(result);
@@ -189,23 +196,25 @@ std::string * mysql_kerbname(const string & user_check, bool obratka)
 		    << endl;
 #endif
 		mysql_free_result(result);
-		return NULL;
+		//return NULL;
+		return ret;
 	}
 #ifdef DEBUG
 	clog << "row[0] " << row[0] << endl;
 	clog << "row[1] " << row[1] << endl;
-	clog << "sizof: " << (int)(sizeof(user_check) + 1) << endl;
+	clog << "Len of input: " << inlen << endl;
 #endif
 	/*
 	   snprintf(ret, MAXLEN,        //sizeof(user_check) + 1,
 	   (obratka ? row[1] : row[0]));
 	 */
-	std::string * ret = new std::string[MAXLEN];
-	(*ret) = obratka ? row[1] : row[0];
-//#ifdef DEBUG
+//      string *ret = new string[MAXLEN];
+//      (*ret) = obratka ? row[1] : row[0];
+	ret.assign(obratka ? row[1] : row[0]);
+#ifdef DEBUG
 	clog << "Результат mysql_kerbname(): " << user_check <<
-	    " ==--> " << (*ret) << endl;
-//#endif
+	    " ==--> " << ret << endl;
+#endif
 	mysql_free_result(result);
 	//return (char *)ret;
 	return ret;
@@ -216,13 +225,12 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 {
 #ifdef DEBUG
 	clog << endl;
-	clog << "=--->ConvertKrbName(" << k_name << "," << (char *)(preob ?
-								    "True" :
-								    "False")
+	clog << "=--->ConvertKrbName(" << k_name << "," << (preob ? "True" :
+							    "False")
 	    << ")<---=" << endl;
 #endif
 	// возвращаемая строка. В вызывающей ф. удаляем как: delete [] temp;
-	char *ret = new char[MAXLEN];	// High(!): fixed size local buffer
+	char *ret = new char[MAXLEN + 1];	// High(!): fixed size local buffer
 	string ltmp = "";
 	if (npl.GetValue(k_name.c_str(), &ltmp)) {
 #ifdef DEBUG
@@ -259,10 +267,6 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 			// В k_name будет типа 'ntlmdom\username'
 			found = k_name.find('\\');
 			if (found != string::npos) {
-#ifdef DEBUG
-				int poso = klen - found;
-				clog << "Poso: " << poso << endl;	//temp
-#endif
 				domain = k_name.substr(0, found);
 				login =
 				    k_name.substr(found + 1,
@@ -270,21 +274,23 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 #ifdef DEBUG
 				clog << "Found Domain: " << domain << " in position: " << int (found) << " and login: " << login << endl;	//temp
 #endif
-				std::string * tmp =
+				const string & tmp =
 				    mysql_kerbname(domain, preob);
-				if (NULL != tmp) {
-					snprintf(ret, STR_MAX_SIZE, "%s%s",
-						 login.c_str(), (*tmp).c_str());
+				if (tmp.size() != 0) {
+					//snprintf(ret, STR_MAX_SIZE, "%s%s", login.c_str(), tmp.c_str());
+					login += tmp;
+					snprintf(ret, MAXLEN, "%s",
+						 login.c_str());
+
 #ifdef DEBUG
 					clog << "NTLM обратка: " << ret
 					    << endl;
 #endif
-					delete[]tmp;
-					//free(ntpos);  // Взыв
+					// Добавляем найденное в наш кеш NamePairList.
 					npl.AddPair(k_name, ret);
 					return ret;
 				}
-				delete[]tmp;
+				//delete[]tmp;
 			} else {
 				snprintf(ret, STR_MAX_SIZE, "#");
 				return ret;	//snprintf(k_name, 1, "");
@@ -294,7 +300,7 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 	} else {
 
 #ifdef DEBUG
-		clog << "Found Kerberos name: " << k_name << " in pos: " << found << endl;	//<< (unsigned int)(posd + 1) << endl;
+		clog << "Found Kerberos name: " << k_name << " in position: " << found << endl;	//<< (unsigned int)(posd + 1) << endl;
 #endif
 		// В k_name будет типа 'username@KERBDOM.MY.RU'
 		// Выделим из полного имени только само имя, без домена
@@ -304,19 +310,18 @@ char *ConvertKrbName(const string k_name, bool preob = true)
 		clog << "Kerberos Domain: " <<
 		    domain << " and login: " << login << endl;
 #endif
-		std::string * tmp = mysql_kerbname(domain, preob);
-		if (NULL != tmp) {
+		const string & tmp = mysql_kerbname(domain, preob);
+		if (tmp.size() != 0) {
 			snprintf(ret, STR_MAX_SIZE,
-				 "%s\\%s", (*tmp).c_str(), login.c_str());
+				 "%s\\%s", tmp.c_str(), login.c_str());
 #ifdef DEBUG
 			clog << "Converted to NTLM name: " << ret << endl;
 #endif
-			delete[]tmp;
-			// Сохранаем пару в кеше
+			// Сохраняем пару в кеше, хотя возможно это и излишне т.к. эти данные 
+			// нужны тольео при формировании списков ACL (типа squid.conf.fulltime)
 			npl.AddPair(k_name, ret);
 			return ret;
 		}
-		delete[]tmp;
 	}
 	ret[0] = '#';
 	ret[1] = '\0';
@@ -395,7 +400,8 @@ int main(void)
 	// ----------------
 	mysql_close(&mysql);
 	//free(tstconv);
-
+	delete[]temp;
+	delete[]sql_query;
 	return EXIT_SUCCESS;
 }
 #endif

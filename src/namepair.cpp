@@ -15,10 +15,10 @@ NamePair::NamePair(const string & initName,
 _next(NULL)
 {
 #ifdef DEBUG
-	clog << "(C)-Конструктор NamePair: " << _name << " <-> " <<
+	clog << "(C!)-Конструктор NamePair: " << _name << " <-> " <<
 	    _value << endl;
 #endif
-};
+}
 
 NamePair::~NamePair()
 {
@@ -26,23 +26,25 @@ NamePair::~NamePair()
 		delete _next;
 	}
 #ifdef DEBUG
-	clog << "(D)-Вызван деструктор NamePair" << endl;
+	clog <<
+	    "(D!)-Вызван дефолтный деструктор NamePair"
+	    << endl;
 #endif
-};
+}
 
  NamePairList::NamePairList():_head(NULL), _last(NULL)
 {
 #ifdef DEBUG
-	clog << "(C)-Вызван конструктор NamePairList" << endl;
+	clog << "(C!)-Вызван конструктор NamePairList" << endl;
 #endif
 
-};
+}
 
 NamePairList::~NamePairList()
 {
 	if (_head)
 		delete _head;
-};
+}
 
 // AddPair
 const NamePair *NamePairList::AddPair(const string & newName,
@@ -57,11 +59,11 @@ const NamePair *NamePairList::AddPair(const string & newName,
 		_last = sp;
 	}
 #ifdef DEBUG
-	std::clog << "(A!)Добавлена пара:\t" << newName << " <--> "
-	    << newValue << std::endl;
+	std::clog << "(A!)-Добавлена пара:\t" << newName <<
+	    " <--> " << newValue << std::endl;
 #endif
 	return sp;
-};
+}
 
 // GetValue
 bool NamePairList::GetValue(const string & findName, string * buf)
@@ -73,8 +75,8 @@ bool NamePairList::GetValue(const string & findName, string * buf)
 			if (findName.compare(temp->GetName()) == 0) {
 				(*buf) = temp->GetValue();
 #ifdef DEBUG
-				std::clog << "(F!)Найдена пара:\t" <<
-				    temp->GetName() << " <--> " << temp->
+				std::clog << "(F!)-Найдена пара:\t"
+				    << temp->GetName() << " <--> " << temp->
 				    GetValue() << std::endl;
 #endif
 				return true;
@@ -84,4 +86,4 @@ bool NamePairList::GetValue(const string & findName, string * buf)
 		while (temp != NULL);
 	}
 	return false;
-};
+}

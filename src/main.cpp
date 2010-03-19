@@ -1906,7 +1906,7 @@ int main(int argc, char *argv[])
 		// Ales999
 		if (offset > finfo.st_size) {
 #ifdef DEBUG
-			snprintf(temp, 4096, "Size %llu, Current size: %llu ",
+			snprintf(temp, STR_MAX_SIZE, "Size %llu, Current size: %llu ",
 				 offset, finfo.st_size);
 			logmsg(temp);
 			logmsg(_T("- detected EXTERNAL logrotation."));
