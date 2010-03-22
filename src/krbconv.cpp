@@ -223,6 +223,7 @@ std::string mysql_kerbname(const string & user_check, bool obratka)
 // -----------------------------------------------------------------------------------------
 string ConvertKrbName(const string k_name, bool preob = true)
 {
+	const static char delim = '\\';
 #ifdef DEBUG
 	clog << endl;
 	clog << "=--->ConvertKrbName(" << k_name << "," << (preob ? "True" :
@@ -290,7 +291,7 @@ string ConvertKrbName(const string k_name, bool preob = true)
 					    << endl;
 #endif
 					// Добавляем найденное в наш кеш NamePairList.
-					npl.AddPair(k_name, myret.c_str());
+					// (BUG?) npl.AddPair(k_name, myret.c_str());
 					return myret;
 				}
 				//delete[]tmp;
@@ -318,7 +319,7 @@ string ConvertKrbName(const string k_name, bool preob = true)
 		if (tmp.size() != 0) {
 			//snprintf(ret, STR_MAX_SIZE, "%s\\%s", tmp.c_str(), login.c_str());
 			myret.assign(tmp);
-			myret += '\\';
+			myret += delim;
 			myret += login;
 #ifdef DEBUG
 			clog << "Converted to NTLM name: " << myret << endl;

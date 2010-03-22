@@ -1069,9 +1069,7 @@ http_access allow group_time1900
 					//fputs(out_buffer, fg);
 
 				};
-				//free(tmpname);
-				loginf("Afrer for delete tmpname");
-				//free(&tmpname);
+				//loginf("Afrer for delete tmpname");
 				mysql_free_result(res);
 				fclose(fg);
 
@@ -1476,7 +1474,7 @@ static bool parse_string(char *s, size_t len)
 		_strcmp(fields[8], _T(INT_SUBNET1)) return true;
 		_strcmp(fields[8], _T(INT_SUBNET2)) return true;
 		_strcmp(fields[8], _T(INT_SUBNET3)) return true;
-		if (strstr(fields[3], "DENIED") != NULL)
+		if (strstr(fields[3], "DENIED") != NULL) // При таком раскладе, если юзера в базе нет то и создаваться лн не будет при autolearn=1!
 			return true;
 //#ifndef CHEAT_MODE
 		if (strstr(fields[3], "HIT") != NULL)
@@ -1498,9 +1496,17 @@ static bool parse_string(char *s, size_t len)
 		//char *tmplog = ConvertKrbName(strconv);
 		std::string tmplog = ConvertKrbName(strconv, true);
 
+		if(!tmplog.empty()) {
 		login_size =
 		    mysql_real_escape_string(&mysql, login, tmplog.c_str(),
 					     tmplog.size());
+		} else {
+		login_size =
+		    mysql_real_escape_string(&mysql, login, fields[7],
+					     strlen(fields[7]));
+		}
+		tmplog.erase();
+
 
 		//delete[]tmplog;
 
@@ -1521,6 +1527,7 @@ static bool parse_string(char *s, size_t len)
 			_nstrcmp(login, (ucache[i].uname)) {
 				uidcache = 1;
 				uid = ucache[i].uid;
+				std::clog << "Найден uid=" << uid << " для юзера: " << login << std::endl;
 #ifdef STAT
 				cache_hit++;
 #endif
@@ -1553,6 +1560,8 @@ static bool parse_string(char *s, size_t len)
 				if (NULL != result)
 					mysql_free_result(result);
 				if (1 == autolearn) {
+					snprintf(temp, STR_MAX_SIZE, "Add autolearn user: %s\n", login);
+					loginf(temp);
 					snprintf(sql_query, STR_MAX_SIZE,
 						 "insert delayed into users (aid, quota, dquota, login, descr) select o1.value as aid, o2.value as lim1 ,o2.value as lim2, '%s', 'autocreated' from options as o1, options as o2  where o1.name='def_timeacl' and o2.name='std_limit'",
 						 login);
@@ -1567,7 +1576,7 @@ static bool parse_string(char *s, size_t len)
 						return false;	//no user found
 					}
 					uid = mysql_insert_id(&mysql);
-				} else {
+				} else { // Так можно и весь лог забить(!)
 					snprintf(temp, STR_MAX_SIZE,
 						 "parser: no user: %s query: %s error %s",
 						 login, sql_query,
@@ -1707,6 +1716,7 @@ int main(int argc, char *argv[])
 			config_nodaemon = 1;
 			break;
 		case 'a':
+			loginf("Use autolearn");
 			autolearn = 1;
 			break;
 		case 'f':
