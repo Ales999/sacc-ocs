@@ -183,7 +183,9 @@ pid_t PidFile_read(void);
 int sys_logfile;
 char *sql_query = _V2PC(malloc(STR_MAX_SIZE));
 // From krbconv.cpp:
-extern char *ConvertKrbName(const std::string, bool obr = true);
+//extern char *ConvertKrbName(const std::string, bool obr = true);
+extern std::string ConvertKrbName(const std::string, bool obr = true);
+
 /* code itself */
 /* Get time ticket */
 void sys_gettime(time_t * t)
@@ -876,7 +878,8 @@ void squid_reconfig()
 	int current_record = 0;
 	int rows_selected = 0, acl_rows = 0;
 	pid_t squid_pid;
-	char *tmpname;
+	//char *tmpname;
+	std::string tmpname; // Временная для работы ConvertKrbName
 	std::string strconv;
 #ifdef DEBUG
 	printf("reconfig: query malloc\n");
@@ -1027,15 +1030,22 @@ http_access allow group_time1900
 					//tmpname = ConvertKrbName(strncpy(tmpname, out_buffer, strlen(out_buffer)-1), false);
 					//char *tmpname;        // = new char[MAXLEN];
 					strconv.assign(conv_buff);
-					tmpname =
+					const std::string & tmpname =
 					    ConvertKrbName(strconv, false);
-					snprintf(out_buffer, STR_MAX_SIZE,
-						 "%s\n", tmpname);
+					if( !tmpname.empty() ) {
+					  snprintf(out_buffer, STR_MAX_SIZE,
+						 "%s\n", tmpname.c_str());
 #ifdef DEBUG
-					printf("TmpOrbName: %s\n", tmpname);
+					  std::clog << "Обратная обработка: " << tmpname << std::endl;
 #endif
-					fputs(out_buffer, fg);
-					delete[]tmpname;	// 
+					  fputs(out_buffer, fg);
+					}
+#ifdef DEBUG
+					else {
+					std::clog << "Имя: " << conv_buff << " _не_стали_ обрабатывать!"  << std::endl;
+					}
+#endif					
+					//delete[]tmpname;	//
 					/*
 
 					   tmpname = ConvertKrbName(row[0], false);
@@ -1485,12 +1495,14 @@ static bool parse_string(char *s, size_t len)
 					     strlen(fields[7]));
 #else
 		strconv.assign(fields[7]);
-		char *tmplog = ConvertKrbName(strconv);
+		//char *tmplog = ConvertKrbName(strconv);
+		std::string tmplog = ConvertKrbName(strconv, true);
 
 		login_size =
-		    mysql_real_escape_string(&mysql, login, tmplog,
-					     strlen(tmplog));
-		delete[]tmplog;
+		    mysql_real_escape_string(&mysql, login, tmplog.c_str(),
+					     tmplog.size());
+
+		//delete[]tmplog;
 
 #endif				// End DEBIAN
 #else				// Else in IP_STAT
