@@ -879,7 +879,7 @@ void squid_reconfig()
 	int rows_selected = 0, acl_rows = 0;
 	pid_t squid_pid;
 	//char *tmpname;
-	std::string tmpname; // Временная для работы ConvertKrbName
+	std::string tmpname;	// Временная для работы ConvertKrbName
 	std::string strconv;
 #ifdef DEBUG
 	printf("reconfig: query malloc\n");
@@ -1032,20 +1032,26 @@ http_access allow group_time1900
 					strconv.assign(conv_buff);
 					const std::string & tmpname =
 					    ConvertKrbName(strconv, false);
-					if( !tmpname.empty() ) {
-					  snprintf(out_buffer, STR_MAX_SIZE,
-						 "%s\n", tmpname.c_str());
+					if (!tmpname.empty()) {
+						snprintf(out_buffer,
+							 STR_MAX_SIZE, "%s\n",
+							 tmpname.c_str());
 #ifdef DEBUG
-					  std::clog << "Обратная обработка: " << tmpname << std::endl;
+						std::clog <<
+						    "Обратная обработка: "
+						    << tmpname << std::endl;
 #endif
-					  fputs(out_buffer, fg);
+						fputs(out_buffer, fg);
 					}
 #ifdef DEBUG
 					else {
-					std::clog << "Имя: " << conv_buff << " _не_стали_ обрабатывать!"  << std::endl;
+						std::clog << "Имя: " <<
+						    conv_buff <<
+						    " _не_стали_ обрабатывать!"
+						    << std::endl;
 					}
-#endif					
-					//delete[]tmpname;	//
+#endif
+					//delete[]tmpname;      //
 					/*
 
 					   tmpname = ConvertKrbName(row[0], false);
@@ -1382,6 +1388,68 @@ void check_state()
         return (res);
 } */
 
+bool AutoAddUser(const char *login, int &uid)
+{
+	static MYSQL_RES *result;
+	static MYSQL_ROW row;
+	std::clog << "Login test in AutoAddUser: " << login << std::endl;
+	snprintf(sql_query, STR_MAX_SIZE,
+		 "select id from users where login='%s';", login);
+	if (mysql_query(&mysql, sql_query)) {
+		// log message about error
+		snprintf(temp, STR_MAX_SIZE,
+			 "parser: mysql error, user: %s query: %s error %s",
+			 login, sql_query, mysql_error(&mysql));
+		logmsg(temp);
+		errno = 5;
+		return false;	//no user found
+	}
+	result = mysql_store_result(&mysql);
+	if (0 == mysql_num_rows(result)) {	// Если юзера в базе нету.
+		if (NULL != result)
+			mysql_free_result(result);
+		// Если режим автодобавления
+		if (1 == autolearn) {
+			snprintf(temp, STR_MAX_SIZE, "Add autolearn user: %s\n",
+				 login);
+			loginf(temp);
+			snprintf(sql_query, STR_MAX_SIZE,
+				 "insert delayed into users (aid, quota, dquota, login, descr) select o1.value as aid, o2.value as lim1 \
+				 ,o2.value as lim2, '%s', 'autocreated' from options as o1, options as o2  \
+				 where o1.name='def_timeacl' and o2.name='std_limit'",
+				 login);
+			if (mysql_query(&mysql, sql_query)) {
+				// log message about error
+				snprintf(temp, STR_MAX_SIZE,
+					 "parser: autoadd fail, user: %s, query: %s, error: %s",
+					 login, sql_query, mysql_error(&mysql));
+				logmsg(temp);
+				errno = 5;
+				return false;	//no user found
+			}
+#ifdef DEBUG
+			std::clog << "User " << login <<
+			    " успешно добавлен в базу пользователей"
+			    << std::endl;
+#endif
+			uid = mysql_insert_id(&mysql);
+		} else {	// Так можно и весь лог забить(!) при неверной конфигурации squid.conf
+			snprintf(temp, STR_MAX_SIZE,
+				 "parser: no user: %s query: %s error %s",
+				 login, sql_query, mysql_error(&mysql));
+			logmsg(temp);
+			errno = 6;
+			return false;
+		}
+	} else {
+		row = mysql_fetch_row(result);
+		// uid будет возвращен по ссылке
+		uid = atoi(row[0]);
+		mysql_free_result(result);
+	}
+	return true;
+}
+
 /* main string parsing */
 static bool parse_string(char *s, size_t len)
 {
@@ -1394,21 +1462,24 @@ static bool parse_string(char *s, size_t len)
 	int fieldnum = 0;
 	bool cached = false;
 	unsigned long ip = 0;
+	static int uid;
 	std::string strconv;
-//1040314641.655     36 10.0.0.200 TCP_DENIED/407 1691 GET http://www.wzor.net/ - NONE/- text/html
-//[0]-time
-//[1]-conn_time
-//[2]-ip
-//[3]-code
-//[4]-size
-//[5]-method
-//[6]-query
-//[7]-user
-//[8]-mode/addr
-//[9]-content type
+	bool chdeni = false;	// Признак что строка содержит "DENIED"
+	//1040314641.655     36 10.0.0.200 TCP_DENIED/407 1691 GET http://www.wzor.net/ - NONE/- text/html
+	//[0]-time
+	//[1]-conn_time
+	//[2]-ip
+	//[3]-code
+	//[4]-size
+	//[5]-method
+	//[6]-query
+	//[7]-user
+	//[8]-mode/addr
+	//[9]-content type
+
 #ifdef DEBUG
 	printf("parser: string %s len=%d\n", s, len);
-#endif				/* debug */
+#endif
 	if (len > 16) {
 		out = s;
 		// strsep заменена макросом
@@ -1464,8 +1535,10 @@ static bool parse_string(char *s, size_t len)
 		}
 		if (atol(fields[4]) == 0)
 			return true;
-		if (strstr(fields[8], "NONE/-") != NULL)
-			return true;
+		if (strstr(fields[8], "NONE/-") != NULL) {
+			if (0 == autolearn)
+				return true;
+		}
 		if (strstr(fields[3], "NONE/") != NULL)
 			return true;
 #ifndef IP_STAT
@@ -1474,18 +1547,22 @@ static bool parse_string(char *s, size_t len)
 		_strcmp(fields[8], _T(INT_SUBNET1)) return true;
 		_strcmp(fields[8], _T(INT_SUBNET2)) return true;
 		_strcmp(fields[8], _T(INT_SUBNET3)) return true;
-		if (strstr(fields[3], "DENIED") != NULL) // При таком раскладе, если юзера в базе нет то и создаваться лн не будет при autolearn=1!
-			return true;
+		// При таком раскладе, если юзера в базе нет то и создаваться он не будет при autolearn=1!
+		//printf("Добрались до DENIED при autolearn=%d\n", autolearn);
+		if (strstr(fields[3], "DENIED") != NULL) {
+			chdeni = true;
+			if (0 == autolearn)	// Если нет режима автосоздания пользователя - прекращаем эту функцию.
+				return true;
+		}
 //#ifndef CHEAT_MODE
 		if (strstr(fields[3], "HIT") != NULL)
 			cached = true;
 //#endif /* cheat */
 #ifdef DEBUG
 		printf("parser: all fields looks like valid\n");
-#endif				/* debug */
+#endif
 		static int uidcache;
 		uidcache = 0;	//miss
-		static int uid;
 #ifndef IP_STAT
 #ifndef DEBIAN
 		login_size =
@@ -1493,22 +1570,19 @@ static bool parse_string(char *s, size_t len)
 					     strlen(fields[7]));
 #else
 		strconv.assign(fields[7]);
-		//char *tmplog = ConvertKrbName(strconv);
 		std::string tmplog = ConvertKrbName(strconv, true);
 
-		if(!tmplog.empty()) {
-		login_size =
-		    mysql_real_escape_string(&mysql, login, tmplog.c_str(),
-					     tmplog.size());
+		if (!tmplog.empty()) {
+			login_size =
+			    mysql_real_escape_string(&mysql, login,
+						     tmplog.c_str(),
+						     tmplog.size());
 		} else {
-		login_size =
-		    mysql_real_escape_string(&mysql, login, fields[7],
-					     strlen(fields[7]));
+			login_size =
+			    mysql_real_escape_string(&mysql, login, fields[7],
+						     strlen(fields[7]));
 		}
 		tmplog.erase();
-
-
-		//delete[]tmplog;
 
 #endif				// End DEBIAN
 #else				// Else in IP_STAT
@@ -1523,73 +1597,37 @@ static bool parse_string(char *s, size_t len)
 		       login);
 #endif
 
-		for (int i = 0; (i < uccsize) && (0 == uidcache); i++) {
-			_nstrcmp(login, (ucache[i].uname)) {
-				uidcache = 1;
-				uid = ucache[i].uid;
-				std::clog << "Найден uid=" << uid << " для юзера: " << login << std::endl;
-#ifdef STAT
-				cache_hit++;
+		if (!chdeni) {
+			for (int i = 0; (i < uccsize) && (0 == uidcache); i++) {
+				_nstrcmp(login, (ucache[i].uname)) {
+					uidcache = 1;
+					uid = ucache[i].uid;
+#ifdef DEBUG
+					std::clog << "Найден uid=" << uid
+					    << " для юзера: " << login
+					    << std::endl;
 #endif
-				break;
+#ifdef STAT
+					cache_hit++;
+#endif
+					break;
+				}
 			}
-		}
+		}		// end if(chdeni)
 
 		if (0 == uidcache)	//cache miss, select uid from database
 		{
-			static MYSQL_RES *result;
-			static MYSQL_ROW row;
+			//static MYSQL_RES *result;
+			//static MYSQL_ROW row;
 #ifdef STAT
 			cache_miss++;
 #endif
-
-			snprintf(sql_query, STR_MAX_SIZE,
-				 "select id from users where login='%s';",
-				 login);
-			if (mysql_query(&mysql, sql_query)) {
-				/* log message about error */
-				snprintf(temp, STR_MAX_SIZE,
-					 "parser: mysql error, user: %s query: %s error %s",
-					 login, sql_query, mysql_error(&mysql));
-				logmsg(temp);
-				errno = 5;
-				return false;	//no user found
+			// Если пользователя нет и нет режима автодобавления то на выход.
+			if (!AutoAddUser(login, uid)) {
+				return false;
 			}
-			result = mysql_store_result(&mysql);
-			if (0 == mysql_num_rows(result)) {
-				if (NULL != result)
-					mysql_free_result(result);
-				if (1 == autolearn) {
-					snprintf(temp, STR_MAX_SIZE, "Add autolearn user: %s\n", login);
-					loginf(temp);
-					snprintf(sql_query, STR_MAX_SIZE,
-						 "insert delayed into users (aid, quota, dquota, login, descr) select o1.value as aid, o2.value as lim1 ,o2.value as lim2, '%s', 'autocreated' from options as o1, options as o2  where o1.name='def_timeacl' and o2.name='std_limit'",
-						 login);
-					if (mysql_query(&mysql, sql_query)) {
-						/* log message about error */
-						snprintf(temp, STR_MAX_SIZE,
-							 "parser: autoadd fail, user: %s, query: %s, error: %s",
-							 login, sql_query,
-							 mysql_error(&mysql));
-						logmsg(temp);
-						errno = 5;
-						return false;	//no user found
-					}
-					uid = mysql_insert_id(&mysql);
-				} else { // Так можно и весь лог забить(!)
-					snprintf(temp, STR_MAX_SIZE,
-						 "parser: no user: %s query: %s error %s",
-						 login, sql_query,
-						 mysql_error(&mysql));
-					logmsg(temp);
-					errno = 6;
-					return false;
-				}
-			} else {
-				row = mysql_fetch_row(result);
-				uid = atoi(row[0]);
-				mysql_free_result(result);
-			}
+			if (chdeni)	// Если ранее был обнаружен DENIED то выход
+				return true;
 			//save data to internal cache
 			ucache[ucpointer].uid = uid;
 			strncpy(ucache[ucpointer].uname, login, STR_MAX_SIZE);
@@ -1928,8 +1966,9 @@ int main(int argc, char *argv[])
 		// Ales999
 		if (offset > finfo.st_size) {
 #ifdef DEBUG
-			snprintf(temp, STR_MAX_SIZE, "Size %llu, Current size: %llu ",
-				 offset, finfo.st_size);
+			snprintf(temp, STR_MAX_SIZE,
+				 "Size %llu, Current size: %llu ", offset,
+				 finfo.st_size);
 			logmsg(temp);
 			logmsg(_T("- detected EXTERNAL logrotation."));
 #endif
