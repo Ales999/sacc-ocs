@@ -918,7 +918,7 @@ void squid_reconfig()
 				fseeko(fr, squid_loffset, SEEK_SET);
 				fgets(line_buffer, len, fr);
 			}
-		if (strstr(line_buffer, "http_access deny all")) {
+		if (strstr(line_buffer, "http_access deny all")) { // Так можно и закоментированную строку поймать :-(
 #ifdef DEBUG
 			printf("reconfig: creating_configuration\n");
 #endif
@@ -1074,13 +1074,15 @@ http_access allow group_time1900
 
 					//fputs(out_buffer, fg);
 
-				};
+				}; // End for (current_record = 0; ///
+				free(conv_buff);
 				//loginf("Afrer for delete tmpname");
 				mysql_free_result(res);
 				fclose(fg);
 
 				//!
-			}
+			} // End for(int acl_current_record = 0; ...
+			mysql_free_result(acl_res);
 		}
 		fputs(line_buffer, fw);
 	}
@@ -1392,7 +1394,7 @@ bool AutoAddUser(const char *login, int &uid)
 {
 	static MYSQL_RES *result;
 	static MYSQL_ROW row;
-	std::clog << "Login test in AutoAddUser: " << login << std::endl;
+	//std::clog << "Login test in AutoAddUser: " << login << std::endl;
 	snprintf(sql_query, STR_MAX_SIZE,
 		 "select id from users where login='%s';", login);
 	if (mysql_query(&mysql, sql_query)) {
@@ -1739,7 +1741,8 @@ int main(int argc, char *argv[])
 #ifdef DEBUG
 	time_t start_time, stop_time;
 #endif				/*debug */
-	char *s = _V2PC(malloc(MAXBUFSIZE));
+	//char *s = _V2PC(malloc(MAXBUFSIZE));
+	char *s = _V2PC(malloc(MAXBUFSIZE * SIZEOF_CHAR));
 	size_t len;
 	int a_char;
 	struct stat finfo;
@@ -1850,7 +1853,7 @@ int main(int argc, char *argv[])
 #endif				/* DEBUG */
 
 	/* Going to endless cycle */
-	s = _V2PC(malloc(MAXBUFSIZE * SIZEOF_CHAR));
+	//char *s = _V2PC(malloc(MAXBUFSIZE * SIZEOF_CHAR));
 	/* opennig access.log file */
 	if (NULL == (fp = fopen(squid_filename, "rm"))) {
 #ifdef DEBUG
@@ -2117,4 +2120,5 @@ int main(int argc, char *argv[])
 			usleep(SLEEP_TIME);	/* default 50 msec */
 		};
 	}			/* while 1 */
+	free(s);
 }
