@@ -430,6 +430,20 @@ void exit_all()
 	/* log message about what we're stoped */
 	snprintf(temp, STR_MAX_SIZE, "service %s (%u) stopped.", APP_NAME, PID);
 	logmsg(temp);
+	//
+	logmsg(_T("Free mem's before exit"));
+	if (NULL != sql_query)
+		free(sql_query);
+		sql_query = NULL;
+	if(NULL != temp) {
+		free(temp);
+		temp = NULL;
+	}
+	for (int i = 0; i < USER_CACHE_SIZE; i++)
+		free(ucache[i].uname) ; // = _V2PC(malloc(MAXBUFSIZE));
+
+	logmsg(_T("End Free mem's"));
+	//
 	close(0);
 	close(1);
 	close(2);
@@ -437,6 +451,7 @@ void exit_all()
 #ifndef STAT
 	unlink(SESSION_LOG_FNAME);
 #endif
+	// Ну и на выход, в shell
 	exit(ErrNumber);
 }
 
@@ -891,6 +906,8 @@ void squid_reconfig()
 		snprintf(temp, STR_MAX_SIZE,
 			 "reconfig: Can't open %s for read.", SQUID_ORIG_CONF);
 		logcrt(temp);
+		free(out_buffer);
+		free(line_buffer);
 		sig_shutdown(1);
 		return;
 	}
@@ -902,6 +919,8 @@ void squid_reconfig()
 			 "Can't open %s for write, skipping reconfiguration.",
 			 SQUID_CONF);
 		logerr(temp);
+		free(out_buffer);
+		free(line_buffer);
 		return;
 	}
 #ifdef DEBUG
@@ -934,16 +953,22 @@ http_access allow group_time1900
 					 mysql_errno(&mysql),
 					 mysql_error(&mysql));
 				logcrt(temp);
+				free(out_buffer);
+				free(line_buffer);
 				exit_all();
 			}
 			acl_res = mysql_store_result(&mysql);
 			if (acl_res == NULL) {
 				logcrt(_T("squid_reconfig: no result"));
+				free(out_buffer);
+				free(line_buffer);
 				exit_all();
 			};
 			acl_rows = mysql_num_rows(acl_res);
 			if (acl_rows == 0) {
 				logcrt(_T("squid_reconfig: no acl's found"));
+				free(out_buffer);
+				free(line_buffer);
 				exit_all();
 			};
 			for (int acl_current_record = 0;
@@ -966,6 +991,8 @@ http_access allow group_time1900
 						 "Can't open %s.%s for write, skipping reconfiguration.",
 						 SQUID_CONF, acl_row[0]);
 					logerr(temp);
+					free(out_buffer);
+					free(line_buffer);
 					return;
 				}
 				snprintf(sql_query, STR_MAX_SIZE,
@@ -978,11 +1005,15 @@ http_access allow group_time1900
 						 mysql_errno(&mysql),
 						 mysql_error(&mysql));
 					logcrt(temp);
+					free(out_buffer);
+					free(line_buffer);
 					exit_all();
 				}
 				res = mysql_store_result(&mysql);
 				if (res == NULL) {
 					logcrt(_T("squid_reconfig: no result"));
+					free(out_buffer);
+					free(line_buffer);
 					exit_all();
 				};
 				rows_selected = mysql_num_rows(res);
@@ -1012,6 +1043,8 @@ http_access allow group_time1900
 					if (row == NULL) {
 						logcrt(_T
 						       ("squid_reconfig: no row"));
+						free(out_buffer);
+						free(line_buffer);
 						exit_all();
 					};
 					snprintf(out_buffer, STR_MAX_SIZE,
@@ -1869,6 +1902,7 @@ int main(int argc, char *argv[])
 					setvbuf(fp, tmpbf, _IOLBF, MAXBUFSIZE);
 					break;
 				}
+#ifndef DEBIAN
 			case SIG_RECOUNT:
 				{
 					squid_recount(&mysql);
@@ -1889,10 +1923,15 @@ int main(int argc, char *argv[])
 //                      squid_reconfig();
 					break;
 				}
+#endif // ifNoDef DEBIAN
+			// Получен сигнал на выход из программы.
 			case SIG_SHUTDOWN:
 				logmsg(_T("signal: shutdown"));
 				offset = ftello(fp);
 				squid_setlogoffset(offset, &mysql);
+				fclose(fp);
+				free(s);
+				free(tmpbf);
 				exit_mysql();
 				break;
 			case SIG_ROTATE:
@@ -2086,5 +2125,5 @@ int main(int argc, char *argv[])
 			usleep(SLEEP_TIME);	/* default 50 msec */
 		};
 	}			/* while 1 */
-	free(s);
+
 }
