@@ -873,12 +873,10 @@ void squid_reconfig()
 	FILE *fw, *fg;
 	char *line_buffer = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
 	char *out_buffer = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
-	char *conv_buff = _V2PC(malloc(MAXLEN * SIZEOF_CHAR));
 	int len;
 	int current_record = 0;
 	int rows_selected = 0, acl_rows = 0;
 	pid_t squid_pid;
-	//char *tmpname;
 	std::string tmpname;	// Временная для работы ConvertKrbName
 	std::string strconv;
 #ifdef DEBUG
@@ -918,7 +916,7 @@ void squid_reconfig()
 				fseeko(fr, squid_loffset, SEEK_SET);
 				fgets(line_buffer, len, fr);
 			}
-		if (strstr(line_buffer, "http_access deny all")) { // Так можно и закоментированную строку поймать :-(
+		if (strstr(line_buffer, "http_access deny all")) {	// Так можно и закоментированную строку поймать :-(
 #ifdef DEBUG
 			printf("reconfig: creating_configuration\n");
 #endif
@@ -1005,8 +1003,7 @@ http_access allow group_time1900
 #endif				/* FREE_HTTPS */
 
 				}
-				// Ales:
-				// Вот в этом цикле и вносятся сами логины в файл, типа 'squid.conf.fulltime'
+				// Ales999: Вот в этом цикле и вносятся сами логины в файл, типа 'squid.conf.fulltime'
 				//char *tmpname = _V2PC(malloc(STR_MAX_SIZE));  // login from users
 				for (current_record = 0;
 				     current_record < rows_selected;
@@ -1020,16 +1017,10 @@ http_access allow group_time1900
 					snprintf(out_buffer, STR_MAX_SIZE,
 						 "%s\n", row[0]);
 					// его и будем конвертировать.
-					snprintf(conv_buff, STR_MAX_SIZE,
-						 "%s", row[0]);
-
+					strconv.assign(row[0]);
 					fputs(out_buffer, fg);
 					// Тут вносим(добавляем!) наш измененный логин, если было 'domain\username'
 					// то станет 'username@DOMAIN.TIPA.RU', т.е. проведем обратное преобразование.
-					//tmpname = ConvertKrbName(out_buffer, false);
-					//tmpname = ConvertKrbName(strncpy(tmpname, out_buffer, strlen(out_buffer)-1), false);
-					//char *tmpname;        // = new char[MAXLEN];
-					strconv.assign(conv_buff);
 					const std::string & tmpname =
 					    ConvertKrbName(strconv, false);
 					if (!tmpname.empty()) {
@@ -1046,43 +1037,18 @@ http_access allow group_time1900
 #ifdef DEBUG
 					else {
 						std::clog << "Имя: " <<
-						    conv_buff <<
+						    strconv <<
 						    " _не_стали_ обрабатывать!"
 						    << std::endl;
 					}
 #endif
-					//delete[]tmpname;      //
-					/*
 
-					   tmpname = ConvertKrbName(row[0], false);
-
-					   if (strlen(row[0]) > 1) {
-					   snprintf(tmpname, STR_MAX_SIZE,
-					   ConvertKrbName(row[0],
-					   false));
-					   if ((NULL != tmpname) && strlen(tmpname) > 1) {
-					   snprintf(out_buffer,
-					   STR_MAX_SIZE,
-					   "%s\n",
-					   tmpname);
-
-					   loginf(out_buffer);
-					   //loginf("Output!");
-					   //fputs(out_buffer, fg);
-					   }
-					   } */
-
-					//fputs(out_buffer, fg);
-
-				}; // End for (current_record = 0; ///
-				free(conv_buff);
+				};	// End for (current_record = 0; ///
+				//free(conv_buff); // Взыв (!)
 				//loginf("Afrer for delete tmpname");
 				mysql_free_result(res);
 				fclose(fg);
-
-				//!
-			} // End for(int acl_current_record = 0; ...
-			mysql_free_result(acl_res);
+			}	// End for(int acl_current_record = 0; ...
 		}
 		fputs(line_buffer, fw);
 	}
