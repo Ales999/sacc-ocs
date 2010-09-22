@@ -1,0 +1,298 @@
+6.7 Результирующие коды Squid 
+
+Коды TCP_ соотвествуют запросам на HTTP-порту (обычно 3128). Коды UDP_ соотвествуют запросам на ICP-порту (обычно 3130). Если журналирование ICP было выключено при помощи опции log_icp_queries, то ICP-отыетф попадать в журнал не будут. 
+
+
+Нижеследующие результирующие коды были взяты из Squid-2, в соответствии со структурой log_tags в файле src/access_log.c: 
+
+
+TCP_HIT
+
+Верная копия запрошенного объекта была в кеше. 
+
+TCP_MISS
+
+Запрошенного объекта не было в кеше. 
+
+TCP_REFRESH_HIT
+
+Запрошенный объект был закеширован, но УСТАРЕЛ. IMS-запрос для этого объекта вернул "304 not modified". 
+
+TCP_REF_FAIL_HIT
+
+Запрошенный объект был закеширован, но УСТАРЕЛ. IMS-запрос завершен неудачно и устаревший объект был доставлен. 
+
+TCP_REFRESH_MISS
+
+Запрошенный объект был закеширован, но УСТАРЕЛ. IMS-запрос вернул новое содержимое. 
+
+TCP_CLIENT_REFRESH_MISS
+
+Клиент послал прагму "no-cache" или другу аналогичную команду контроля кеширования в запросе. Поэтому кеш должен повторно получить объект. 
+
+TCP_IMS_HIT
+
+Клиент использовал IMS-запрос для объекта, который был найден в кеше свежим. 
+
+TCP_SWAPFAIL_MISS
+
+Объект скорее всего был в кеше, но доступа к нему нет. 
+
+TCP_NEGATIVE_HIT
+
+Запрос для негативно кешированных объектов типа "404 not found", о которых кеш знает, что они недоступны. См. пояснения по negative_ttl в вашем файле squid.conf. 
+
+TCP_MEM_HIT
+
+Верная копия запрошенного объекта была в кеше и в памяти, доступа к диску не производилось. 
+
+TCP_DENIED
+
+Доступ запрещен для этого запроса. 
+
+TCP_OFFLINE_HIT
+
+Запрошенный объект был извлечен из кеша в режиме offline. В режиме offline никогда не проверяются, см. offline_mode в файле squid.conf. 
+
+UDP_HIT
+
+Верная копия запрошенного объекта была в кеше. 
+
+UDP_MISS
+
+Запрошенный объект отсутствует в этом кеше. 
+
+UDP_DENIED
+
+Доступ запрещен для этого запроса. 
+
+UDP_INVALID
+
+Был получен неверный запрос. 
+
+UDP_MISS_NOFETCH
+
+Из-за опции запуска "-Y" или частых отказов, кеш при хите будет возвращать либо UDP_HIT или этот код. Соседи таким образом получат только хиты. 
+
+NONE
+
+Указывается с ошибками и запросами cachemgr. 
+
+
+Следующие коды больше недоступны в Squid-2: 
+
+ERR_*
+
+Ошибки теперь указываются в статусе кода. 
+
+TCP_CLIENT_REFRESH
+
+См. TCP_CLIENT_REFRESH_MISS. 
+
+TCP_SWAPFAIL
+
+См. TCP_SWAPFAIL_MISS. 
+
+TCP_IMS_MISS
+
+Удалено, вместо этого используется TCP_IMS_HIT. 
+
+UDP_HIT_OBJ
+
+Совпавший объект больше недоступен. 
+
+UDP_RELOADING
+
+См. UDP_MISS_NOFETCH. 
+
+6.8 HTTP status codes 
+
+These are taken from RFC 2616 and verified for Squid. Squid-2 uses almost all codes except 307 (Temporary Redirect), 416 (Request Range Not Satisfiable), and 417 (Expectation Failed). Extra codes include 0 for a result code being unavailable, and 600 to signal an invalid header, a proxy error. Also, some definitions were added as for RFC 2518 (WebDAV). Yes, there are really two entries for status code 424, compare with http_status in src/enums.h: 
+
+000 Используется в основном для UDP-трафика.
+
+100 Continue
+101 Переключение протоколов
+*102 Processing
+
+200 OK
+201 Создано
+202 Принято
+203 Non-Authoritative Information
+204 Нет содержимого
+205 Содержимое отвергнуто
+206 Partial Content
+*207 Мультистатус
+
+300 Множественный выбор
+301 Moved Permanently
+302 Удаленно временно
+303 See Other
+304 Не изменено
+305 Используется прокси
+[307 Временное перенарпавление]
+
+400 Неверный запрос
+401 Unauthorized
+402 Payment Required
+403 Запрещено
+404 Не найдено
+405 Метод не разрешен
+406 Not Acceptable
+407 Прокси требует аутентификации
+408 Таймаут запроса
+409 Конфликт
+410 Gone
+411 Требуется длина
+412 Precondition Failed
+413 Request Entity Too Large
+414 Запрошенный URI слишком велик
+415 Неподдерживаемый тип Media
+[416 Request Range Not Satisfiable]
+[417 Expectation Failed]
+*424 Заблокировано
+*424 Failed Dependency
+*433 Unprocessable Entity
+
+500 Внутренняя ошибка сервера
+501 Not Implemented
+502 Неверный шлюз
+503 Сервис недоступен
+504 Таймаут шлюза
+505 Версия HTTP не поддерживается
+*507 Insufficient Storage
+
+600 ошибка разбора заголовка Squid
+
+6.9 Методы запроса 
+
+Squid распознает несколько методов запросов как описано в RFC 2616. Новые версии Squid (2.2.STABLE5 и выше) также распознают расширения RFC 2518 ``HTTP Extensions for Distributed Authoring -- WEBDAV''. 
+
+method    defined    cachabil.  meaning
+--------- ---------- ---------- -------------------------------------------
+GET       HTTP/0.9   possibly   object retrieval and simple searches.
+HEAD      HTTP/1.0   possibly   metadata retrieval.
+POST      HTTP/1.0   CC or Exp. submit data (to a program).
+PUT       HTTP/1.1   never      upload data (e.g. to a file).
+DELETE    HTTP/1.1   never      remove resource (e.g. file).
+TRACE     HTTP/1.1   never      appl. layer trace of request route.
+OPTIONS   HTTP/1.1   never      request available comm. options.
+CONNECT   HTTP/1.1r3 never      tunnel SSL connection.
+
+ICP_QUERY Squid      never      used for ICP based exchanges.
+PURGE     Squid      never      remove object from cache.
+
+PROPFIND  rfc2518    ?          retrieve properties of an object.
+PROPATCH  rfc2518    ?          change properties of an object.
+MKCOL     rfc2518    never      create a new collection.
+MOVE      rfc2518    never      create a duplicate of src in dst.
+COPY      rfc2518    never      atomically move src to dst.
+LOCK      rfc2518    never      lock an object against modifications.
+UNLOCK    rfc2518    never      unlock an object.
+
+
+
+6.10 Коды иерархий 
+
+В Squid-2 используются следующие коды иерархий: 
+NONE
+
+Для TCP HIT, неудачных TCP, запросов cachemgr и всех UDP-запросов - нет иерархической информации. 
+
+DIRECT
+
+Объект был получен напрямую с сервера. 
+
+SIBLING_HIT
+
+Объект был получен с кеша sibling, который ответил UDP_HIT. 
+
+PARENT_HIT
+
+Объект был запрошен из кеша parent, который ответил UDP_HIT. 
+
+DEFAULT_PARENT
+
+ICP-запросы не посылались. Парент был выбран, потому-что для него указано ``default'' в конфигурационном файле. 
+
+SINGLE_PARENT
+
+Объект был запрошен с того парента, который соответствует данному URL. 
+
+FIRST_UP_PARENT
+
+Объект был получен с первого парента в списке. 
+
+NO_PARENT_DIRECT
+
+Объект был получен напрямую с сервера, т.к. нет парента для данного URL. 
+
+FIRST_PARENT_MISS
+
+Объект был получен с самого быстрого парента (возможно из-за приоритета) исходя из RTT. 
+
+CLOSEST_PARENT_MISS
+
+Этот парент был выбран, т.к. он имеет меньшее значение RTT к запрашиваемому серверу. См. также конфигурационную closests-only для соседа. 
+
+CLOSEST_PARENT
+
+Выбор парента был основан на нашем собственном измерении RTT. 
+
+CLOSEST_DIRECT
+
+Наше собственное измерение RTT вернуло меньшее время, чем любой парент. 
+
+NO_DIRECT_FAIL
+
+Объект не может быть запрошен из-за настроек файервола (см. также never_direct и сопутствующие материалы), нет доступных парентов. 
+
+SOURCE_FASTEST
+
+Был выбран оригинальный сервер, т.к. ping достигает его бысрей всего. 
+
+ROUNDROBIN_PARENT
+
+Не было получено ICP-ответов ни от одного из парентов. Парент был выбран т.к. он помечен как round robin в конфиге и имеет меньшее число использования. 
+
+CACHE_DIGEST_HIT
+
+Сосед был выбран, потому-что cache digest сообщил о хите. Эта опция впоследствии была заменена, чтобы различать parent-ов и sibling-ов. 
+
+CD_PARENT_HIT
+
+Парент был выбран, потому-что cache digest предсказал хит. 
+
+CD_SIBLING_HIT
+
+Сиблинг был выбран, птому-что cache digest предсказал хит. 
+
+NO_CACHE_DIGEST_DIRECT
+
+похоже не используется? 
+
+CARP
+
+Сосед был выбран по CARP. 
+
+ANY_PARENT
+
+часть src/peer_select.c:hier_strings[]. 
+
+INVALID CODE
+
+часть src/peer_select.c:hier_strings[]. 
+
+
+Почти каждому из них может предшествовать 'TIMEOUT_', если 2-х секундное (по умолчанию) ожидание ICP-ответов от всех соседей оканчивается таймаутом. См. также конфигурационную опцию icp_query_timeout. 
+
+
+Следующие коды иерархии удалены в Squid-2: 
+code                  meaning
+--------------------  -------------------------------------------------
+PARENT_UDP_HIT_OBJ    hit objects are not longer available.
+SIBLING_UDP_HIT_OBJ   hit objects are not longer available.
+SSL_PARENT_MISS       SSL can now be handled by squid.
+FIREWALL_IP_DIRECT    No special logging for hosts inside the firewall.
+LOCAL_IP_DIRECT       No special logging for local networks.
+

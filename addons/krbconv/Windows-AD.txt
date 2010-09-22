@@ -1,0 +1,2 @@
+In Active Directory set:
+Network security: LAN Manager authentication level Send LM & NTLM - use NTLMv2 session security if negotiated 

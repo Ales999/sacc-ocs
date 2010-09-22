@@ -1,0 +1,60 @@
+<VirtualHost 192.168.101.14:80>
+    DocumentRoot /var/www/
+    
+    <Directory />
+	Options FollowSymLinks
+	AllowOverride None
+     </Directory>
+
+
+    Alias /ban/ "/var/www/ban/"
+    <Directory "/var/www/ban">
+	Options Indexes MultiViews
+	AllowOverride None
+	Order allow,deny
+	Allow From all
+    </Directory>
+
+     <Directory /var/www/sacc>
+        AllowOverride  All
+     </Directory>
+
+    <Directory /var/www/sacc/stat>
+        Options ExecCGI
+	PerlAuthenHandler Apache2::AuthenNTLM
+        AuthType ntlm,basic
+        AuthName PROXY
+        require valid-user
+        PerlAddVar ntdomain "KRBD SERVERDC1 SERVERDC2"
+        PerlAddVar ntdomain "OTHERDOM SRV1 SRV2"
+        PerlSetVar defaultdomain KRBD
+        PerlSetVar splitdomainprefix 0
+        PerlSetVar ntlmdebug 0
+    </Directory>
+
+    <Directory /var/www/sacc/sa>
+	Options ExecCGI
+	PerlAuthenHandler Apache2::AuthenNTLM
+	AuthType ntlm,basic
+	AuthName PROXY_SA
+	require user "krbd\\adminusername" "krbd\\otheradm1" "krbd\\otheradm2"
+	PerlAddVar ntdomain "KRBD SERVERDC1 SERVERDC2"
+	PerlSetVar defaultdomain KRBD
+	PerlSetVar splitdomainprefix 0
+	PerlSetVar ntlmdebug 0
+    </Directory>
+
+    <Directory /var/www/sacc/admin>
+	Options ExecCGI
+	PerlAuthenHandler Apache2::AuthenNTLM
+	AuthType ntlm,basic
+	AuthName PROXY_Admin
+	require user "krbd\\adminusername" "krbd\\otheradm1" "krbd\\otheradm2"
+	PerlAddVar ntdomain "KRBD SERVERSDC1 SERVERDC2"
+	PerlSetVar defaultdomain KRBD
+	PerlSetVar splitdomainprefix 0
+	PerlSetVar ntlmdebug 0
+    </Directory>
+
+
+</VirtualHost>

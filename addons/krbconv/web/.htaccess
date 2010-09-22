@@ -1,0 +1,35 @@
+
+#
+
+# Don't show directory listings for URLs which map to a directory
+Options -Indexes
+
+<IfModule mod_php5.c>
+    php_flag register_globals On
+    php_flag register_argc_argv On
+    php_flag magic_quotes_gpc On
+    php_flag magic_quotes_runtime Off
+
+    php_value mysql.allow_persistent 1
+    php_value mysql.connect_timeout 180
+    php_value variables_order "EGPCS"
+    php_value display_errors 1
+    php_value output_buffering Off
+    php_value display_startup_errors Off
+    php_value mysql.allow_persistent On
+    php_value default_socket_timeout 240
+    php_value mysql.connect_timeout 240
+    php_value error_reporting "E_ALL & ~E_NOTICE"
+</IfModule>
+
+
+
+#<IfModule mod_charset_lite.c>
+#    CharsetDefault UTF-8
+#    CharsetSourceEnc UTF-8
+#</IfModule>
+
+<IfModule mod_charset_lite.c>
+    CharsetDefault KOI8-R
+    CharsetSourceEnc KOI8-R
+</IfModule>

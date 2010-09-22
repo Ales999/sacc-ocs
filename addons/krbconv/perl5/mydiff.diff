@@ -1,0 +1,21 @@
+--- AuthenNTLM.pm-orig	2005-04-29 01:14:03.000000000 +0600
++++ AuthenNTLM.pm	2010-08-13 23:41:19.000000000 +0600
+@@ -249,6 +249,7 @@
+ sub map_user
+ {
+     my ($self, $r) = @_ ;
++    my $result = '' ;
+ 
+     if ($self -> {splitdomainprefix} == 1) 
+     {
+@@ -256,7 +257,9 @@
+     }
+     else 
+     {
+-	return lc("$self->{userdomain}\\$self->{username}") ;
++	$result = lc("$self->{userdomain}") . lc("\\$self->{username}") ;
++	#return lc("$self->{userdomain}\\$self->{username}") ;
++	return $result ;
+     }
+ }
+ 

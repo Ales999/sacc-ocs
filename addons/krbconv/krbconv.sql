@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `krbconv` (
 --
 
 INSERT INTO `krbconv` (`id`, `krbname`, `ntlmname`) VALUES
-(1, '@KRBD.DOMEN.RU', 'krbd'),
-(2, '@OTHER.LOCAL', 'otherdom');
+(1, '@KRBD.DOMEN.RU', 'KRBD'),
+(2, '@OTHERDOM.TEST.MY', 'OTHERDOM'),
+(3, '@CHANGE.DOMAIN.RU', 'CHANGE');
 COMMIT;
