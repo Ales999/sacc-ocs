@@ -346,8 +346,12 @@ int main(void)
 	sql_connect(&mysql);
 	//char *tempconv;               // Local !
 	string tempconv;
+	// Test ACL
+	string str = "KRBD\\testuser";
+	tempconv = ConvertKrbName(str,false);
+	clog << "Original: " << str << " and converted name: " << tempconv << endl;
 	// Test 1
-	string str = "testuser@KRBD.DOMEN.RU";
+	str.assign("testuser@KRBD.DOMEN.RU");
 	tempconv = ConvertKrbName(str);
 	clog << "Original: " << str <<
 	    " and converted name: " << tempconv << endl;
@@ -409,8 +413,8 @@ int main(void)
 	// ----------------
 	mysql_close(&mysql);
 	//free(tstconv);
-	delete[]temp;
-	delete[]sql_query;
+	//delete[]temp;
+	//delete[]sql_query;
 	return EXIT_SUCCESS;
 }
 #endif

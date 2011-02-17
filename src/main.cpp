@@ -1018,18 +1018,12 @@ http_access allow group_time1900
 				};
 				rows_selected = mysql_num_rows(res);
 				if (rows_selected > 0) {
-					snprintf(out_buffer, STR_MAX_SIZE,
-						 "acl group_%s proxy_auth \"%s\"\n",
-						 acl_row[1], temp);
+					snprintf(out_buffer, STR_MAX_SIZE, "acl group_%s proxy_auth -i \"%s\"\n", acl_row[1], temp);
 					fputs(out_buffer, fw);
-					snprintf(out_buffer, STR_MAX_SIZE,
-						 "http_access allow group_%s %s\n",
-						 acl_row[1], acl_row[1]);
+					snprintf(out_buffer, STR_MAX_SIZE, "http_access allow group_%s %s\n", acl_row[1], acl_row[1]);
 					fputs(out_buffer, fw);
 #if FREE_HTTPS
-					snprintf(out_buffer, STR_MAX_SIZE,
-						 "http_access allow group_%s CONNECT\n",
-						 acl_row[1]);
+					snprintf(out_buffer, STR_MAX_SIZE, "http_access allow group_%s CONNECT\n", acl_row[1]);
 					fputs(out_buffer, fw);
 #endif				/* FREE_HTTPS */
 
