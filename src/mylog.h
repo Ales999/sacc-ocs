@@ -36,6 +36,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string>
+
 #define logerr(mesg) logger.msg(__FILE__, __LINE__, 3, mesg)
 #define logcrt(mesg) logger.msg(__FILE__, __LINE__, 4, mesg)
 #define logmsg(mesg) logger.msg(__FILE__, __LINE__, 5, mesg)
@@ -50,6 +52,7 @@ class mylog
 	bool syslg;
 public:
 	void msg(char* FileName, int Line, int severity, const char *fmt, ...);
+	void msg(std::string FileName, int Line, int severity, const std::string fmt, ...);
 	virtual ~mylog(void);
 	void log(char* app_name, bool insyslog, int mask);
 };

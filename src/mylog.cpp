@@ -67,3 +67,26 @@ void mylog::msg(char* FileName, int Line, int severity, const char *fmt, ...)
     };
 	va_end(ap);
 };
+// Альтернативная версия msg
+void mylog::msg(std::string FileName, int Line, int severity, const std::string fmt, ...)
+{
+    va_list ap;
+    if (severity>logmask) return;
+    if (fmt.empty()) return;
+    //if (NULL==fmt) return;
+    va_start(ap, fmt);
+    vsyslog(severity, "CPP Version", ap);
+    if(syslg)
+    {
+	if(7==logmask) 
+	    syslog(severity, "in %s:%d", FileName.c_str(), Line);
+	vsyslog(severity, fmt.c_str(), ap);
+    } else
+    {
+	if(7==logmask)
+	    printf("(%u) in %s:%d ",pthread_self(), FileName.c_str(), Line);
+	vprintf(fmt.c_str(), ap);
+	printf("\n");
+    }
+    va_end(ap);
+};

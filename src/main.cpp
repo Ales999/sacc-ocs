@@ -67,6 +67,9 @@
 #include <regex.h>
 #include <errno.h>
 #include <err.h>
+#include <iostream>
+#include <sstream>
+using namespace std;
 
 #ifndef HAVE_FSEEKO
 #define fseeko(f, offset, whence)       fseek(f, (long)(offset), whence)
@@ -172,7 +175,8 @@ mylog logger;
 //#define logerr(mesg) printf("%s:%d %d %s",__FILE__, __LINE__, 3, mesg)
 //#define logcrt(mesg) printf("%s:%d %d %s",__FILE__, __LINE__, 4, mesg)
 //#define logmsg(mesg) printf("%s:%d %d %s",__FILE__, __LINE__, 5, mesg)
-
+//string msgout;
+stringstream ostm; // Поток в стринг: outss.str()
 #define logerr(mesg) logger.msg(__FILE__, __LINE__, 3, mesg)
 #define logcrt(mesg) logger.msg(__FILE__, __LINE__, 4, mesg)
 #define logmsg(mesg) logger.msg(__FILE__, __LINE__, 5, mesg)
@@ -321,9 +325,11 @@ int squid_setlogoffset(off_t log_offset, MYSQL * lmysql)
 #endif
 	if (mysql_query(lmysql, sql_query) != 0) {
 		/* log message about error */
-		snprintf(temp, STR_MAX_SIZE, "MySQL Error - %d: %s\n",
-			 mysql_errno(lmysql), mysql_error(lmysql));
-		logerr(temp);
+		//snprintf(temp, STR_MAX_SIZE, "MySQL Error - %d: %s\n", mysql_errno(lmysql), mysql_error(lmysql));
+		ostm.str(""); // clear ostm stream
+		ostm << "MySQL Error - " <<  mysql_errno(lmysql) << ": " << mysql_error(lmysql) << endl; //%d: %s\n", mysql_errno(lmysql), mysql_error(lmysql));
+		logerr(ostm.str()); // logerr(temp);
+		ostm.flush();
 		/* exit */
 		ErrNumber = 1;
 		exit_mysql();
@@ -347,7 +353,9 @@ pid_t squid_getpid(void)
 		fclose(pid_fp);
 	} else {
 		snprintf(temp, STR_MAX_SIZE, "can't find %s", SQUID_PID_FILE);
-		logmsg(temp);
+		ostm.flush();
+		ostm << "Can't find " << SQUID_PID_FILE << endl;
+		logmsg(ostm.str());
 	}
 /*
     if (pid<2)
@@ -1774,6 +1782,14 @@ int main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 	logger.log(SYSLOG_NAME, config_insyslog, loglevel);	// set 7 for debug output
+	
+	//string msginfo="---=== Run me ... :-) ===---";
+	//ostm << msginfo;
+	//loginf(ostm.str());
+	//ostm.flush();
+	//ostm.str("Пробное сообщение");// << endl;
+	//loginf(ostm.str());
+	
 	if (squid_filename == NULL)
 		squid_filename = SQUID_LOGNAME;	/* default filename */
 /* Checking for runned program */
