@@ -1,0 +1,105 @@
+(C!)-Вызван конструктор NamePairList
+
+=--->ConvertKrbName(KRBD\\testuser,False)<---=
+Size of KRBD\\testuser is: 14
+Found NTLM name: KRBD\\testuser
+sf: KRBD
+sl: \testuser
+Normalize Name: KRBD\testuser
+Found Domain: KRBD in position: 4 and login: testuser
+Проверка домена KRBD по базе krbconv
+row[0] @KRBD.DOMEN.RU
+row[1] KRBD
+Len of input: 4
+Результат mysql_kerbname(): KRBD ==--> @KRBD.DOMEN.RU
+NTLM обратка: testuser@KRBD.DOMEN.RU
+Original: KRBD\\testuser and converted name: testuser@KRBD.DOMEN.RU
+
+=--->ConvertKrbName(testuser@KRBD.DOMEN.RU,True)<---=
+Size of testuser@KRBD.DOMEN.RU is: 22
+Found Kerberos name: testuser@KRBD.DOMEN.RU in position: 8
+Kerberos Domain: @KRBD.DOMEN.RU and login: testuser
+Проверка домена @KRBD.DOMEN.RU по базе krbconv
+row[0] @KRBD.DOMEN.RU
+row[1] KRBD
+Len of input: 14
+Результат mysql_kerbname(): @KRBD.DOMEN.RU ==--> KRBD
+Converted to NTLM name: KRBD\testuser
+(C!)-Конструктор NamePair: testuser@KRBD.DOMEN.RU <-> KRBD\testuser
+(A!)-Добавлена пара:	testuser@KRBD.DOMEN.RU <--> KRBD\testuser
+Original: testuser@KRBD.DOMEN.RU and converted name: KRBD\testuser
+
+=--->ConvertKrbName(testuser@KRBD.DOMEN.RU,False)<---=
+(F!)-Найдена пара:	testuser@KRBD.DOMEN.RU <--> KRBD\testuser
+-------Найдено в кеше: KRBD\testuser -------------
+Original: testuser@KRBD.DOMEN.RU and converted name: KRBD\testuser
+
+=--->ConvertKrbName(tst@OTHERDOM.TEST.MY,True)<---=
+Size of tst@OTHERDOM.TEST.MY is: 20
+Found Kerberos name: tst@OTHERDOM.TEST.MY in position: 3
+Kerberos Domain: @OTHERDOM.TEST.MY and login: tst
+Проверка домена @OTHERDOM.TEST.MY по базе krbconv
+row[0] @OTHERDOM.TEST.MY
+row[1] OTHERDOM
+Len of input: 17
+Результат mysql_kerbname(): @OTHERDOM.TEST.MY ==--> OTHERDOM
+Converted to NTLM name: OTHERDOM\tst
+(C!)-Конструктор NamePair: tst@OTHERDOM.TEST.MY <-> OTHERDOM\tst
+(A!)-Добавлена пара:	tst@OTHERDOM.TEST.MY <--> OTHERDOM\tst
+Original: tst@OTHERDOM.TEST.MY and converted name: OTHERDOM\tst
+
+=--->ConvertKrbName(tst@OTHERDOM.TEST.MY,False)<---=
+(F!)-Найдена пара:	tst@OTHERDOM.TEST.MY <--> OTHERDOM\tst
+-------Найдено в кеше: OTHERDOM\tst -------------
+Original: tst@OTHERDOM.TEST.MY and converted name: OTHERDOM\tst
+
+=--->ConvertKrbName(tst@OTHERDOM.TEST.MY,True)<---=
+(F!)-Найдена пара:	tst@OTHERDOM.TEST.MY <--> OTHERDOM\tst
+-------Найдено в кеше: OTHERDOM\tst -------------
+Original: tst@OTHERDOM.TEST.MY and converted name: OTHERDOM\tst
+---------------------------------------
+
+=--->ConvertKrbName(otherdom\nextuser,True)<---=
+Size of otherdom\nextuser is: 17
+Found NTLM name: otherdom\nextuser
+Оставим как есть: otherdom\nextuser
+Original: otherdom\nextuser and converted name: otherdom\nextuser
+
+=--->ConvertKrbName(otherdom\nextuser,False)<---=
+Size of otherdom\nextuser is: 17
+Found NTLM name: otherdom\nextuser
+Normalize Name: otherdom\nextuser
+Found Domain: otherdom in position: 8 and login: nextuser
+Проверка домена otherdom по базе krbconv
+row[0] @OTHERDOM.TEST.MY
+row[1] OTHERDOM
+Len of input: 8
+Результат mysql_kerbname(): otherdom ==--> @OTHERDOM.TEST.MY
+NTLM обратка: nextuser@OTHERDOM.TEST.MY
+Original: otherdom\nextuser and converted name: nextuser@OTHERDOM.TEST.MY
+
+=--->ConvertKrbName(otherdom\nextuser,False)<---=
+Size of otherdom\nextuser is: 17
+Found NTLM name: otherdom\nextuser
+Normalize Name: otherdom\nextuser
+Found Domain: otherdom in position: 8 and login: nextuser
+Проверка домена otherdom по базе krbconv
+row[0] @OTHERDOM.TEST.MY
+row[1] OTHERDOM
+Len of input: 8
+Результат mysql_kerbname(): otherdom ==--> @OTHERDOM.TEST.MY
+NTLM обратка: nextuser@OTHERDOM.TEST.MY
+Original: otherdom\nextuser and converted name: nextuser@OTHERDOM.TEST.MY
+
+=--->ConvertKrbName(test_true,True)<---=
+Size of test_true is: 9
+Found NTLM name: test_true
+Оставим как есть: test_true
+Original: test_true and converted name: test_true
+
+=--->ConvertKrbName(test_false,False)<---=
+Size of test_false is: 10
+Found NTLM name: test_false
+Original: test_false and converted name: 
+(D!)-Вызван дефолтный деструктор NamePair
+(D!)-Вызван дефолтный деструктор NamePair
