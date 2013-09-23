@@ -14,8 +14,8 @@ if (! (isset ( $PHP_AUTH_USER ))) {
 	Header ( "HTTP/1.0 401 Unauthorized" );
 	show_head ();
 	show_help ();
-	//            echo "$o 1. Введено: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
-	//            echo "2. Введено: $ulogin : $passwd ";
+	//            echo "$o 1. п▓п╡п╣п╢п╣п╫п╬: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
+	//            echo "2. п▓п╡п╣п╢п╣п╫п╬: $ulogin : $passwd ";
 	
 
 	//            show_form();
@@ -26,7 +26,7 @@ if (auth_cli ( $PHP_AUTH_USER, $PHP_AUTH_PW, $link ))
 
 //        if (true)
 {
-	// ------------ Просмотр запросов пользователя (событие "detail") ------------
+	// ------------ п÷я─п╬я│п╪п╬я┌я─ п╥п╟п©я─п╬я│п╬п╡ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ (я│п╬п╠я▀я┌п╦п╣ "detail") ------------
 	if (($type == "detail") and ($detailed == 1)) {
 		show_head ();
 		echo "<A HREF=\"index.php#$id\">&lt;&lt;</A>\n<BR>\n";
@@ -45,13 +45,13 @@ if (auth_cli ( $PHP_AUTH_USER, $PHP_AUTH_PW, $link ))
 		show_tail ();
 		@mysql_close ( $link );
 		exit ();
-	} // ------------ Просмотр обычной статистики ----------------------------------
+	} // ------------ п÷я─п╬я│п╪п╬я┌я─ п╬п╠я▀я┤п╫п╬п╧ я│я┌п╟я┌п╦я│я┌п╦п╨п╦ ----------------------------------
 else //if (!(isset($type))) 
 	{
 		show_head ();
 		list ( $month, $year ) = get_month_year ();
-		//            echo "1. Введено: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
-		//             echo "2. Введено: $ulogin : $passwd ";
+		//            echo "1. п▓п╡п╣п╢п╣п╫п╬: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
+		//             echo "2. п▓п╡п╣п╢п╣п╫п╬: $ulogin : $passwd ";
 		echo "<H1>$web_client_your_stat $month $year</H1>\n";
 		$REMOTE_USER=mysql_real_escape_string($REMOTE_USER);
 		$result = mysql_query ( "SELECT id FROM users where login='$REMOTE_USER'", $link );
@@ -73,7 +73,7 @@ else //if (!(isset($type)))
 	Header ( "WWW-Authenticate: Basic realm=\"$web_client_auth_realm\"" );
 	Header ( "HTTP/1.0 401 Unauthorized" );
 	show_head ();
-	echo "1. Введено: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
+	echo "1. п▓п╡п╣п╢п╣п╫п╬: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
 	echo "$msg $msg2";
 	show_help ();
 	echo "<P><FONT COLOR=#FF0000>$web_client_auth_wrong</FONT></P>";

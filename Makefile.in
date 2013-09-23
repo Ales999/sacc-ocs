@@ -248,7 +248,7 @@ www = @www@
 SUBDIRS = src etc web
 EXTRA_DIST = AUTHORS COPYING ChangeLog INSTALL .todo init.sql .bugs
 DOC_DIST = ./doc/Install.notes.txt ./doc/about.en.txt ./doc/faq.txt ./doc/howto-ntlm.txt ./doc/Troubleshooting.txt ./doc/about.ru.txt ./doc/features.txt
-MYSQL = $(CMYSQL) -f -B -h ${mysql_host} -u${mysql_root} --password=${mysql_rp} --default-character-set=koi8r
+MYSQL = $(CMYSQL) -f -B -h ${mysql_host} -u${mysql_root} --password=${mysql_rp} --default-character-set=utf8
 AUTOMAKE_OPTIONS = foreign
 MAINTAINERCLEANFILES = subdirs acinclude.m4 configure.files libtool config.log config.cache config.h
 all: config.h
@@ -770,7 +770,7 @@ upgrade-local:
 
 uninstall-local:
 	$(RM) -fr ${prefix}/sacc/
-	@$(MYSQLDUMP) -c -h ${mysql_host} -u${mysql_root} --password=${mysql_rp} --default-character-set=koi8r ${mysql_db} >/tmp/sacc-dump.sql
+	@$(MYSQLDUMP) -c -h ${mysql_host} -u${mysql_root} --password=${mysql_rp} --default-character-set=utf8 ${mysql_db} >/tmp/sacc-dump.sql
 	@$(ECHO) "drop database ${mysql_db}"|mysql -f -B
 	@$(ECHO) "Database dropped, backup saved to /tmp/sacc-dump.sql"
 	$(RM) ${www}

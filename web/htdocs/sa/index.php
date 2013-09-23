@@ -11,7 +11,7 @@ require_once ("../inc/xmlarr.php");
 $mod_name = $sa_title;
 $mode = "sa";
 
-# ----------------- Аутентификация ---------------------
+# ----------------- п░я┐я┌п╣п╫я┌п╦я└п╦п╨п╟я├п╦я▐ ---------------------
 if (isset ( $PHP_AUTH_USER )) {
 	$ok = false;
 //	if (auth_adm ( $PHP_AUTH_USER, $PHP_AUTH_PW )) {
@@ -42,16 +42,16 @@ if (isset ( $PHP_AUTH_USER )) {
 $link = db_connect ();
 $login = stripslashes ( trim ( $_GET ['login'] ) );
 $group = "admins";
-# -------------------- Создание нового пользователя (событие "create") -----------------------
+# -------------------- п║п╬п╥п╢п╟п╫п╦п╣ п╫п╬п╡п╬пЁп╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ (я│п╬п╠я▀я┌п╦п╣ "create") -----------------------
 if ($type == "create") {
 	$msg = "";
 	$pass1 = stripslashes ( $_GET ['pass'] );
 	$pass2 = stripslashes ( $_GET ['pass2'] );
 	$descr = stripslashes ( $_GET ['descr'] );
 	
-	# ---------------- Нажата кнопка "Сохранить" ("createbutton") -----------------
+	# ---------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "п║п╬я┘я─п╟п╫п╦я┌я▄" ("createbutton") -----------------
 	if (isset ( $createbutton )) {
-		# проверка поля login
+		# п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ login
 		if ($login == "")
 			$msg .= "<SPAN CLASS=\"errmsg\">$login_blank</SPAN>\n<BR>\n";
 		else {
@@ -59,10 +59,10 @@ if ($type == "create") {
 			if (mysql_numrows ( $result ) != 0)
 				$msg .= "<SPAN CLASS=\"errmsg\">$user_exist</SPAN>\n<BR>\n";
 		}
-		# проверка поля "password" ($pass1=$pass2)
+		# п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ "password" ($pass1=$pass2)
 		if ($pass1 != $pass2)
 			$msg .= "<SPAN CLASS=\"errmsg\">$passwd_noteq</SPAN>\n<BR>\n";
-			# ошибок не обнаружилось
+			# п╬я┬п╦п╠п╬п╨ п╫п╣ п╬п╠п╫п╟я─я┐п╤п╦п╩п╬я│я▄
 		if ($msg == "") {
 			$result = mysql_query ( "INSERT INTO admins (login, passwd, descr) VALUES('$login', md5('$pass'), '$descr')", $link );
 			if (mysql_affected_rows () != "0") {
@@ -71,8 +71,8 @@ if ($type == "create") {
 				@mysql_close ( $link );
 				exit ();
 			}
-		} else { #--- информация не занесена в БД по к.-л. причинам ---
-			// Какая то ботва произошла похоже...
+		} else { #--- п╦п╫я└п╬я─п╪п╟я├п╦я▐ п╫п╣ п╥п╟п╫п╣я│п╣п╫п╟ п╡ п▒п■ п©п╬ п╨.-п╩. п©я─п╦я┤п╦п╫п╟п╪ ---
+			// п п╟п╨п╟я▐ я┌п╬ п╠п╬я┌п╡п╟ п©я─п╬п╦п╥п╬я┬п╩п╟ п©п╬я┘п╬п╤п╣...
 			show_head ();
 			echo "<H1>$add_user_fail</H1>\n<HR NOSHADE COLOR=#000000 SIZE=1>\n";
 			echo "<FORM METHOD=get ACTION=index.php>
@@ -88,7 +88,7 @@ if ($type == "create") {
 		}
 	}
 	
-	# -------------- Default-действие для события "create" -----------------
+	# -------------- Default-п╢п╣п╧я│я┌п╡п╦п╣ п╢п╩я▐ я│п╬п╠я▀я┌п╦я▐ "create" -----------------
 	$mod_name = $new_sa_creation_header;
 	show_head ();
 	echo "<P><P><P>
@@ -142,7 +142,7 @@ $web_admin_header_influences:<BR>
 	@mysql_close ( $link );
 	exit ();
 } 
-# ------------ экспорт пользователей
+# ------------ я█п╨я│п©п╬я─я┌ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩п╣п╧
 elseif ($type== "db2xml")
 {
 	# TODO xmlexport and import
@@ -177,13 +177,13 @@ for($i = 0; $i < mysql_numrows ( $result ); $i ++)
 	exit;
 }
 
-# ------------ импорт пользователей
+# ------------ п╦п╪п©п╬я─я┌ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩п╣п╧
 elseif ($type== "xml2db")
 {
 	show_head();
 	echo "<form enctype=\"multipart/form-data\" action=\"index.php?type=xmlimp\" method=\"post\">
  <input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"3000000\" />
- файл xml для импорта: <input name=\"userfile\" type=\"file\" />
+ я└п╟п╧п╩ xml п╢п╩я▐ п╦п╪п©п╬я─я┌п╟: <input name=\"userfile\" type=\"file\" />
  <input type=\"submit\" value=\"Send File\" />
 </form>";
 	show_tail();
@@ -210,21 +210,21 @@ if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
 //}
 	exit;
 }
-# ------------ Редактирование существующего пользователя (событие "edit") -------------
+# ------------ п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╣пЁп╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ (я│п╬п╠я▀я┌п╦п╣ "edit") -------------
 elseif ($type == "edit") {
-	# ------------- Нажата кнопка "Сохранить" ----------------
+	# ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "п║п╬я┘я─п╟п╫п╦я┌я▄" ----------------
 	if (isset ( $savebutton )) {
 		$login = stripslashes ( trim ( $_GET ['nick'] ) );
 		$group = addslashes ( stripslashes ( trim ( $_GET ['group'] ) ) );
 		$loginhidden = addslashes ( stripslashes ( trim ( $_GET ['loginhidden'] ) ) );
-		# ------{ критичный кусок: необходимы проверки, как при создании пользователя
+		# ------{ п╨я─п╦я┌п╦я┤п╫я▀п╧ п╨я┐я│п╬п╨: п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀ п©я─п╬п╡п╣я─п╨п╦, п╨п╟п╨ п©я─п╦ я│п╬п╥п╢п╟п╫п╦п╦ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐
 		$result = mysql_query ( "UPDATE admins SET descr='" . addslashes ( $descr ) . "', login='" . addslashes ( $login ) . "' WHERE login='$loginhidden'", $link );
 		logevent ( "modify SA $login, $descr)" );
 		Header ( "Location: index.php?type=edit&login=$login" );
 		@mysql_close ( $link );
 		exit ();
-		# ------конец критичного куска }
-	} # ------------- Нажата кнопка "Удалить" ----------------
+		# ------п╨п╬п╫п╣я├ п╨я─п╦я┌п╦я┤п╫п╬пЁп╬ п╨я┐я│п╨п╟ }
+	} # ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "пёп╢п╟п╩п╦я┌я▄" ----------------
 	elseif (isset ( $deletebutton )) {
 		$result = mysql_query ( "DELETE FROM admins WHERE login='$login'", $link );
 		logevent ( "delete SA $login" );
@@ -246,7 +246,7 @@ elseif ($type == "edit") {
 		}
 	}
 	
-	# -------------- Default-действие для события "edit" ----------------
+	# -------------- Default-п╢п╣п╧я│я┌п╡п╦п╣ п╢п╩я▐ я│п╬п╠я▀я┌п╦я▐ "edit" ----------------
 	show_head ();
 	echo "<H1>$edit_user</H1>\n<HR NOSHADE COLOR=#000000 SIZE=1>\n";
 	$result = mysql_query ( "SELECT * FROM $group WHERE login='$login'", $link );
@@ -271,7 +271,7 @@ elseif ($type == "edit") {
           <BR>
           <INPUT TYPE=submit CLASS=\"inputsubmit\" ID=\"bg_green\" NAME=savebutton VALUE=\"$edit_save\">&nbsp;&nbsp;&nbsp;&nbsp;
           <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_blue\"  VALUE=\"$back_tomain\" onClick=\"window.location='index.php#$login'\">&nbsp;&nbsp;&nbsp;&nbsp;
-          <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_red\"   NAME=deletebutton VALUE=\"$edit_delete\" OnClick=\"if ( confirm('Warning! User &laquo;" . htmlspecialchars ( $login ) . "&raquo; will be removed without an opportunity of restoration!') ) window.location='index.php?type=edit&deletebutton=Удалить&login=$login'; \">
+          <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_red\"   NAME=deletebutton VALUE=\"$edit_delete\" OnClick=\"if ( confirm('Warning! User &laquo;" . htmlspecialchars ( $login ) . "&raquo; will be removed without an opportunity of restoration!') ) window.location='index.php?type=edit&deletebutton=пёп╢п╟п╩п╦я┌я▄&login=$login'; \">
           </FORM>
     ";
 	show_tail ();
@@ -279,7 +279,7 @@ elseif ($type == "edit") {
 	exit ();
 }
 
-# ------------- Default-действие при отсутствии событий ----------------
+# ------------- Default-п╢п╣п╧я│я┌п╡п╦п╣ п©я─п╦ п╬я┌я│я┐я┌я│я┌п╡п╦п╦ я│п╬п╠я▀я┌п╦п╧ ----------------
 show_head ();
 echo "<P><P><P>
 $web_admin_header_influences:<BR>
@@ -303,7 +303,7 @@ echo "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
 
 $ORDER_BY = "ORDER BY login";
 $st = "login";
-//Greyder посоветовал как, вроде помогает, но херово.
+//Greyder п©п╬я│п╬п╡п╣я┌п╬п╡п╟п╩ п╨п╟п╨, п╡я─п╬п╢п╣ п©п╬п╪п╬пЁп╟п╣я┌, п╫п╬ я┘п╣я─п╬п╡п╬.
 setlocale ( LC_ALL, "ru_RU.KOI8-R" );
 $result = mysql_query ( "SELECT * FROM admins", $link );
 //$arr = mysql_fetch_array($result, MYSQL_NUM);
@@ -312,7 +312,7 @@ for($i = 0; $i < mysql_numrows ( $result ); $i ++) {
 	$descr = "Administrator";
 	$descr = @mysql_result ( $result, $i, "descr" );
 	//    $passwd = mysql_result( $result, $i, "passwd");
-	# Выводится содержимое таблицы
+	# п▓я▀п╡п╬п╢п╦я┌я│я▐ я│п╬п╢п╣я─п╤п╦п╪п╬п╣ я┌п╟п╠п╩п╦я├я▀
 	//    $login= $arr[$descr][login];
 	echo "<TR BGCOLOR=#FFF7E5>
             <TD><A NAME=\"" . $login . "\">

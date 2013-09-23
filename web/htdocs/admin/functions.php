@@ -1,11 +1,11 @@
 <?php
-//      æÕÎËÃÉÑ show_help() - ÏÔÏÂÒÁÖÁÅÔ ËÒÁÔËÕÀ ÓÐÒÁ×ËÕ ÐÏ ÐÒÏÇÒÁÍÍÅ
-//      ÷ÈÏÄ : ÎÉÞÅÇÏ
-//      ÷ÙÈÏÄ: ×ÓÅÇÄÁ true;
+//      Ð¤ÑƒÐ½ÐºÑ†Ð¸Ñ show_help() - Ð¾Ñ‚Ð¾Ð±Ñ€Ð°Ð¶Ð°ÐµÑ‚ ÐºÑ€Ð°Ñ‚ÐºÑƒÑŽ ÑÐ¿Ñ€Ð°Ð²ÐºÑƒ Ð¿Ð¾ Ð¿Ñ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ðµ
+//      Ð’Ñ…Ð¾Ð´ : Ð½Ð¸Ñ‡ÐµÐ³Ð¾
+//      Ð’Ñ‹Ñ…Ð¾Ð´: Ð²ÑÐµÐ³Ð´Ð° true;
 //
 function show_help() {
 	global $settings;
-	global $web_admin_header_managesa, $web_admin_header_viewlog, $admin_title, $web_admin_history, $web_admin_queue, $web_admin_acl;
+	global $web_admin_header_managesa, $web_admin_header_viewlog, $admin_title, $web_admin_history, $web_admin_queue, $web_admin_acl, $web_admin_dom;
 	global $web_admin_header_adduser, $web_admin_header_influences, $web_admin_perf, $web_admin_header_options, $web_admin_header_viewrsh, $web_admin_daystat;
 	echo "<p>$web_admin_header_influences:<BR>
  &#151;&nbsp;<A HREF=\"index.php\">$admin_title</A>;<BR>
@@ -27,5 +27,6 @@ function show_help() {
  &#151;&nbsp;<A HREF=\"index.php?type=day1\">$web_admin_daystat</A>;<BR>
  ";
 
+//  &#151;&nbsp;<A HREF=\"index.php?type=doms\">$web_admin_dom</A>;<BR>
 }
 ?>

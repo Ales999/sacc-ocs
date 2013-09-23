@@ -7,7 +7,7 @@
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES koi8r */;
+/*!40101 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -31,7 +31,7 @@ CREATE TABLE `options` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=koi8r;
+) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `options` (
 
 LOCK TABLES `options` WRITE;
 /*!40000 ALTER TABLE `options` DISABLE KEYS */;
-INSERT INTO `options` VALUES (1,'language','0','язык системы','0 - русский, 1 - английский.'),(2,'megabyte_cost','0','стоимость мегабайта траффика','если 0 то нигде про неё не писать.'),(3,'admin_mail','support@krbd.ru','адрес администратора',NULL),(4,'domain','KRBD','доменное имя',NULL),(5,'detailed','1','детализированная статистика','0 -нет, 1 - да.'),(6,'delimiter',' ','разделитель разрядов.',NULL),(7,'def_timeacl','6','время доступа по  умолчанию.',NULL),(8,'std_limit','314572800','лимит по умолчанию.',NULL),(9,'create_todo','0','действие при создании','0 - создать и в редактирование, 1 - создать и на главную, 3 - создать и снова на создание.'),(10,'order_main','0','main frame sort order','0-6 sort order'),(11,'order_uhist','1','history sort order','0-6 sort order'),(12,'main_ch','1','use color highlight in user manager','on/off'),(13,'uhist_ch','1','use color highlight in user history','on/off'),(14,'origin','SAcc-1.81','webinterface header','=)'),(15,'pagelen','20','length of page','numeric'),(16,'timezone','6','delta from UTC','time offset from UTC'),(17,'cisco','0','we need to show cisco ipacc stat','no/yes');
+INSERT INTO `options` VALUES (1,'language','0','я▐п╥я▀п╨ я│п╦я│я┌п╣п╪я▀','0 - я─я┐я│я│п╨п╦п╧, 1 - п╟п╫пЁп╩п╦п╧я│п╨п╦п╧.'),(2,'megabyte_cost','0','я│я┌п╬п╦п╪п╬я│я┌я▄ п╪п╣пЁп╟п╠п╟п╧я┌п╟ я┌я─п╟я└я└п╦п╨п╟','п╣я│п╩п╦ 0 я┌п╬ п╫п╦пЁп╢п╣ п©я─п╬ п╫п╣я▒ п╫п╣ п©п╦я│п╟я┌я▄.'),(3,'admin_mail','support@krbd.ru','п╟п╢я─п╣я│ п╟п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─п╟',NULL),(4,'domain','KRBD','п╢п╬п╪п╣п╫п╫п╬п╣ п╦п╪я▐',NULL),(5,'detailed','1','п╢п╣я┌п╟п╩п╦п╥п╦я─п╬п╡п╟п╫п╫п╟я▐ я│я┌п╟я┌п╦я│я┌п╦п╨п╟','0 -п╫п╣я┌, 1 - п╢п╟.'),(6,'delimiter',' ','я─п╟п╥п╢п╣п╩п╦я┌п╣п╩я▄ я─п╟п╥я─я▐п╢п╬п╡.',NULL),(7,'def_timeacl','6','п╡я─п╣п╪я▐ п╢п╬я│я┌я┐п©п╟ п©п╬  я┐п╪п╬п╩я┤п╟п╫п╦я▌.',NULL),(8,'std_limit','314572800','п╩п╦п╪п╦я┌ п©п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌.',NULL),(9,'create_todo','0','п╢п╣п╧я│я┌п╡п╦п╣ п©я─п╦ я│п╬п╥п╢п╟п╫п╦п╦','0 - я│п╬п╥п╢п╟я┌я▄ п╦ п╡ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣, 1 - я│п╬п╥п╢п╟я┌я▄ п╦ п╫п╟ пЁп╩п╟п╡п╫я┐я▌, 3 - я│п╬п╥п╢п╟я┌я▄ п╦ я│п╫п╬п╡п╟ п╫п╟ я│п╬п╥п╢п╟п╫п╦п╣.'),(10,'order_main','0','main frame sort order','0-6 sort order'),(11,'order_uhist','1','history sort order','0-6 sort order'),(12,'main_ch','1','use color highlight in user manager','on/off'),(13,'uhist_ch','1','use color highlight in user history','on/off'),(14,'origin','SAcc-1.81','webinterface header','=)'),(15,'pagelen','20','length of page','numeric'),(16,'timezone','6','delta from UTC','time offset from UTC'),(17,'cisco','0','we need to show cisco ipacc stat','no/yes');
 /*!40000 ALTER TABLE `options` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

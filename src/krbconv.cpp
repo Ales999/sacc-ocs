@@ -114,7 +114,7 @@ void sql_connect(MYSQL * lpmysql_link)
 		exit_all();
 	}
 #ifdef HAVE_MYSQL_SET_CHARACTER_SET
-	if (!mysql_set_character_set(&mysql, "koi8r")) {
+	if (!mysql_set_character_set(&mysql, "utf8")) {
 		printf("New client character set: %s\n",
 		       mysql_character_set_name(&mysql));
 	}

@@ -15,7 +15,7 @@ if ($_COOKIE ['lang'] == 1) {
 }
 ;
 
-# ----------------- Аутентификация ---------------------
+# ----------------- п░я┐я┌п╣п╫я┌п╦я└п╦п╨п╟я├п╦я▐ ---------------------
 if (isset ( $PHP_AUTH_USER )) {
 	$ok = false;
 //	if (auth_adm ( $PHP_AUTH_USER, $PHP_AUTH_PW )) {
@@ -53,7 +53,7 @@ for($i = 0; $i < mysql_numrows ( $result ); $i ++) {
 }
 $origin = $settings ['origin'];
 $type = $_GET ['type'];
-# -------------------- Создание нового пользователя (событие "create") -----------------------
+# -------------------- п║п╬п╥п╢п╟п╫п╦п╣ п╫п╬п╡п╬пЁп╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ (я│п╬п╠я▀я┌п╦п╣ "create") -----------------------
 if ($type == "create") {
 	$msg = "";
 	$other = stripslashes ( trim ( $_GET ['other'] ) );
@@ -63,19 +63,19 @@ if ($type == "create") {
 	$todo = stripslashes ( $_GET ['todo'] );
 	
 	$email = ereg_replace ( " +", "", strtolower ( stripslashes ( trim ( $_GET ['email'] ) ) ) );
-	// надо сделать поиск собаки и если нет - то добавлять (влом)
+	// п╫п╟п╢п╬ я│п╢п╣п╩п╟я┌я▄ п©п╬п╦я│п╨ я│п╬п╠п╟п╨п╦ п╦ п╣я│п╩п╦ п╫п╣я┌ - я┌п╬ п╢п╬п╠п╟п╡п╩я▐я┌я▄ (п╡п╩п╬п╪)
 	//    if ( $email == "" ) $email = "$mail_domen";
 	$lim = ( int ) stripslashes ( str_replace ( $delimiter, "", trim ( $_GET ['lim'] ) ) );
 	$dlim = ( int ) stripslashes ( str_replace ( $delimiter, "", trim ( $_GET ['dlim'] ) ) );
 	$cur = ( int ) stripslashes ( str_replace ( $delimiter, "", trim ( $_GET ['cur'] ) ) );
 	$timeacl = ( int ) stripslashes ( trim ( $_GET ['acl'] ) );
 	
-	# ---------------- Нажата кнопка "Сохранить" ("createbutton") -----------------
+	# ---------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "п║п╬я┘я─п╟п╫п╦я┌я▄" ("createbutton") -----------------
 	if (isset ( $createbutton )) {
-		# проверка поля "Пользователь" ($other)
+		# п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ "п÷п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▄" ($other)
 		if ($other == "")
 			$msg .= "<SPAN CLASS=\"errmsg\">$user_blank</SPAN>\n<BR>\n";
-			# проверка поля login
+			# п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ login
 		if ($login == "")
 			$msg .= "<SPAN CLASS=\"errmsg\">$login_blank</SPAN>\n<BR>\n";
 		else {
@@ -84,10 +84,10 @@ if ($type == "create") {
 				$msg .= "<SPAN CLASS=\"errmsg\">$user_exist</SPAN>\n<BR>\n";
 		}
 		//        if ( $cur == "0" ) $cur="1";
-		# проверка поля "password" ($pass1=$pass2)
+		# п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ "password" ($pass1=$pass2)
 		if ($pass1 != $pass2)
 			$msg .= "<SPAN CLASS=\"errmsg\">$passwd_noteq</SPAN>\n<BR>\n";
-			# ошибок не обнаружилось
+			# п╬я┬п╦п╠п╬п╨ п╫п╣ п╬п╠п╫п╟я─я┐п╤п╦п╩п╬я│я▄
 		if ($msg == "") {
 			$result = mysql_query ( "INSERT INTO users (login, used, quota, dquota, email, descr, aid) VALUES('$login', $cur, $lim, $dlim, '" . addslashes ( $email ) . "', '" . addslashes ( $other ) . "','" . addslashes ( $timeacl ) . "')", $link );
 			mysql_error ();
@@ -108,8 +108,8 @@ if ($type == "create") {
 				@mysql_close ( $link );
 				exit ();
 			}
-		} else { #--- информация не занесена в БД по к.-л. причинам ---
-			// Какая то ботва произошла похоже...
+		} else { #--- п╦п╫я└п╬я─п╪п╟я├п╦я▐ п╫п╣ п╥п╟п╫п╣я│п╣п╫п╟ п╡ п▒п■ п©п╬ п╨.-п╩. п©я─п╦я┤п╦п╫п╟п╪ ---
+			// п п╟п╨п╟я▐ я┌п╬ п╠п╬я┌п╡п╟ п©я─п╬п╦п╥п╬я┬п╩п╟ п©п╬я┘п╬п╤п╣...
 			show_head ();
 			echo "<H1>$add_user_fail</H1>\n<HR NOSHADE COLOR=#000000 SIZE=1>\n";
 			echo "<FORM METHOD=get ACTION=index.php>
@@ -123,7 +123,7 @@ if ($type == "create") {
 			exit ();
 		}
 	}
-	# -------------- Default-действие для события "create" -----------------
+	# -------------- Default-п╢п╣п╧я│я┌п╡п╦п╣ п╢п╩я▐ я│п╬п╠я▀я┌п╦я▐ "create" -----------------
 	$mod_name = $new_user_creation_header;
 	show_head ();
 	show_help ();
@@ -145,7 +145,7 @@ if ($type == "create") {
             <TD ALIGN=CENTER VALIGN=TOP><SPAN CLASS=\"verdanabold11px\">$like_that</SPAN></TD>
           </TR>
           <TR>
-            <TD><P><B>Пользователь:</B></P></TD>
+            <TD><P><B>п÷п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▄:</B></P></TD>
             <TD><INPUT TYPE=text CLASS=\"input\" NAME=other VALUE=\"" . htmlspecialchars ( $other ) . "\"></TD>
             <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$descr_like</SPAN></TD>
           </TR>
@@ -170,28 +170,28 @@ if ($type == "create") {
 	}
 	
 	echo "          <TR>
-            <TD><P><B>Эл. почта:</B></P></TD>
+            <TD><P><B>п╜п╩. п©п╬я┤я┌п╟:</B></P></TD>
             <TD><INPUT TYPE=text CLASS=\"input\" NAME=email VALUE=\"" . htmlspecialchars ( $email ) . "\"></TD>
             <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;ivanov$mail_domen, ivanov1$mail_domen</SPAN></TD>
           </TR>
           <TR>
-            <TD><P><B>Лимит текущий(байт):</B></P></TD>
+            <TD><P><B>п⌡п╦п╪п╦я┌ я┌п╣п╨я┐я┴п╦п╧(п╠п╟п╧я┌):</B></P></TD>
             <TD><INPUT TYPE=text CLASS=\"input\" NAME=lim VALUE=\"" . dotize ( $lim ) . "\"></TD>
-            <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$std_limit (или " . dotize ( $std_limit ) . ")</SPAN></TD>
+            <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$std_limit (п╦п╩п╦ " . dotize ( $std_limit ) . ")</SPAN></TD>
           </TR>
           <TR>
-            <TD><P><B>Лимит в месяц(байт):</B></P></TD>
+            <TD><P><B>п⌡п╦п╪п╦я┌ п╡ п╪п╣я│я▐я├(п╠п╟п╧я┌):</B></P></TD>
             <TD><INPUT TYPE=text CLASS=\"input\" NAME=dlim VALUE=\"" . dotize ( $lim ) . "\"></TD>
-            <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$std_limit (или " . dotize ( $std_limit ) . ")</SPAN></TD>
+            <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$std_limit (п╦п╩п╦ " . dotize ( $std_limit ) . ")</SPAN></TD>
           </TR>
           <TR>
-            <TD><P><B>Трафик (байт):</B></P></TD>
+            <TD><P><B>п╒я─п╟я└п╦п╨ (п╠п╟п╧я┌):</B></P></TD>
             <TD><INPUT TYPE=text CLASS=\"input\" NAME=cur VALUE=\"" . dotize ( $cur ) . "\"></TD>
             <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$limit_like</SPAN></TD>
           </TR>
           </TABLE>
         <!--  WORKTIME   -->
-ограничение</td>
+п╬пЁя─п╟п╫п╦я┤п╣п╫п╦п╣</td>
 <td><select name=acl style=\"font-weight: bold\">";
 	$result = mysql_query ( "select vname, id from acl", $link );
 	
@@ -208,16 +208,16 @@ if ($type == "create") {
    </td></tr><tr>
    <br>";
 	//echo $todo;
-	echo "действие <select name=todo style=\"font-weight: bold\">";
+	echo "п╢п╣п╧я│я┌п╡п╦п╣ <select name=todo style=\"font-weight: bold\">";
 	echo "<option value=\"1\"";
 	echo ($todo == 1) ? "selected" : " ";
-	echo ">создать и на главную";
+	echo ">я│п╬п╥п╢п╟я┌я▄ п╦ п╫п╟ пЁп╩п╟п╡п╫я┐я▌";
 	echo "<option value=\"0\"";
 	echo ($todo == 0) ? "selected" : " ";
-	echo ">создать, и перейти в редактирование";
+	echo ">я│п╬п╥п╢п╟я┌я▄, п╦ п©п╣я─п╣п╧я┌п╦ п╡ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣";
 	echo "<option value=\"3\"";
 	echo ($todo == 3) ? "selected" : " ";
-	echo ">создать и снова на создание";
+	echo ">я│п╬п╥п╢п╟я┌я▄ п╦ я│п╫п╬п╡п╟ п╫п╟ я│п╬п╥п╢п╟п╫п╦п╣";
 	echo "</select>
           <BR>
             <INPUT TYPE=submit CLASS=\"inputsubmit\" ID=\"bg_green\" NAME=createbutton VALUE=\"$crt_newuser\">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -228,9 +228,9 @@ if ($type == "create") {
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Редактирование опций (событие "options") -------------
+} # ------------ п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ п╬п©я├п╦п╧ (я│п╬п╠я▀я┌п╦п╣ "options") -------------
 elseif ($type == "options") {
-	# ------------- Нажата кнопка "Сохранить" ----------------
+	# ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "п║п╬я┘я─п╟п╫п╦я┌я▄" ----------------
 	if (isset ( $savebutton )) {
 		$link2 = db_connect ();
 		$result = mysql_query ( "SELECT name FROM options;", $link );
@@ -268,10 +268,10 @@ elseif ($type == "options") {
 	<INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_blue\"  VALUE=\"$back_tomain\" onClick=\"window.location='index.php'\">&nbsp;&nbsp;&nbsp;&nbsp;";
 	show_tail ();
 	exit ( 0 );
-} # ------------ Редактирование существующего пользователя (событие "edit") -------------
+} # ------------ п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ я│я┐я┴п╣я│я┌п╡я┐я▌я┴п╣пЁп╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ (я│п╬п╠я▀я┌п╦п╣ "edit") -------------
 elseif ($type == "edit") {
-	//надо переделать нахуй на привязку по ID
-	# ------------- Нажата кнопка "Сохранить" ----------------
+	//п╫п╟п╢п╬ п©п╣я─п╣п╢п╣п╩п╟я┌я▄ п╫п╟я┘я┐п╧ п╫п╟ п©я─п╦п╡я▐п╥п╨я┐ п©п╬ ID
+	# ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "п║п╬я┘я─п╟п╫п╦я┌я▄" ----------------
 	if (isset ( $savebutton )) {
 		$other = stripslashes ( trim ( $other ) );
 		$login = stripslashes ( trim ( $nick ) );
@@ -284,7 +284,7 @@ elseif ($type == "edit") {
 		$cur = ( int ) stripslashes ( str_replace ( $delimiter, "", trim ( $cur ) ) );
 		$fund = ( int ) stripslashes ( str_replace ( $delimiter, "", trim ( $fund ) ) );
 		$status = ( int ) stripslashes ( str_replace ( $delimiter, "", trim ( $status ) ) );
-		# проверка поля "password" ($pass=$pass2)
+		# п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ "password" ($pass=$pass2)
 		if ($pass != $pass2)
 			$msg .= "<SPAN CLASS=\"errmsg\">$passwd_noteq</SPAN>\n<BR>\n";
 		if (($auth_mode == 1) && (isset ( $pass ))) {
@@ -300,7 +300,7 @@ elseif ($type == "edit") {
 		//        $timeacl = stripslashes(trim($timeacl));
 		
 
-		# ------{ критичный кусок: необходимы проверки, как при создании пользователя
+		# ------{ п╨я─п╦я┌п╦я┤п╫я▀п╧ п╨я┐я│п╬п╨: п╫п╣п╬п╠я┘п╬п╢п╦п╪я▀ п©я─п╬п╡п╣я─п╨п╦, п╨п╟п╨ п©я─п╦ я│п╬п╥п╢п╟п╫п╦п╦ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐
 		$result = mysql_query ( "UPDATE users SET login='" . addslashes ( $login ) . "', used=$cur, quota=$lim, dquota=$dlim, status=$status, email='" . addslashes ( $email ) . "', descr='" . addslashes ( $other ) . "', aid=$acl WHERE id='$id'", $link );
 		mysql_error ();
 		mysql_query ( "insert into queue (command, itime) values (1, " . time () . ")", $link );
@@ -310,17 +310,17 @@ elseif ($type == "edit") {
 		//	echo "saved";
 		@mysql_close ( $link );
 		exit ();
-		# ------конец критичного куска }
-	} # ------------- Нажата кнопка "Удалить" ----------------
+		# ------п╨п╬п╫п╣я├ п╨я─п╦я┌п╦я┤п╫п╬пЁп╬ п╨я┐я│п╨п╟ }
+	} # ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "пёп╢п╟п╩п╦я┌я▄" ----------------
 	elseif (isset ( $deletebutton )) {
 		$result = mysql_query ( "SELECT login FROM users WHERE id=$id", $link );
 		$login = mysql_result ( $result, 0, "login" );
 		$result = mysql_query ( "update users set status=3 WHERE id=$id", $link );
-		logevent ( "Отметил на удаление пользователя $login:$id." );
+		logevent ( "п·я┌п╪п╣я┌п╦п╩ п╫п╟ я┐п╢п╟п╩п╣п╫п╦п╣ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ $login:$id." );
 		Header ( "Location: index.php" );
 		@mysql_close ( $link );
 		exit ();
-	} # ------------- Нажата кнопка "Удалить сейчас" ----------------
+	} # ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "пёп╢п╟п╩п╦я┌я▄ я│п╣п╧я┤п╟я│" ----------------
 	elseif (isset ( $killbutton )) {
 		$result = mysql_query ( "SELECT email FROM users WHERE id=$id", $link );
 		if (mysql_numrows ( $result ) == 1) {
@@ -334,7 +334,7 @@ elseif ($type == "edit") {
 		$login = mysql_result ( $result, 0, "login" );
 		$result = mysql_query ( "DELETE FROM site WHERE u_id=$id", $link );
 		$result = mysql_query ( "DELETE FROM users WHERE id=$id", $link );
-		logevent ( "Удалил пользователя $login:$id." );
+		logevent ( "пёп╢п╟п╩п╦п╩ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ $login:$id." );
 		Header ( "Location: index.php" );
 		@mysql_close ( $link );
 		exit ();
@@ -356,7 +356,7 @@ elseif ($type == "edit") {
 	//            exit;
 	//        }
 	//    }
-	# -------------- Default-действие для события "edit" ----------------
+	# -------------- Default-п╢п╣п╧я│я┌п╡п╦п╣ п╢п╩я▐ я│п╬п╠я▀я┌п╦я▐ "edit" ----------------
 	$mod_name = $edit_user;
 	show_head ();
 	show_help ();
@@ -375,7 +375,7 @@ elseif ($type == "edit") {
 		//    $login    = addslashes(stripslashes(trim($_GET['login'])));
 		$pass1 = stripslashes ( $_GET ['pass'] );
 		$pass2 = stripslashes ( $_GET ['pass2'] );
-		//        # проверка поля "password" ($pass1=$pass2)
+		//        # п©я─п╬п╡п╣я─п╨п╟ п©п╬п╩я▐ "password" ($pass1=$pass2)
 	//        if ( $pass1 != $pass2 ) $msg .= "<SPAN CLASS=\"errmsg\">$passwd_noteq</SPAN>\n<BR>\n";
 	//        $exc="$bin_prefix/htpasswd -b $ncsa_passwd ".quotemeta($login)." ".quotemeta($pass1);
 	//        $data=shell_exec($exc);
@@ -409,7 +409,7 @@ elseif ($type == "edit") {
           <TR>
             <TD><P><B>default $view_quota</B></P></TD>
             <TD><INPUT TYPE=text CLASS=\"input\" NAME=dlim VALUE=\"" . dotize ( $dlim ) . "\"></TD>
-            <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$std_limit (или " . dotize ( $std_limit ) . ")</SPAN></TD>
+            <TD><SPAN CLASS=\"tahoma11px\">&nbsp;&nbsp;&nbsp;&nbsp;$std_limit (п╦п╩п╦ " . dotize ( $std_limit ) . ")</SPAN></TD>
           </TR>";
 	
 	if ($megabyte_cost > 0) {
@@ -443,7 +443,7 @@ elseif ($type == "edit") {
 	
 	echo "<TD>
             <!-- WORKTIME -->
-ограничение</td>
+п╬пЁя─п╟п╫п╦я┤п╣п╫п╦п╣</td>
 <td><select name=acl style=\"font-weight: bold\">";
 	$result = mysql_query ( "select vname, id from acl", $link );
 	
@@ -459,28 +459,28 @@ elseif ($type == "edit") {
 	echo "</select></td>";
 	
 	echo "</tr><tr><TD>
-статус </td>
+я│я┌п╟я┌я┐я│ </td>
 <td><select name=status style=\"font-weight: bold\">
 <option value=\"0\"";
 	if ($status == "0") {
 		echo "selected";
 	}
-	echo ">включен
+	echo ">п╡п╨п╩я▌я┤п╣п╫
 <option value=\"1\" ";
 	if ($status == "1") {
 		echo "selected";
 	}
-	echo ">выключен
+	echo ">п╡я▀п╨п╩я▌я┤п╣п╫
 <option value=\"2\" ";
 	if ($status == "2") {
 		echo "selected";
 	}
-	echo ">заблокирован, разблокировать в конце месяца
+	echo ">п╥п╟п╠п╩п╬п╨п╦я─п╬п╡п╟п╫, я─п╟п╥п╠п╩п╬п╨п╦я─п╬п╡п╟я┌я▄ п╡ п╨п╬п╫я├п╣ п╪п╣я│я▐я├п╟
 <option value=\"3\" ";
 	if ($status == "3") {
 		echo "selected";
 	}
-	echo ">заблокирован, удалить в конце месяца
+	echo ">п╥п╟п╠п╩п╬п╨п╦я─п╬п╡п╟п╫, я┐п╢п╟п╩п╦я┌я▄ п╡ п╨п╬п╫я├п╣ п╪п╣я│я▐я├п╟
 </select></td>";
 	echo "</tr>
 <tr>
@@ -489,8 +489,8 @@ elseif ($type == "edit") {
           <BR>
           <INPUT TYPE=submit CLASS=\"inputsubmit\" ID=\"bg_green\" NAME=savebutton VALUE=\"$edit_save\">&nbsp;&nbsp;&nbsp;&nbsp;
           <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_blue\"  VALUE=\"$back_tomain\" onClick=\"window.location='index.php#$id'\">&nbsp;&nbsp;&nbsp;&nbsp;
-          <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_blue\"   NAME=deletebutton VALUE=\"$edit_delete\" OnClick=\"window.location='index.php?type=edit&deletebutton=Удалить&id=$id'; \">
-          <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_red\"   NAME=deletebutton VALUE=\"удалить немедленно\" OnClick=\"if ( confirm('Warning! User &laquo;" . htmlspecialchars ( $other ) . "&raquo; will be removed without an opportunity of restoration!') ) window.location='index.php?type=edit&killbutton=Удалить&id=$id'; \">";
+          <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_blue\"   NAME=deletebutton VALUE=\"$edit_delete\" OnClick=\"window.location='index.php?type=edit&deletebutton=пёп╢п╟п╩п╦я┌я▄&id=$id'; \">
+          <INPUT TYPE=button CLASS=\"inputsubmit\" ID=\"bg_red\"   NAME=deletebutton VALUE=\"я┐п╢п╟п╩п╦я┌я▄ п╫п╣п╪п╣п╢п╩п╣п╫п╫п╬\" OnClick=\"if ( confirm('Warning! User &laquo;" . htmlspecialchars ( $other ) . "&raquo; will be removed without an opportunity of restoration!') ) window.location='index.php?type=edit&killbutton=пёп╢п╟п╩п╦я┌я▄&id=$id'; \">";
 	if ($auth_mode == 1) {
 		echo " <INPUT TYPE=submit CLASS=\"inputsubmit\" ID=\"bg_blue\" NAME=passbutton VALUE=\"$Reset_password\" OnClick=\"window.location='index.php?type=edit&passbutton=1&id=$id'; \">&nbsp;&nbsp;&nbsp;&nbsp;";
 	}
@@ -498,7 +498,7 @@ elseif ($type == "edit") {
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Просмотр электронных адресов отправителей писем (событие "email") -------------
+} # ------------ п÷я─п╬я│п╪п╬я┌я─ я█п╩п╣п╨я┌я─п╬п╫п╫я▀я┘ п╟п╢я─п╣я│п╬п╡ п╬я┌п©я─п╟п╡п╦я┌п╣п╩п╣п╧ п©п╦я│п╣п╪ (я│п╬п╠я▀я┌п╦п╣ "email") -------------
 elseif ($type == "email") {
 	show_head ();
 	echo "<A HREF=\"index.php#$login\">&lt;&lt;</A>\n<BR>\n";
@@ -508,7 +508,7 @@ elseif ($type == "email") {
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Просмотр адресов посещенных пользователем сайтов (событие "sites") ------------
+} # ------------ п÷я─п╬я│п╪п╬я┌я─ п╟п╢я─п╣я│п╬п╡ п©п╬я│п╣я┴п╣п╫п╫я▀я┘ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩п╣п╪ я│п╟п╧я┌п╬п╡ (я│п╬п╠я▀я┌п╦п╣ "sites") ------------
 elseif ($type == "sites") {
 	$id = stripslashes ( trim ( $_GET ['id'] ) );
 	show_head ();
@@ -525,7 +525,7 @@ elseif ($type == "sites") {
 	exit ();
 } 
 
-# ------------ Просмотр запросов пользователя (событие "detail") ------------
+# ------------ п÷я─п╬я│п╪п╬я┌я─ п╥п╟п©я─п╬я│п╬п╡ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐ (я│п╬п╠я▀я┌п╦п╣ "detail") ------------
 elseif (($type == "detail") and ($detailed == 1)) 
 
 {
@@ -644,7 +644,7 @@ elseif ($type == "rsh_ip") {
 } # ---------------------------- RSH stat for pair ------------------------------------------
 elseif ($type == "rsh_detail") {
 	show_head ();
-	echo "<h1>Не реализовано</h1>";
+	echo "<h1>п²п╣ я─п╣п╟п╩п╦п╥п╬п╡п╟п╫п╬</h1>";
 	exit ();
 } # ---------------------------- daily stat, level 1-----------------------------------------
 elseif ($type == "day1") {
@@ -660,7 +660,7 @@ elseif ($type == "day2") {
 	exit ();
 } 
 
-# ------------ Просмотр эффективности (событие "perf") ------------
+# ------------ п÷я─п╬я│п╪п╬я┌я─ я█я└я└п╣п╨я┌п╦п╡п╫п╬я│я┌п╦ (я│п╬п╠я▀я┌п╦п╣ "perf") ------------
 elseif ($type == "perf") {
 	$mod_name = $web_admin_perf;
 	show_head ();
@@ -736,7 +736,7 @@ elseif ($type == "perf") {
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Просмотр истории (событие "uhist") ------------
+} # ------------ п÷я─п╬я│п╪п╬я┌я─ п╦я│я┌п╬я─п╦п╦ (я│п╬п╠я▀я┌п╦п╣ "uhist") ------------
 elseif ($type == "uhist") {
 	$mod_name = " users history for" . strftime ( "%B %d, %T", ( int ) $utime );
 	show_head ();
@@ -829,7 +829,7 @@ elseif ($type == "uhist") {
 	    <TD>";
 		
 		if ($lim == "0") {
-			echo "Анлим.";
+			echo "п░п╫п╩п╦п╪.";
 		}
 		;
 		if ($lim != "0")
@@ -845,7 +845,7 @@ elseif ($type == "uhist") {
 	$msum = 0;
 	$result = mysql_query ( "SELECT SUM(quota) as squota FROM uhistory where utime=$utime", $link );
 	$slim = @mysql_result ( $result, 0, "squota" );
-	// Мужик по фамилии "_Итого:"
+	// п°я┐п╤п╦п╨ п©п╬ я└п╟п╪п╦п╩п╦п╦ "_п≤я┌п╬пЁп╬:"
 	echo "<TR BGCOLOR=#FFF7E5><TD><A NAME=\"$word_total\">$web_admin_total $i </A></TD>
             <TD ALIGN=RIGHT>" . dotize ( $lim ) . "</TD>
             <TD ALIGN=RIGHT>" . dotize ( $slim ) . "</TD>
@@ -863,7 +863,7 @@ elseif ($type == "uhist") {
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Просмотр оглавления истории (событие "hist") ------------
+} # ------------ п÷я─п╬я│п╪п╬я┌я─ п╬пЁп╩п╟п╡п╩п╣п╫п╦я▐ п╦я│я┌п╬я─п╦п╦ (я│п╬п╠я▀я┌п╦п╣ "hist") ------------
 elseif ($type == "hist") {
 	$mod_name = $web_admin_header_viewhist;
 	show_head ();
@@ -879,7 +879,7 @@ elseif ($type == "hist") {
             <TD><B>$web_admin_date</B></TD></TR>";
 	for($i = 0; $i < mysql_numrows ( $result ); $i ++) {
 		$utime = @mysql_result ( $result, $i, "utime" );
-		# Выводится содержимое таблицы
+		# п▓я▀п╡п╬п╢п╦я┌я│я▐ я│п╬п╢п╣я─п╤п╦п╪п╬п╣ я┌п╟п╠п╩п╦я├я▀
 		echo "<TR BGCOLOR=#FFF7E5><TD>$i</TD><TD><a href=index.php?type=uhist&utime=$utime>" . strftime ( "%B %d, %T", ( int ) $utime ) . "</a></TD></TR>";
 	}
 	echo "</TABLE></TD></TR></TABLE><br>";
@@ -888,7 +888,7 @@ elseif ($type == "hist") {
 	exit ();
 } 
 
-# ------------ Просмотр eventlog (событие "event") ------------
+# ------------ п÷я─п╬я│п╪п╬я┌я─ eventlog (я│п╬п╠я▀я┌п╦п╣ "event") ------------
 elseif ($type == "event") {
 	$mod_name = $web_admin_header_viewlog;
 	show_head ();
@@ -906,14 +906,14 @@ elseif ($type == "event") {
 	for($i = 0; $i < @mysql_numrows ( $result ); $i ++) {
 		$ev_id = @mysql_result ( $result, $i, "id" );
 		$ev_data = @mysql_result ( $result, $i, "record" );
-		# Выводится содержимое таблицы
+		# п▓я▀п╡п╬п╢п╦я┌я│я▐ я│п╬п╢п╣я─п╤п╦п╪п╬п╣ я┌п╟п╠п╩п╦я├я▀
 		echo "<TR BGCOLOR=#FFF7E5><TD>$ev_id</TD><TD>$ev_data</TD></TR>";
 	}
 	echo "</TABLE></TD></TR></TABLE><br>";
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Просмотр заданий (событие "queue") ------------
+} # ------------ п÷я─п╬я│п╪п╬я┌я─ п╥п╟п╢п╟п╫п╦п╧ (я│п╬п╠я▀я┌п╦п╣ "queue") ------------
 elseif ($type == "queue") {
 	$mod_name = "commands log";
 	show_head ();
@@ -990,14 +990,14 @@ elseif ($type == "queue") {
 		}
 		;
 		
-		# Выводится содержимое таблицы
+		# п▓я▀п╡п╬п╢п╦я┌я│я▐ я│п╬п╢п╣я─п╤п╦п╪п╬п╣ я┌п╟п╠п╩п╦я├я▀
 		echo "<TR BGCOLOR=#FFF7E5><TD>$q_id</TD><TD>command \"$cmd\" ($q_cmd) status \"$status\" ($q_st), inserted $stime seen by daemon $etime </TD></TR>";
 	}
 	echo "</TABLE></TD></TR></TABLE><br>";
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Просмотр аццесс контрол листов (событие "acl") ------------
+} # ------------ п÷я─п╬я│п╪п╬я┌я─ п╟я├я├п╣я│я│ п╨п╬п╫я┌я─п╬п╩ п╩п╦я│я┌п╬п╡ (я│п╬п╠я▀я┌п╦п╣ "acl") ------------
 elseif ($type == "acl") {
 	show_head ();
 	show_help ();
@@ -1006,9 +1006,9 @@ elseif ($type == "acl") {
 	show_tail ();
 	mysql_close ( $link );
 	exit ();
-} # ------------ Редактирование аццесс контрол листов (событие "acled") ------------
+} # ------------ п═п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣ п╟я├я├п╣я│я│ п╨п╬п╫я┌я─п╬п╩ п╩п╦я│я┌п╬п╡ (я│п╬п╠я▀я┌п╦п╣ "acled") ------------
 elseif ($type == "acled") {
-	# ------------- Нажата кнопка "Сохранить" ----------------
+	# ------------- п²п╟п╤п╟я┌п╟ п╨п╫п╬п©п╨п╟ "п║п╬я┘я─п╟п╫п╦я┌я▄" ----------------
 	if (isset ( $savebutton )) {
 		$id = ( int ) stripslashes ( trim ( $id ) );
 		$vname = stripslashes ( trim ( $vname ) );
@@ -1064,8 +1064,18 @@ elseif ($type == "acled") {
 	exit ( 0 );
 
 }
+# --- 
+//elseif ($type == "doms") {
+//	show_head ();
+//	show_help ();
+//	echo "<HR NOSHADE COLOR=#000000 SIZE=1>\n<BR>\n";
+//	show_doms ( $link );
+//	show_tail ();
+//	mysql_close ( $link );
+//	exit ();
+//}
 
-# ------------- Default-действие при отсутствии событий ----------------
+# ------------- Default-п╢п╣п╧я│я┌п╡п╦п╣ п©я─п╦ п╬я┌я│я┐я┌я│я┌п╡п╦п╦ я│п╬п╠я▀я┌п╦п╧ ----------------
 show_head ();
 show_help ();
 echo "<BR>";
@@ -1125,7 +1135,7 @@ if (isset ( $st )) {
 	$ORDER_BY = "ORDER BY $order";
 	$st = "login";
 }
-# Выборка всей информации по пользователям из БД squid (таблица stat)
+# п▓я▀п╠п╬я─п╨п╟ п╡я│п╣п╧ п╦п╫я└п╬я─п╪п╟я├п╦п╦ п©п╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐п╪ п╦п╥ п▒п■ squid (я┌п╟п╠п╩п╦я├п╟ stat)
 $result = mysql_query ( "SELECT login, used, users.descr as descr, quota, email, users.id as id, status, acl.vname as timeacl FROM users, acl where acl.id=users.aid and users.login not like('%\$%') $ORDER_BY", $link );
 echo mysql_error ( $link );
 //print $ORDER_BY;
@@ -1202,7 +1212,7 @@ for($i = 0; $i < mysql_numrows ( $result ); $i ++) {
 	} elseif ("3" == $status) {
 		echo "for remove";
 	} elseif ($lim == "0") {
-		echo "Анлим.";
+		echo "п░п╫п╩п╦п╪.";
 	} elseif ($cur > $lim) {
 		echo "$web_status_negative";
 	}
@@ -1223,7 +1233,7 @@ $slim = @mysql_result ( $result, 0, "squota" );
 $_total = @mysql_result ( $result, 0, "_total" );
 $result = mysql_query ( "SELECT offset FROM sys_trf", $link );
 $sys_off = @mysql_result ( $result, 0, "offset" );
-// Мужик по фамилии "_Итого:"
+// п°я┐п╤п╦п╨ п©п╬ я└п╟п╪п╦п╩п╦п╦ "_п≤я┌п╬пЁп╬:"
 echo "<TR BGCOLOR=#FFF7E5><TD><A NAME=\"$word_total\">$web_admin_total $i ($_total)</A></TD>
             <TD ALIGN=RIGHT>" . dotize ( $lim ) . "</TD>
             <TD ALIGN=RIGHT>" . dotize ( $slim ) . "</TD>

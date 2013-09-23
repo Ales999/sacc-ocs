@@ -1,14 +1,14 @@
 #!/usr/local/bin/php -q
 <?php
 // -----------------------------------------------------------------------------
-// ÷ÓÅ ËÏÐÉÒÁÊÔÙ ÐÒÉÎÁÄÌÅÖÁÔ Virus-Õ
-// óÄÅÌÁÎÏ Ó ÏÓÏÂÙÍ ÃÉÎÉÚÍÏÍ.
+// Ð’ÑÐµ ÐºÐ¾Ð¿Ð¸Ñ€Ð°Ð¹Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð½Ð°Ð´Ð»ÐµÐ¶Ð°Ñ‚ Virus-Ñƒ
+// Ð¡Ð´ÐµÐ»Ð°Ð½Ð¾ Ñ Ð¾ÑÐ¾Ð±Ñ‹Ð¼ Ñ†Ð¸Ð½Ð¸Ð·Ð¼Ð¾Ð¼.
 // created: SAcc v.154  [27-jul-03]
-// + ÐÏÐÙÔËÁ ÉÚÂÁ×ÉÔÓÑ ÏÔ sh ÓËÒÉÐÔÏ×. É ÓÄÅÌÁÔØ ×Ó£ ÎÁ ÐÈÐ.
+// + Ð¿Ð¾Ð¿Ñ‹Ñ‚ÐºÐ° Ð¸Ð·Ð±Ð°Ð²Ð¸Ñ‚ÑÑ Ð¾Ñ‚ sh ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð². Ð¸ ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð²ÑÑ‘ Ð½Ð° Ð¿Ñ…Ð¿.
 // -----------------------------------------------------------------------------
 //$debug=1;
 // Changelog:
-// * æÉËÓÉÍ content/type (c) Virus 28-jul
+// * Ð¤Ð¸ÐºÑÐ¸Ð¼ content/type (c) Virus 28-jul
 //
 $fd = fopen ("/tmp/sacc_r.uue".$mode, "r");
 while (!feof ($fd)) {
@@ -16,7 +16,7 @@ while (!feof ($fd)) {
     $buffer = fgets($fd);
 //Content-Type: application/octet-stream; name="stat.html"
 //Content-Type: multipart/mixed;
-    $buffer=str_replace("multipart/mixed;","text/html;charset=\"koi8-r\";",$buffer);
+    $buffer=str_replace("multipart/mixed;","text/html;charset=\"utf-8\";",$buffer);
 //    $buffer=str_replace("\r\n","",$buffer);
 //    $buffer=str_replace("  ","",$buffer);
 //    $buffer=str_replace("\n","",$buffer);

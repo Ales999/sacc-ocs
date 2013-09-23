@@ -1,29 +1,29 @@
 #!/usr/local/bin/php -q
 <?php
 // -----------------------------------------------------------------------------
-// Все копирайты принадлежат Virus-у и некоторая часть CS-y.
-// Сделано с особым цинизмом.
+// п▓я│п╣ п╨п╬п©п╦я─п╟п╧я┌я▀ п©я─п╦п╫п╟п╢п╩п╣п╤п╟я┌ Virus-я┐ п╦ п╫п╣п╨п╬я┌п╬я─п╟я▐ я┤п╟я│я┌я▄ CS-y.
+// п║п╢п╣п╩п╟п╫п╬ я│ п╬я│п╬п╠я▀п╪ я├п╦п╫п╦п╥п╪п╬п╪.
 // Last change: SAcc v.154  [27-jul-03]
-// + попытка избавится от sh скриптов. и сделать всё на пхп.
+// + п©п╬п©я▀я┌п╨п╟ п╦п╥п╠п╟п╡п╦я┌я│я▐ п╬я┌ sh я│п╨я─п╦п©я┌п╬п╡. п╦ я│п╢п╣п╩п╟я┌я▄ п╡я│я▒ п╫п╟ п©я┘п©.
 // -----------------------------------------------------------------------------
 // place into sacc/report
 require("../etc/pref.php");
 require("../web/htdocs/inc/functions.php");
-# ----------------- Аутентификация ---------------------
+# ----------------- п░я┐я┌п╣п╫я┌п╦я└п╦п╨п╟я├п╦я▐ ---------------------
     $link = mysql_connect("","","");
     $db = mysql_select_db("trf", $link);
 if ( $link == NULL ) {
-    echo "<H1>Внимание!</H1>
+    echo "<H1>п▓п╫п╦п╪п╟п╫п╦п╣!</H1>
           <P>
-            <FONT COLOR=#FF0000>Неудалось подключение к локальной БД MySQL!</FONT>
+            <FONT COLOR=#FF0000>п²п╣я┐п╢п╟п╩п╬я│я▄ п©п╬п╢п╨п╩я▌я┤п╣п╫п╦п╣ п╨ п╩п╬п╨п╟п╩я▄п╫п╬п╧ п▒п■ MySQL!</FONT>
           </P>\n";
     exit;
 }
-// вывод заголовков и прочей ботвы.
+// п╡я▀п╡п╬п╢ п╥п╟пЁп╬п╩п╬п╡п╨п╬п╡ п╦ п©я─п╬я┤п╣п╧ п╠п╬я┌п╡я▀.
 ob_start();
 echo "<HTML>
 <HEAD>
-<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">
+<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">
 <TITLE>SAcc v. $version: Reporter</TITLE>
 <STYLE TYPE=\"text/css\">
 <!--
@@ -34,58 +34,58 @@ A { text-decoration:none }
 P, SPAN, TD { font-size:10 pt }
 // -->
 </STYLE></HEAD><BODY BGCOLOR=#FFFFFF TEXT=#000000>";
-//вывод шапки
+//п╡я▀п╡п╬п╢ я┬п╟п©п╨п╦
 echo "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
       <TR>
         <TD BGCOLOR=#93BEE2><TABLE BORDER=0 CELLPADDING=1 CELLSPACING=1>
          <TR VALIGN=TOP ALIGN=CENTER>
-            <TD HEIGHT=30><B>Фамилия И. О. (отдел)</B></TD>
-            <TD><B>Трафик,<BR>байт</B></TD>
-            <TD><B>Лимит,<BR>байт</B></TD>
+            <TD HEIGHT=30><B>п╓п╟п╪п╦п╩п╦я▐ п≤. п·. (п╬я┌п╢п╣п╩)</B></TD>
+            <TD><B>п╒я─п╟я└п╦п╨,<BR>п╠п╟п╧я┌</B></TD>
+            <TD><B>п⌡п╦п╪п╦я┌,<BR>п╠п╟п╧я┌</B></TD>
             <TD><B>NT login</B></TD>
-            <TD><B>Почта,<br>байт</B></TD>
-            <TD><B>Статус</B></TD></TR>";
-// Выборка всей информации по пользователям из БД squid (таблица traf)
+            <TD><B>п÷п╬я┤я┌п╟,<br>п╠п╟п╧я┌</B></TD>
+            <TD><B>п║я┌п╟я┌я┐я│</B></TD></TR>";
+// п▓я▀п╠п╬я─п╨п╟ п╡я│п╣п╧ п╦п╫я└п╬я─п╪п╟я├п╦п╦ п©п╬ п©п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▐п╪ п╦п╥ п▒п■ squid (я┌п╟п╠п╩п╦я├п╟ traf)
 $result = mysql_query("SELECT * FROM traf order by used desc", $link);
 for ($i = 0; $i < mysql_numrows($result); $i++) {
     $login = mysql_result( $result, $i, "login");
     $cur = mysql_result( $result, $i, "used");
-    $cur = $cur -1; // надо бы избавится от этой единицы нахрен...
+    $cur = $cur -1; // п╫п╟п╢п╬ п╠я▀ п╦п╥п╠п╟п╡п╦я┌я│я▐ п╬я┌ я█я┌п╬п╧ п╣п╢п╦п╫п╦я├я▀ п╫п╟я┘я─п╣п╫...
     $lim = mysql_result( $result, $i, "quota");
     $email = mysql_result( $result, $i, "email");
     $descr = mysql_result( $result, $i, "descr");
     $timeacl = mysql_result( $result, $i, "timeacl");
-//Выводится содержимое таблицы
+//п▓я▀п╡п╬п╢п╦я┌я│я▐ я│п╬п╢п╣я─п╤п╦п╪п╬п╣ я┌п╟п╠п╩п╦я├я▀
     echo "<TR BGCOLOR=#FFF7E5>
             <TD>".$descr."</TD>
             <TD ALIGN=RIGHT>". dotize($cur) . "</TD>
             <TD ALIGN=RIGHT>" . dotize($lim) . "</TD>
             <TD>$login</TD>
             <TD align=right>";
-//  учёт почты не распространяется =) Может быть, когда нибудь :))
+//  я┐я┤я▒я┌ п©п╬я┤я┌я▀ п╫п╣ я─п╟я│п©я─п╬я│я┌я─п╟п╫я▐п╣я┌я│я▐ =) п°п╬п╤п╣я┌ п╠я▀я┌я▄, п╨п╬пЁп╢п╟ п╫п╦п╠я┐п╢я▄ :))
     $rcpt = "rcpt='" . str_replace(",", "' OR rcpt='", $email) . "'";
     $email = str_replace(",", ", ", $email);
     $result2 = mysql_query("SELECT SUM(size) FROM mail WHERE $rcpt", $link);
     $msum = @mysql_result($result2, 0);
     $msum = dotize($msum);
 echo "$msum</TD><TD>";
-if ($lim > 0) if ($cur>$lim) echo "Отключен";
+if ($lim > 0) if ($cur>$lim) echo "п·я┌п╨п╩я▌я┤п╣п╫";
 echo "</TR>";
 }
 $result = mysql_query("SELECT sum(used) as sused, sum(quota) as squota FROM traf", $link);
 $slim = @mysql_result($result, 0, "squota");
 $lim = @mysql_result($result, 0, "sused");
-// опять емайл ;))
+// п╬п©я▐я┌я▄ п╣п╪п╟п╧п╩ ;))
 $result = mysql_query("SELECT SUM(size) FROM mail", $link);
 $msum = @mysql_result($result, 0);
-// Мужик по фамилии "_Итого:"
-echo "<TR BGCOLOR=#FFF7E5><TD>Итого на $i рыл</TD>
+// п°я┐п╤п╦п╨ п©п╬ я└п╟п╪п╦п╩п╦п╦ "_п≤я┌п╬пЁп╬:"
+echo "<TR BGCOLOR=#FFF7E5><TD>п≤я┌п╬пЁп╬ п╫п╟ $i я─я▀п╩</TD>
             <TD ALIGN=RIGHT>". dotize($lim) . "</TD>
             <TD ALIGN=RIGHT>" . dotize($slim) . "</TD>
             <TD></TD>
             <TD align=right>" . dotize($msum) . "</TD>
             <TD align=right><FONT COLOR=#00FF00>";
-// тот самый предел в месяц.
+// я┌п╬я┌ я│п╟п╪я▀п╧ п©я─п╣п╢п╣п╩ п╡ п╪п╣я│я▐я├.
 if (($msum+$lim) > $month_limit) echo "<FONT COLOR=#FF0000>";
 echo "           " . dotize(($msum+$lim)) . "</FONT></TD>
             </TR></TABLE></TD></TR></TABLE>";

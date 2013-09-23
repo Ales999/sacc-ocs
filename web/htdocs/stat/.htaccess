@@ -1,7 +1,6 @@
-
 <IfModule mod_charset_lite.c>
-    CharsetDefault KOI8-R
-    CharsetSourceEnc KOI8-R
+    CharsetSourceEnc UTF-8
+    CharsetDefault UTF-8
 </IfModule>
 
 

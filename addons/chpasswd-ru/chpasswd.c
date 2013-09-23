@@ -263,8 +263,8 @@ Herror(char *msg, FILE * fpw, FILE * tmp)
     puts("\n");
     printf("<html>\n");
     printf("<head>\n");
-    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">");
-    printf("  <title>Изменение пароля доступа к Squid</title>\n");
+    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">");
+    printf("  <title>п≤п╥п╪п╣п╫п╣п╫п╦п╣ п©п╟я─п╬п╩я▐ п╢п╬я│я┌я┐п©п╟ п╨ Squid</title>\n");
     printf("</head>\n");
 	    
     printf("<font color=red size=+2>%s\n", msg);
@@ -285,8 +285,8 @@ Hmsg(char *msg)
     puts("\n");
     printf("<html>\n");
   printf("<head>\n");
-    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">");
-      printf("  <title>Изменение пароля доступа к Squid</title>\n");
+    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">");
+      printf("  <title>п≤п╥п╪п╣п╫п╣п╫п╦п╣ п©п╟я─п╬п╩я▐ п╢п╬я│я┌я┐п©п╟ п╨ Squid</title>\n");
         printf("</head>\n");
     printf("<font color=red size=+2>%s\n", msg);
     return;
@@ -330,8 +330,8 @@ Changed(char *user, char *PwdLogFile, char *newpwd, char *showpwd, char *PwdFile
     puts("\n");
     printf("<html>\n");
   printf("<head>\n");
-    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">");
-      printf("  <title>Изменение пароля доступа к Squid</title>\n");
+    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">");
+      printf("  <title>п≤п╥п╪п╣п╫п╣п╫п╦п╣ п©п╟я─п╬п╩я▐ п╢п╬я│я┌я┐п©п╟ п╨ Squid</title>\n");
         printf("</head>\n");
 	    
     printf("<font color=blue size=+2>");
@@ -354,8 +354,8 @@ NotFound(char *user, char *PwdLogFile, char *newpwd, char *showpwd, char *PwdFil
     puts("\n");
     printf("<html>\n");
   printf("<head>\n");
-    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">");
-      printf("  <title>Изменение пароля доступа к Squid</title>\n");
+    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">");
+      printf("  <title>п≤п╥п╪п╣п╫п╣п╫п╦п╣ п©п╟я─п╬п╩я▐ п╢п╬я│я┌я┐п©п╟ п╨ Squid</title>\n");
         printf("</head>\n");
 	    
     printf("<font color=red size=+2>");
@@ -676,8 +676,8 @@ rulefail(char *minchar, char *minnum, char *minspec)
     puts("\n");
     printf("<html>\n");
   printf("<head>\n");
-    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">");
-      printf("  <title>Изменение пароля доступа к Squid</title>\n");
+    printf("<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">");
+      printf("  <title>п≤п╥п╪п╣п╫п╣п╫п╦п╣ п©п╟я─п╬п╩я▐ п╢п╬я│я┌я┐п©п╟ п╨ Squid</title>\n");
         printf("</head>\n");
     printf("<font color=red size=+2>");
     sprintf(Msg,"%s</font><br><br>",msg17);

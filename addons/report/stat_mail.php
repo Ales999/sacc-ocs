@@ -1,10 +1,10 @@
 #!/usr/local/bin/php -q
 <?php
 // -----------------------------------------------------------------------------
-// ÷ÓÅ ËÏÐÉÒÁÊÔÙ ÐÒÉÎÁÄÌÅÖÁÔ Virus-Õ É ÎÅËÏÔÏÒÁÑ ÞÁÓÔØ CS-y.
-// óÄÅÌÁÎÏ Ó ÏÓÏÂÙÍ ÃÉÎÉÚÍÏÍ.
+// Ð’ÑÐµ ÐºÐ¾Ð¿Ð¸Ñ€Ð°Ð¹Ñ‚Ñ‹ Ð¿Ñ€Ð¸Ð½Ð°Ð´Ð»ÐµÐ¶Ð°Ñ‚ Virus-Ñƒ Ð¸ Ð½ÐµÐºÐ¾Ñ‚Ð¾Ñ€Ð°Ñ Ñ‡Ð°ÑÑ‚ÑŒ CS-y.
+// Ð¡Ð´ÐµÐ»Ð°Ð½Ð¾ Ñ Ð¾ÑÐ¾Ð±Ñ‹Ð¼ Ñ†Ð¸Ð½Ð¸Ð·Ð¼Ð¾Ð¼.
 // created: SAcc v.154  [27-jul-03]
-// + ÐÏÐÙÔËÁ ÉÚÂÁ×ÉÔÓÑ ÏÔ sh ÓËÒÉÐÔÏ×. É ÓÄÅÌÁÔØ ×Ó£ ÎÁ ÐÈÐ.
+// + Ð¿Ð¾Ð¿Ñ‹Ñ‚ÐºÐ° Ð¸Ð·Ð±Ð°Ð²Ð¸Ñ‚ÑÑ Ð¾Ñ‚ sh ÑÐºÑ€Ð¸Ð¿Ñ‚Ð¾Ð². Ð¸ ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð²ÑÑ‘ Ð½Ð° Ð¿Ñ…Ð¿.
 // -----------------------------------------------------------------------------
 //$debug=1;
 //
@@ -15,11 +15,11 @@
 
 require("../etc/pref.php");
 $result=shell_exec("hostname");
-if (!isset($cfg_loaded)) {echo "ÂÏÔ×Á! ÎÅÍÏÇÕ ÚÁÇÒÕÚÉÔØ ËÏÎÆÉÇ!";die;};
+if (!isset($cfg_loaded)) {echo "Ð±Ð¾Ñ‚Ð²Ð°! Ð½ÐµÐ¼Ð¾Ð³Ñƒ Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ ÐºÐ¾Ð½Ñ„Ð¸Ð³!";die;};
 //echo "to: $admin_mail\n";
 $exec_str="/usr/local/sacc/report/stat.php | uuencode stat.html >/tmp/sacc_r.uue&&./stat_fix.php | mail -s \"".date("Y-M-d")." $result Sacc v $version\" $admin_mail";
 //"Content-Type: application/octet-stream; name=\"stat.html\""
-//"Content-Type: text/html;charset=\"koi8-r\";name=\"stat.html\""
+//"Content-Type: text/html;charset=\"utf-8\";name=\"stat.html\""
 //&&rm /tmp/stat_r.uue"
 //echo "$exec_str\n";
 shell_exec($exec_str);

@@ -1,4 +1,4 @@
--- $Author: slavik $ $Date: 2008-06-27 13:28:08 +0600 (п÷я┌п╫, 27 п≤я▌п╫ 2008) $
+-- $Author: slavik $ $Date: 2008-06-27 13:28:08 +0600 (п©ц╥я▐Б■▄п©Б∙╚, 27 п©Б┴╓я▐Б√▄п©Б∙╚ 2008) $
 -- $Id: init.sql 22 2008-06-27 07:28:08Z slavik $
 SET FOREIGN_KEY_CHECKS=0;
 CREATE TABLE `detail` (
@@ -16,7 +16,7 @@ CREATE TABLE `detail` (
   PRIMARY KEY  (`id`),
   KEY `szut` (`size`,`utime`),
   KEY `code` (`code`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
 -- mail
 CREATE TABLE `mail` (
   `uid` int(11) NOT NULL auto_increment,
@@ -28,7 +28,7 @@ CREATE TABLE `mail` (
   KEY `email1` (`frm`(15)),
   KEY `email2` (`id`(15)),
   KEY `email4` (`rcpt`(15))
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'Mail Table';
 -- options
 CREATE TABLE `options` (
   `id` smallint(6) unsigned NOT NULL auto_increment,
@@ -39,7 +39,7 @@ CREATE TABLE `options` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'Options Table';
 --
 CREATE TABLE `shistory` (
   `id` int(11) NOT NULL auto_increment,
@@ -48,7 +48,7 @@ CREATE TABLE `shistory` (
   `size` bigint(20) default '0',
   PRIMARY KEY  (`id`),
   KEY `uh_id` (`uh_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
 --
 CREATE TABLE `site` (
   `id` int(11) NOT NULL auto_increment,
@@ -59,7 +59,7 @@ CREATE TABLE `site` (
   `futime` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `site1` (`site`(40))
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
 --
 CREATE TABLE `sys_trf` (
   `offset` bigint(20) default NULL,
@@ -67,14 +67,14 @@ CREATE TABLE `sys_trf` (
   `trf` bigint(20) default NULL,
   `id` int(11) NOT NULL auto_increment,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
 --
 CREATE TABLE `syslog` (
   `id` int(11) NOT NULL auto_increment,
   `a_id` int(11) default NULL,
   `record` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
 --
 CREATE TABLE `uhistory` (
   `login` varchar(25) default NULL,
@@ -86,7 +86,7 @@ CREATE TABLE `uhistory` (
   PRIMARY KEY  (`id`),
   KEY `utime` (`utime`),
   FULLTEXT KEY `login` (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment'; 
 --
 CREATE TABLE `users` (
   `id` int(11) NOT NULL auto_increment,
@@ -101,7 +101,8 @@ CREATE TABLE `users` (
   `dquota` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `login` (`login`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
+
 --
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL auto_increment,
@@ -109,7 +110,8 @@ CREATE TABLE `admins` (
   `passwd` varchar(50) default NULL,
   `descr` text,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
+) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
+---
 DROP TABLE IF EXISTS `queue`;
 CREATE TABLE `queue` (                              
           `id` int(10) unsigned NOT NULL auto_increment,    
@@ -119,7 +121,8 @@ CREATE TABLE `queue` (
           `rtime` int(10) unsigned NOT NULL default '0',    
           PRIMARY KEY  (`id`),                              
           KEY `complete` (`complete`)                       
-        ) ENGINE=MyISAM DEFAULT CHARSET=koi8r; 
+        ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
+---
 DROP TABLE IF EXISTS `acl`;
 CREATE TABLE `acl` (                     
           `id` int(11) NOT NULL auto_increment,  
@@ -127,19 +130,20 @@ CREATE TABLE `acl` (
           `vname` text,                          
           `data` text,                           
           PRIMARY KEY  (`id`)                    
-        ) ENGINE=MyISAM DEFAULT CHARSET=koi8r;
-
+        ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
 -- stub
+set character_set_results = utf8;
+set character_set_connection = utf8;
+set character_set_client = utf8;
+set character_set_database = utf8;
+ALTER DATABASE `sacc` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+--- stub
 insert into admins (login, passwd, descr) values ('admin', md5('password'), 'sysadmin');
 insert into admins (login, passwd, descr) values ('slavik', '81198d0d6c036105f859d6301897c52b', 'developer');
--- stub
-set character_set_results = koi8r;
-set character_set_connection = koi8r;
-set character_set_client = koi8r;
-set character_set_database = koi8r;
+---
 INSERT INTO `sys_trf` (`offset`, `moffset`, `trf`, `id`) VALUES (0,0,0,1);
-insert into users (login, quota, used, email, descr, timeacl, aid) values ('slavik', 0, 0,'avirus@mail.ru','Пользователь системы', '',1);
-alter table detail add index(url(20));INSERT INTO `options` VALUES (1,'language','1','язык системы','0 - русский, 1 - английский.'),(2,'megabyte_cost','0','стоимость мегабайта траффика','если 0 то нигде про неё не писать.'),(3,'admin_mail','s@econ.psu.ru','адрес администратора',NULL),(4,'domain','russia','доменное имя',NULL),(5,'detailed','1','детализированная статистика','0 -нет, 1 - да.'),(6,'delimiter',' ','разделитель разрядов.',NULL),(7,'def_timeacl','2','время доступа по  умолчанию.',NULL),(8,'std_limit','20000000','лимит по умолчанию.',NULL),(9,'create_todo','0','действие при создании','0 - создать и в редактирование, 1 - создать и на главную, 3 - создать и снова на создание.'),(10,'order_main','0','main frame sort order','0-6 sort order'),(11,'order_uhist','1','history sort order','0-6 sort order'),(12,'main_ch','1','use color highlight in user manager','on/off'),(13,'uhist_ch','1','use color highlight in user history','on/off'),(14,'origin','SAcc-180rc2','webinterface header','=)'),(15,'pagelen','10','length of page','numeric'),(16,'timezone','5','delta from UTC','time offset from UTC'), (17,'cisco','0','we need to show cisco ipacc stat','no/yes');
-INSERT INTO `acl` VALUES (1,'time1700','с 17:00 до 9:00','acl time1700 time MTWHF 17:00-23:59\r\nacl time1700 time SA 0:00-23:59\r\nacl time1700 time MTWHF 0:00-8:59'),(2,'time1900','с 19:00 до 9:00','acl time1900 time MTWHF 19:00-23:59\r\nacl time1900 time MTWHF 0:00-8:59\r\nacl time1900 time SA 0:00-23:59'),(3,'CONNECT','только HTTPS','#acl CONNECT method CONNECT'),(4,'time2000','с 20:00 до 00:00','acl time2000 time MTWHF 20:00-23:59'),(5,'time2100','с 21:00 до 00:00','acl time2100 time MTWHF 21:00-23:59'),(0,'fulltime','неограниченный','acl fulltime time SMTWHFA 00:00-23:59');
+insert into users (login, quota, used, email, descr, timeacl, aid) values ('slavik', 0, 0,'avirus@mail.ru','п÷п╬п╩я▄п╥п╬п╡п╟я┌п╣п╩я▄ я│п╦я│я┌п╣п╪я▀', '',1);
+alter table detail add index(url(20));INSERT INTO `options` VALUES (1,'language','1','я▐п╥я▀п╨ я│п╦я│я┌п╣п╪я▀','0 - я─я┐я│я│п╨п╦п╧, 1 - п╟п╫пЁп╩п╦п╧я│п╨п╦п╧.'),(2,'megabyte_cost','0','я│я┌п╬п╦п╪п╬я│я┌я▄ п╪п╣пЁп╟п╠п╟п╧я┌п╟ я┌я─п╟я└я└п╦п╨п╟','п╣я│п╩п╦ 0 я┌п╬ п╫п╦пЁп╢п╣ п©я─п╬ п╫п╣я▒ п╫п╣ п©п╦я│п╟я┌я▄.'),(3,'admin_mail','s@econ.psu.ru','п╟п╢я─п╣я│ п╟п╢п╪п╦п╫п╦я│я┌я─п╟я┌п╬я─п╟',NULL),(4,'domain','russia','п╢п╬п╪п╣п╫п╫п╬п╣ п╦п╪я▐',NULL),(5,'detailed','1','п╢п╣я┌п╟п╩п╦п╥п╦я─п╬п╡п╟п╫п╫п╟я▐ я│я┌п╟я┌п╦я│я┌п╦п╨п╟','0 -п╫п╣я┌, 1 - п╢п╟.'),(6,'delimiter',' ','я─п╟п╥п╢п╣п╩п╦я┌п╣п╩я▄ я─п╟п╥я─я▐п╢п╬п╡.',NULL),(7,'def_timeacl','2','п╡я─п╣п╪я▐ п╢п╬я│я┌я┐п©п╟ п©п╬  я┐п╪п╬п╩я┤п╟п╫п╦я▌.',NULL),(8,'std_limit','20000000','п╩п╦п╪п╦я┌ п©п╬ я┐п╪п╬п╩я┤п╟п╫п╦я▌.',NULL),(9,'create_todo','0','п╢п╣п╧я│я┌п╡п╦п╣ п©я─п╦ я│п╬п╥п╢п╟п╫п╦п╦','0 - я│п╬п╥п╢п╟я┌я▄ п╦ п╡ я─п╣п╢п╟п╨я┌п╦я─п╬п╡п╟п╫п╦п╣, 1 - я│п╬п╥п╢п╟я┌я▄ п╦ п╫п╟ пЁп╩п╟п╡п╫я┐я▌, 3 - я│п╬п╥п╢п╟я┌я▄ п╦ я│п╫п╬п╡п╟ п╫п╟ я│п╬п╥п╢п╟п╫п╦п╣.'),(10,'order_main','0','main frame sort order','0-6 sort order'),(11,'order_uhist','1','history sort order','0-6 sort order'),(12,'main_ch','1','use color highlight in user manager','on/off'),(13,'uhist_ch','1','use color highlight in user history','on/off'),(14,'origin','SAcc-180rc2','webinterface header','=)'),(15,'pagelen','10','length of page','numeric'),(16,'timezone','5','delta from UTC','time offset from UTC'), (17,'cisco','0','we need to show cisco ipacc stat','no/yes');
+INSERT INTO `acl` VALUES (1,'time1700','я│ 17:00 п╢п╬ 9:00','acl time1700 time MTWHF 17:00-23:59\r\nacl time1700 time SA 0:00-23:59\r\nacl time1700 time MTWHF 0:00-8:59'),(2,'time1900','я│ 19:00 п╢п╬ 9:00','acl time1900 time MTWHF 19:00-23:59\r\nacl time1900 time MTWHF 0:00-8:59\r\nacl time1900 time SA 0:00-23:59'),(3,'CONNECT','я┌п╬п╩я▄п╨п╬ HTTPS','#acl CONNECT method CONNECT'),(4,'time2000','я│ 20:00 п╢п╬ 00:00','acl time2000 time MTWHF 20:00-23:59'),(5,'time2100','я│ 21:00 п╢п╬ 00:00','acl time2100 time MTWHF 21:00-23:59'),(0,'fulltime','п╫п╣п╬пЁя─п╟п╫п╦я┤п╣п╫п╫я▀п╧','acl fulltime time SMTWHFA 00:00-23:59');
 -- stub
 exit

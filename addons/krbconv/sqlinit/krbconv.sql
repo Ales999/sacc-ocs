@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `krbconv` (
   `ntlmname` varchar(254) CHARACTER SET ascii NOT NULL COMMENT 'Шаблон в NTLM нотации',
   PRIMARY KEY (`id`),
   UNIQUE KEY `krbname` (`krbname`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Таблица преобразований имен пользователей в acees.log из Ker' AUTO_INCREMENT=3 ;
+)ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'Таблица преобразований имен пользователей в acees.log из Ker' AUTO_INCREMENT=3 ;
 
 --
 -- MIME-ТИПЫ ТАБЛИЦЫ `krbconv`:

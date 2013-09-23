@@ -427,8 +427,6 @@ ErrorDocument 404 /404.html
 # force utf-8 for a number of file formats
 #AddCharset utf-8 .html .css .js .xml .json .rss
 
-AddDefaultCharset koi8-r
-
 # ----------------------------------------------------------------------
 # A little more security
 # ----------------------------------------------------------------------
@@ -495,15 +493,15 @@ Options -Indexes
 
 
 
-#<IfModule mod_charset_lite.c>
-#    CharsetDefault UTF-8
-#    CharsetSourceEnc UTF-8
-#</IfModule>
-
 <IfModule mod_charset_lite.c>
-    CharsetDefault KOI8-R
-    CharsetSourceEnc KOI8-R
+    CharsetDefault UTF-8
+    CharsetSourceEnc UTF-8
 </IfModule>
+
+#<IfModule mod_charset_lite.c>
+#    CharsetDefault KOI8-R
+#    CharsetSourceEnc KOI8-R
+#</IfModule>
 
 
 

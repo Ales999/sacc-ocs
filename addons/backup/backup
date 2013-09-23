@@ -18,6 +18,6 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 _date=`date +%y%m%d`
-/usr/local/bin/mysqldump --default-character-set=koi8r sacc >/tmp/backup.sql
+/usr/local/bin/mysqldump --default-character-set=utf8 sacc >/tmp/backup.sql
 bzip2 /tmp/backup.sql
 mv /tmp/backup.sql.bz2 /usr/local/sacc/addons/backup/data/$_date.bz2

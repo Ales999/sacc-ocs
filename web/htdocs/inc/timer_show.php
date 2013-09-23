@@ -1,21 +1,21 @@
-<!-- let's show timer -->
+<!-- lets show timer -->
 <?php
 global $tstart, $language, $lang, $admin_mail;
-//Делаем все то же самое, чтобы получить текущее время 
+//п■п╣п╩п╟п╣п╪ п╡я│п╣ я┌п╬ п╤п╣ я│п╟п╪п╬п╣, я┤я┌п╬п╠я▀ п©п╬п╩я┐я┤п╦я┌я▄ я┌п╣п╨я┐я┴п╣п╣ п╡я─п╣п╪я▐ 
 $mtime = microtime ();
 $mtime = explode ( " ", $mtime );
 $mtime = $mtime [1] + $mtime [0];
-//Записываем время окончания в другую переменную 
+//п≈п╟п©п╦я│я▀п╡п╟п╣п╪ п╡я─п╣п╪я▐ п╬п╨п╬п╫я┤п╟п╫п╦я▐ п╡ п╢я─я┐пЁя┐я▌ п©п╣я─п╣п╪п╣п╫п╫я┐я▌ 
 $tend = $mtime;
-//Вычисляем разницу 
+//п▓я▀я┤п╦я│п╩я▐п╣п╪ я─п╟п╥п╫п╦я├я┐ 
 $totaltime = ($tend - $tstart);
-//Выводим на экран 
+//п▓я▀п╡п╬п╢п╦п╪ п╫п╟ я█п╨я─п╟п╫ 
 echo "<HR NOSHADE COLOR=#000000 SIZE=1><!-- $tstart : $tend -->";
 echo "<center><table width=\"800\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>
     <td width=800 class=\"main\"><p align=center class=\"sys\">
     <font face=arial color=8f8f8f size=1>";
 printf ( "Creation time is %f milliseconds. ", $totaltime * 1000 );
-//Создано за 217,031002 миллисекунд. 2003-Oct-19 в 02:42:55 by SAcc v. 1.55 web engine
+//п║п╬п╥п╢п╟п╫п╬ п╥п╟ 217,031002 п╪п╦п╩п╩п╦я│п╣п╨я┐п╫п╢. 2003-Oct-19 п╡ 02:42:55 by SAcc v. 1.55 web engine
 print ( date ( "Y-M-d --- G:i:s T" ) );
 echo " by <A HREF=\"mailto:" . $admin_mail . "?Subject=SAcc_$version\">SAcc v. $version</a> web engine.";
 ?>
@@ -25,7 +25,7 @@ echo " by <A HREF=\"mailto:" . $admin_mail . "?Subject=SAcc_$version\">SAcc v. $
 ::
 <?php
 if ($lang == 1) {
-	echo "<a href=../lang.php?lang=0&query=" . base64_encode ( $_SERVER ['REQUEST_URI'] ) . ">Русский</a>";
+	echo "<a href=../lang.php?lang=0&query=" . base64_encode ( $_SERVER ['REQUEST_URI'] ) . ">п═я┐я│я│п╨п╦п╧</a>";
 }
 ;
 if ($lang == 0) {

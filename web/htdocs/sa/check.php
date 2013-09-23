@@ -3,7 +3,7 @@ echo "<HTML><HEAD>
 <META HTTP-EQUIV=\"Expires\" CONTENT=\"0\">
 <META HTTP-EQUIV=\"Pragma\"  CONTENT=\"no-cache\">    
 <META HTTP-EQUIV=\"Cache-Control\" CONTENT=\"no-cache\">
-<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=koi8-r\">
+<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=utf-8\">
 <TITLE>SAcc system checker.</TITLE><LINK REL=STYLESHEET TYPE=\"text/css\" HREF=../1.css>
 </HEAD><BODY BGCOLOR=#FFFFFF TEXT=#000000>";
 echo "<P><P><P><A HREF=\"index.php\">&lt;&lt;</A></p></p></p>";

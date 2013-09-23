@@ -8,7 +8,7 @@ function db_connect() {
           <P>
             <FONT COLOR=#FF0000>Look's like shit, database name != sacc </FONT>
           </P>
-          Если это сделано намеренно - удалите эту проверку нафиг и сами виноваты...";
+          п∙я│п╩п╦ я█я┌п╬ я│п╢п╣п╩п╟п╫п╬ п╫п╟п╪п╣я─п╣п╫п╫п╬ - я┐п╢п╟п╩п╦я┌п╣ я█я┌я┐ п©я─п╬п╡п╣я─п╨я┐ п╫п╟я└п╦пЁ п╦ я│п╟п╪п╦ п╡п╦п╫п╬п╡п╟я┌я▀...";
 		@mysql_close ( $link );
 		debug ();
 	}
@@ -35,10 +35,10 @@ function db_connect_ex($dbase) {
 		show_tail ();
 		@mysql_close ( $link );
 	}
-	mysql_query ( "set character_set_results= koi8r;", $link );
-	mysql_query ( "set character_set_connection= koi8r;", $link );
-	mysql_query ( "set character_set_client= koi8r;", $link );
-	mysql_query ( "set character_set_database = koi8r;", $link );
+	mysql_query ( "set character_set_results= utf8;", $link );
+	mysql_query ( "set character_set_connection= utf8;", $link );
+	mysql_query ( "set character_set_client= utf8;", $link );
+	mysql_query ( "set character_set_database = utf8;", $link );
 	return $link;
 }
 ;
