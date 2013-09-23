@@ -14,9 +14,9 @@ $mode = "sa";
 # ----------------- Аутентификация ---------------------
 if (isset ( $PHP_AUTH_USER )) {
 	$ok = false;
-	if (auth_adm ( $PHP_AUTH_USER, $PHP_AUTH_PW )) {
+//	if (auth_adm ( $PHP_AUTH_USER, $PHP_AUTH_PW )) {
 		$ok = true;
-	}
+//	}
 	if (! $ok) {
 		if (isset ( $try )) {
 			Header ( "WWW-Authenticate: Basic realm=\"$sa_auth_realm\"" );

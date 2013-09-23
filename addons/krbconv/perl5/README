@@ -1,4 +1,10 @@
+This file need for Apache2 NTLM authentitication!
+Check Apache2 site file !
+
 файл этот тут у меня:
 
 /usr/lib/perl5/Apache2/AuthenNTLM.pm
 
+
+Possible not needed !
+возможно не нуженен, - использем оригинальный

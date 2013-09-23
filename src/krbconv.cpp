@@ -220,6 +220,36 @@ std::string mysql_kerbname(const string & user_check, bool obratka)
 	return ret;
 }
 
+string NtlmNormalise(const string n_name, size_t first_found)
+{
+    const static char delim = '\\';
+    string sNorma = n_name;
+    string myret;
+    size_t last_found;
+    size_t k_len = n_name.length();
+    
+    // Перекручиваем наоборот 
+    
+    last_found = sNorma.rfind(delim);
+    if (last_found == first_found) 
+    {
+	return myret.assign(n_name);
+    } else
+    { // Требуется убирание лишних символов в NTLM имени.
+	string sf=n_name.substr(0, first_found);
+	string sl=n_name.substr(last_found, (k_len - last_found));
+#ifdef DEBUG	
+	clog << "sf: " << sf << endl;
+	clog << "sl: " << sl << endl;
+#endif    
+	return myret.assign(sf+sl);
+    }
+    
+    
+    
+return sNorma;
+}
+
 // -----------------------------------------------------------------------------------------
 string ConvertKrbName(const string k_name, bool preob = true)
 {
@@ -271,10 +301,12 @@ string ConvertKrbName(const string k_name, bool preob = true)
 			// В k_name будет типа 'ntlmdom\username'
 			found = k_name.find('\\');
 			if (found != string::npos) {
-				domain = k_name.substr(0, found);
-				login =
-				    k_name.substr(found + 1,
-						  (klen - found - 1));
+				// Необходима нормализация, т.к. '\' может быть несколько!
+				string n_name = NtlmNormalise(k_name, found);
+				//clog << "Normalize Name: "  << n_name << endl;
+				domain = n_name.substr(0, found);
+				login = n_name.substr(found + 1,  (klen - found - 1));
+						  
 #ifdef DEBUG
 				clog << "Found Domain: " << domain << " in position: " << int (found) << " and login: " << login << endl;	//temp
 #endif
@@ -347,7 +379,7 @@ int main(void)
 	//char *tempconv;               // Local !
 	string tempconv;
 	// Test ACL
-	string str = "KRBD\\testuser";
+	string str = "KRBD\\\\testuser";
 	tempconv = ConvertKrbName(str,false);
 	clog << "Original: " << str << " and converted name: " << tempconv << endl;
 	// Test 1

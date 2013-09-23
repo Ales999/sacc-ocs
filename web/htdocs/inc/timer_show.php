@@ -1,6 +1,6 @@
 <!-- let's show timer -->
 <?php
-global $tstart, $language, $lang;
+global $tstart, $language, $lang, $admin_mail;
 //Делаем все то же самое, чтобы получить текущее время 
 $mtime = microtime ();
 $mtime = explode ( " ", $mtime );
@@ -17,7 +17,7 @@ echo "<center><table width=\"800\" border=\"0\" cellspacing=\"0\" cellpadding=\"
 printf ( "Creation time is %f milliseconds. ", $totaltime * 1000 );
 //Создано за 217,031002 миллисекунд. 2003-Oct-19 в 02:42:55 by SAcc v. 1.55 web engine
 print ( date ( "Y-M-d --- G:i:s T" ) );
-echo " by <A HREF=\"mailto:avirus@mail.ru?Subject=SAcc_$version\">SAcc v. $version</a> web engine.";
+echo " by <A HREF=\"mailto:" . $admin_mail . "?Subject=SAcc_$version\">SAcc v. $version</a> web engine.";
 ?>
 </font>
 <img src=../images/line_825.gif height=5 WIDTH=100>

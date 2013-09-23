@@ -30,26 +30,28 @@
 // Web interface lang (by default)
 // 0 - russian
 // 1 - english (in develop)
+//$debug=1;
+//$PHP_AUTH_USER=$_SERVER['REMOTE_USER'];
 $language=1;
-$version="1.80-stable2";
+$version="1.80-stable3";
 $origin="SAcc ".$version;
 $megabyte_cost=0;
 $auth_mode=2;
 $admin_mail="s@econ.psu.ru";
-$logdir="/var/log/squid/access.log";
-$domain="RU";
+$logdir="/var/log/squid33/access.log";
+$domain="KRBD";
 $ncsa_passwd="/usr/local/sacc/etc/passwd";
 $bin_prefix="/usr/local/sacc/bin";
 $detailed=1;
 $delimiter=" ";
-$def_timeacl="time1900";
-$std_limit=20000000;
+$def_timeacl="fulltime";
+$std_limit=314572800;
 $cfg_loaded=1;
 $no_mail="true";
 $mysql_server="localhost";
-$mysql_login="slavik";
-$mysql_passwd="slavik";
+$mysql_login="sacc";
+$mysql_passwd="sacc";
 $mysql_database="sacc";
 if (isset($debug)) {echo "config loaded...";};
-//if ($_COOKIE["lang"]==0) {include "/usr/local/sacc/etc/ru.php";} else {include "/usr/local/sacc/etc/en.php";};
+if ($_COOKIE["lang"]==0) {include "/usr/local/sacc/etc/ru.php";} else {include "/usr/local/sacc/etc/en.php";};
 ?>

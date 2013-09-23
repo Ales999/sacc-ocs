@@ -18,9 +18,9 @@ if ($_COOKIE ['lang'] == 1) {
 # ----------------- Аутентификация ---------------------
 if (isset ( $PHP_AUTH_USER )) {
 	$ok = false;
-	if (auth_adm ( $PHP_AUTH_USER, $PHP_AUTH_PW )) {
+//	if (auth_adm ( $PHP_AUTH_USER, $PHP_AUTH_PW )) {
 		$ok = true;
-	}
+//	}
 	if (! $ok) {
 		if (isset ( $try )) {
 			Header ( "WWW-Authenticate: Basic realm=\"$admin_auth_realm\"" );
@@ -1126,7 +1126,7 @@ if (isset ( $st )) {
 	$st = "login";
 }
 # Выборка всей информации по пользователям из БД squid (таблица stat)
-$result = mysql_query ( "SELECT login, used, users.descr as descr, quota, email, users.id as id, status, acl.vname as timeacl FROM users, acl where acl.id=users.aid $ORDER_BY", $link );
+$result = mysql_query ( "SELECT login, used, users.descr as descr, quota, email, users.id as id, status, acl.vname as timeacl FROM users, acl where acl.id=users.aid and users.login not like('%\$%') $ORDER_BY", $link );
 echo mysql_error ( $link );
 //print $ORDER_BY;
 echo "<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>

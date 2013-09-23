@@ -1,3 +1,7 @@
+VERS_DATA=\n\
+include \"${prefix}/sacc/etc/pref.php\";\n\
+if (!(isset(\$$cfg_loaded))) { echo \"ботва! немогу загрузить конфиг!\";}\n\
+?>\n
 
 install-data-local:
 	@$(mkinstalldirs) ${prefix}/sacc/web
@@ -5,9 +9,7 @@ install-data-local:
 	$(RM) ${prefix}/sacc/web/Makefil*
 	$(CHOWN) -R root ${prefix}/sacc/web
 	$(CAT) ./htdocs/inc/version.php.in>${prefix}/sacc/web/htdocs/inc/version.php
-	$(ECHO) 'include "${prefix}/sacc/etc/pref.php";\
-if (!(isset($$cfg_loaded))) { echo "ботва! немогу загрузить конфиг!";}\
-?>'>>${prefix}/sacc/web/htdocs/inc/version.php
+	$(ECHO) -e "$(VERS_DATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/web/htdocs/inc/version.php
 	@$(INSTALL_DATA) ${prefix}/sacc/etc/pref.php ${prefix}/sacc/web/htdocs/inc/pref.php
 	@if [ -h ${prefix}/sacc/etc/pref.php ]; then $(RM) ${prefix}/sacc/etc/pref.php;fi
 	@if [ -r ${prefix}/sacc/etc/pref.php ]; then $(RM) ${prefix}/sacc/etc/pref.php;fi

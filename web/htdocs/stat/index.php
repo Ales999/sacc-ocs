@@ -6,6 +6,7 @@ include ("../inc/functions.php");
 include ("functions.php");
 require_once ("../inc/auth.php");
 require ("../inc/mysql.php");
+
 $mode = "user";
 $link = db_connect ();
 if (! (isset ( $PHP_AUTH_USER ))) {
@@ -29,7 +30,8 @@ if (auth_cli ( $PHP_AUTH_USER, $PHP_AUTH_PW, $link ))
 	if (($type == "detail") and ($detailed == 1)) {
 		show_head ();
 		echo "<A HREF=\"index.php#$id\">&lt;&lt;</A>\n<BR>\n";
-		$result = mysql_query ( "SELECT id FROM users where login='$PHP_AUTH_USER'", $link );
+		$REMOTE_USER=mysql_real_escape_string($REMOTE_USER);
+		$result = mysql_query ( "SELECT id FROM users where login='$REMOTE_USER'", $link );
 		$id = mysql_result ( $result, 0, "id" );
 		$result = mysql_query ( "SELECT name, value FROM options;", $link );
 		for($i = 0; $i < mysql_numrows ( $result ); $i ++) {
@@ -51,7 +53,8 @@ else //if (!(isset($type)))
 		//            echo "1. Введено: $PHP_AUTH_USER : $PHP_AUTH_PW <br>";
 		//             echo "2. Введено: $ulogin : $passwd ";
 		echo "<H1>$web_client_your_stat $month $year</H1>\n";
-		$result = mysql_query ( "SELECT id FROM users where login='$PHP_AUTH_USER'", $link );
+		$REMOTE_USER=mysql_real_escape_string($REMOTE_USER);
+		$result = mysql_query ( "SELECT id FROM users where login='$REMOTE_USER'", $link );
 		$id = mysql_result ( $result, 0, "id" );
 		show_info ( $link, $id );
 		echo "<HR NOSHADE COLOR=#000000 SIZE=1>\n<BR>\n";

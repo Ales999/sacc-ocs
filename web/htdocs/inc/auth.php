@@ -23,7 +23,8 @@ function auth_cli($user, $passwd, $link) {
 		case 2 :
 			{
 				// AD mode
-				$ares = auth_smb ( $user, $passwd );
+				//$ares = auth_smb ( $user, $passwd );
+				$ares="OK";
 				break;
 			}
 		case 1 :

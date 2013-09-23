@@ -16,12 +16,14 @@ install-data-local:
 	$(ECHO) "drop database if exists ${mysql_db};"| ${MYSQL} 2>${prefix}/sacc/sql.log
 	$(ECHO) "create database ${mysql_db};"| ${MYSQL} 2>>${prefix}/sacc/sql.log
 	$(CAT) ./init.sql|${MYSQL} --database="${mysql_db}" 2>>${prefix}/sacc/sql.log
+	$(CAT) ./addons/krbconv/sqlinit/krbconv.sql|${MYSQL} --database="${mysql_db}" 2>>${prefix}/sacc/sql.log
+	$(CAT) ./addons/krbconv/sqlinit/options.sql|${MYSQL} --database="${mysql_db}" 2>>${prefix}/sacc/sql.log
 	$(ECHO) "GRANT ALL PRIVILEGES ON ${mysql_db}.* TO ${mysql_user}@${mysql_sh} IDENTIFIED BY '${mysql_passwd}';"|${MYSQL}  2>>${prefix}/sacc/sql.log
 	@$(ECHO) "linking Web interface to ${www} directory"
 	@if [ -h ${www} ]; then $(RM) ${www};fi
 	$(TOUCH) ${ncsa_passwd}
 	$(CHMOD) 644 ${ncsa_passwd}
-	$(CHOWN) nobody:nobody ${ncsa_passwd}
+	$(CHOWN) nobody:nogroup ${ncsa_passwd}
 	$(LN_S) ${prefix}/sacc/web/htdocs ${www}
 	$(CHMOD) -R 644 ${prefix}/sacc/doc/*
 	@$(ECHO) "Database created, check ${prefix}/sacc/sql.log for errors."
