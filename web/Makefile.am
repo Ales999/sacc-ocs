@@ -1,6 +1,6 @@
-VERS_DATA=\n\
+VERS_DATA = \
 include \"${prefix}/sacc/etc/pref.php\";\n\
-if (!(isset(\$$cfg_loaded))) { echo \"ÂÏÔ×Á! ÎÅÍÏÇÕ ÚÁÇÒÕÚÉÔØ ËÏÎÆÉÇ!\";}\n\
+if (!(isset(\$$cfg_loaded))) { echo \"Ð±Ð¾Ñ‚Ð²Ð°! Ð½ÐµÐ¼Ð¾Ð³Ñƒ Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ ÐºÐ¾Ð½Ñ„Ð¸Ð³!\";}\n\
 ?>\n
 
 install-data-local:

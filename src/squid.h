@@ -4,8 +4,8 @@
 #define SQUID_H_
 struct uid_cache
 	{
-	int uid;	// скэшированный uid
-	char* uname;	// имя пользователя
+	int uid;	// СЃРєСЌС€РёСЂРѕРІР°РЅРЅС‹Р№ uid
+	char* uname;	// РёРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 	};
 
 #endif /*SQUID_H_*/
