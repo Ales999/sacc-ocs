@@ -64,4 +64,5 @@ ALTER TABLE `users` ADD INDEX ( `quota` , `used` ) ;
 ALTER TABLE `detail` CHANGE `u_id` `u_id` MEDIUMINT( 9 ) UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE `detail` ADD INDEX ( `u_id` );
 ALTER TABLE `site` CHANGE `u_id` `u_id` MEDIUMINT( 9 ) UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `site` ADD INDEX ( `u_id` );
 COMMIT;

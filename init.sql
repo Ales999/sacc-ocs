@@ -40,7 +40,7 @@ CREATE TABLE `options` (
   UNIQUE KEY `id` (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'Options Table';
---
+-- stub
 CREATE TABLE `shistory` (
   `id` int(11) NOT NULL auto_increment,
   `uh_id` int(11) NOT NULL default '0',
@@ -49,7 +49,7 @@ CREATE TABLE `shistory` (
   PRIMARY KEY  (`id`),
   KEY `uh_id` (`uh_id`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
---
+-- stub
 CREATE TABLE `site` (
   `id` int(11) NOT NULL auto_increment,
   `u_id` int(11) default NULL,
@@ -60,7 +60,7 @@ CREATE TABLE `site` (
   PRIMARY KEY  (`id`),
   KEY `site1` (`site`(40))
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
---
+-- stub
 CREATE TABLE `sys_trf` (
   `offset` bigint(20) default NULL,
   `moffset` bigint(20) default NULL,
@@ -68,14 +68,14 @@ CREATE TABLE `sys_trf` (
   `id` int(11) NOT NULL auto_increment,
   PRIMARY KEY  (`id`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
---
+-- stub
 CREATE TABLE `syslog` (
   `id` int(11) NOT NULL auto_increment,
   `a_id` int(11) default NULL,
   `record` text,
   PRIMARY KEY  (`id`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
---
+-- stub
 CREATE TABLE `uhistory` (
   `login` varchar(25) default NULL,
   `descr` text,
@@ -87,7 +87,7 @@ CREATE TABLE `uhistory` (
   KEY `utime` (`utime`),
   FULLTEXT KEY `login` (`login`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment'; 
---
+-- stub
 CREATE TABLE `users` (
   `id` int(11) NOT NULL auto_increment,
   `aid` int(11) NOT NULL default '0',
@@ -102,8 +102,7 @@ CREATE TABLE `users` (
   PRIMARY KEY  (`id`),
   KEY `login` (`login`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
-
---
+-- stub
 CREATE TABLE `admins` (
   `id` int(11) NOT NULL auto_increment,
   `login` varchar(15) default NULL,
@@ -111,7 +110,7 @@ CREATE TABLE `admins` (
   `descr` text,
   PRIMARY KEY  (`id`)
 ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
----
+-- stub
 DROP TABLE IF EXISTS `queue`;
 CREATE TABLE `queue` (                              
           `id` int(10) unsigned NOT NULL auto_increment,    
@@ -122,7 +121,7 @@ CREATE TABLE `queue` (
           PRIMARY KEY  (`id`),                              
           KEY `complete` (`complete`)                       
         ) ENGINE = MYISAM CHARACTER SET utf8 COLLATE utf8_general_ci COMMENT = 'None Comment';
----
+-- stub
 DROP TABLE IF EXISTS `acl`;
 CREATE TABLE `acl` (                     
           `id` int(11) NOT NULL auto_increment,  
@@ -136,11 +135,11 @@ set character_set_results = utf8;
 set character_set_connection = utf8;
 set character_set_client = utf8;
 set character_set_database = utf8;
-ALTER DATABASE `sacc` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
---- stub
+-- ALTER DATABASE `sacc` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+-- stub
 insert into admins (login, passwd, descr) values ('admin', md5('password'), 'sysadmin');
 insert into admins (login, passwd, descr) values ('slavik', '81198d0d6c036105f859d6301897c52b', 'developer');
----
+-- stub
 INSERT INTO `sys_trf` (`offset`, `moffset`, `trf`, `id`) VALUES (0,0,0,1);
 insert into users (login, quota, used, email, descr, timeacl, aid) values ('slavik', 0, 0,'avirus@mail.ru','Пользователь системы', '',1);
 alter table detail add index(url(20));INSERT INTO `options` VALUES (1,'language','1','язык системы','0 - русский, 1 - английский.'),(2,'megabyte_cost','0','стоимость мегабайта траффика','если 0 то нигде про неё не писать.'),(3,'admin_mail','s@econ.psu.ru','адрес администратора',NULL),(4,'domain','russia','доменное имя',NULL),(5,'detailed','1','детализированная статистика','0 -нет, 1 - да.'),(6,'delimiter',' ','разделитель разрядов.',NULL),(7,'def_timeacl','2','время доступа по  умолчанию.',NULL),(8,'std_limit','20000000','лимит по умолчанию.',NULL),(9,'create_todo','0','действие при создании','0 - создать и в редактирование, 1 - создать и на главную, 3 - создать и снова на создание.'),(10,'order_main','0','main frame sort order','0-6 sort order'),(11,'order_uhist','1','history sort order','0-6 sort order'),(12,'main_ch','1','use color highlight in user manager','on/off'),(13,'uhist_ch','1','use color highlight in user history','on/off'),(14,'origin','SAcc-180rc2','webinterface header','=)'),(15,'pagelen','10','length of page','numeric'),(16,'timezone','5','delta from UTC','time offset from UTC'), (17,'cisco','0','we need to show cisco ipacc stat','no/yes');
