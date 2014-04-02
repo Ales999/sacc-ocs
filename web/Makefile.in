@@ -187,10 +187,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 www = @www@
-VERS_DATA = \
+VERS_DATA = "\
 include \"${prefix}/sacc/etc/pref.php\";\n\
 if (!(isset(\$$cfg_loaded))) { echo \"ботва! немогу загрузить конфиг!\";}\n\
-?>\n
+?>\n"
 
 all: all-am
 
