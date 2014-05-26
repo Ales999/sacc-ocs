@@ -1,7 +1,7 @@
 ETC_FILES = monthly.sql pref.php.orig php.ini.recommended recount.sql pref.php.in squid.orig.conf
 ETC_INIT = init.d/MySQL.control init.d/SquiD.control init.d/sacc.control init.d/SAcc_counter.control init.d/apache.control
 
-PREF_DATA= \
+PREFDATA= "\
 \$$language=1;\n\
 \$$version=\"${VERSION}\";\n\
 \$$origin=\"SAcc \".\$${version};\n\
@@ -24,7 +24,7 @@ PREF_DATA= \
 \$$mysql_database=\"${mysql_db}\";\n\
 if (isset(\$$debug)) {echo \"config loaded...\";};\n\
 if (\$$_COOKIE[\"lang\"]==0) {include \"$(prefix)/sacc/etc/ru.php\";} else {include \"$(prefix)/sacc/etc/en.php\";};\n\
-?>\n
+?>\n"
 
 install-data-local:
 	@$(mkinstalldirs) ${prefix}/sacc/etc
@@ -33,15 +33,15 @@ install-data-local:
 	$(INSTALL_PROGRAM) -o root ${ETC_INIT} ${prefix}/sacc/etc/init.d
 	$(CHMOD) 600 ${prefix}/sacc/etc/squid.orig.conf
 	$(CAT) ./pref.php.in>${prefix}/sacc/etc/pref.php
-	$(ECHO) -e "$(PREF_DATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/etc/pref.php
+	$(ECHO) -e "$(PREFDATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/etc/pref.php
 
 upgrade-local:
 	$(CAT) ./pref.php.in>${prefix}/sacc/etc/pref.php
-	$(ECHO) -e "$(PREF_DATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/etc/pref.php
+	$(ECHO) -e "$(PREFDATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/etc/pref.php
 
 upgrade:
 	$(CAT) ./pref.php.in>${prefix}/sacc/etc/pref.php
-	$(ECHO) -e "$(PREF_DATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/etc/pref.php
+	$(ECHO) -e "$(PREFDATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/etc/pref.php
 
 uninstall-local:
 	
