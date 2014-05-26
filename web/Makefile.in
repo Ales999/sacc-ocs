@@ -187,7 +187,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 www = @www@
-VERS_DATA = "\
+VERSDATA = "\
 include \"${prefix}/sacc/etc/pref.php\";\n\
 if (!(isset(\$$cfg_loaded))) { echo \"ботва! немогу загрузить конфиг!\";}\n\
 ?>\n"
@@ -204,9 +204,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu web/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign web/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu web/Makefile
+	  $(AUTOMAKE) --foreign web/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -377,7 +377,7 @@ install-data-local:
 	$(RM) ${prefix}/sacc/web/Makefil*
 	$(CHOWN) -R root ${prefix}/sacc/web
 	$(CAT) ./htdocs/inc/version.php.in>${prefix}/sacc/web/htdocs/inc/version.php
-	$(ECHO) -e "$(VERS_DATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/web/htdocs/inc/version.php
+	$(ECHO) -e "$(VERSDATA)" | sed -e 's/^[ ]//'>>${prefix}/sacc/web/htdocs/inc/version.php
 	@$(INSTALL_DATA) ${prefix}/sacc/etc/pref.php ${prefix}/sacc/web/htdocs/inc/pref.php
 	@if [ -h ${prefix}/sacc/etc/pref.php ]; then $(RM) ${prefix}/sacc/etc/pref.php;fi
 	@if [ -r ${prefix}/sacc/etc/pref.php ]; then $(RM) ${prefix}/sacc/etc/pref.php;fi

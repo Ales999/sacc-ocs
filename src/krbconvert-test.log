@@ -5,7 +5,6 @@ Size of KRBD\\testuser is: 14
 Found NTLM name: KRBD\\testuser
 sf: KRBD
 sl: \testuser
-Normalize Name: KRBD\testuser
 Found Domain: KRBD in position: 4 and login: testuser
 Проверка домена KRBD по базе krbconv
 row[0] @KRBD.DOMEN.RU
@@ -68,7 +67,6 @@ Original: otherdom\nextuser and converted name: otherdom\nextuser
 =--->ConvertKrbName(otherdom\nextuser,False)<---=
 Size of otherdom\nextuser is: 17
 Found NTLM name: otherdom\nextuser
-Normalize Name: otherdom\nextuser
 Found Domain: otherdom in position: 8 and login: nextuser
 Проверка домена otherdom по базе krbconv
 row[0] @OTHERDOM.TEST.MY
@@ -81,7 +79,6 @@ Original: otherdom\nextuser and converted name: nextuser@OTHERDOM.TEST.MY
 =--->ConvertKrbName(otherdom\nextuser,False)<---=
 Size of otherdom\nextuser is: 17
 Found NTLM name: otherdom\nextuser
-Normalize Name: otherdom\nextuser
 Found Domain: otherdom in position: 8 and login: nextuser
 Проверка домена otherdom по базе krbconv
 row[0] @OTHERDOM.TEST.MY
@@ -103,3 +100,13 @@ Found NTLM name: test_false
 Original: test_false and converted name: 
 (D!)-Вызван дефолтный деструктор NamePair
 (D!)-Вызван дефолтный деструктор NamePair
+In field KRBD: login(4) KRBD
+Sql: select krbname, ntlmname from krbconv where ntlmname like 'KRBD'
+In field @KRBD.DOMEN.RU: login(14) @KRBD.DOMEN.RU
+Sql: select krbname, ntlmname from krbconv where krbname like '@KRBD.DOMEN.RU'
+In field @OTHERDOM.TEST.MY: login(17) @OTHERDOM.TEST.MY
+Sql: select krbname, ntlmname from krbconv where krbname like '@OTHERDOM.TEST.MY'
+In field otherdom: login(8) otherdom
+Sql: select krbname, ntlmname from krbconv where ntlmname like 'otherdom'
+In field otherdom: login(8) otherdom
+Sql: select krbname, ntlmname from krbconv where ntlmname like 'otherdom'
