@@ -1,9 +1,8 @@
-
 # ---
 # EN: After create file 'HTTP.keytab', place this file to /etc/default
 # Need for work Kerberos authorization.
 # ---
-# RU: После создания файл 'HTTP.keytab', скопируйте данный файл в /etc/default
+# RU: После создания файла 'HTTP.keytab', скопируйте данный файл в /etc/default
 # Нужен для работы керберос авторизации
 
 KRB5_KTNAME=/etc/HTTP.keytab
