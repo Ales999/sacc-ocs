@@ -1,0 +1,33 @@
+Проверть в какой ветке мы находимся и проверить ее статус
+$ git branch -a && git status
+
+Перейти на master:
+$ git checkout master
+
+Создать новый branch и перейти на него:
+$ git checkout -b hotfix
+
+---
+Тут мы что-то исправляем, и теперь это нужно закрепить
+...
+a) Проверяем статус:
+$ git status
+b) Коммитим (закрепляем) наши изменения с указанием чего делали:
+$ git commit -a -m 'added a new footer [issue 53]'
+
+---
+Для слияния наших изменений в ветку master, на него следует для начала переключиться:
+a):
+$ git checkout master
+
+b) Вот теперь переносим наши изменения в ветку master:
+$ git merge hotfix
+
+---
+Если все прошло успешно то ветку 'hotfix' можно удалить:
+$ git branch -d hotfix
+
+
+---
+PS Отлично написано про это все тут: http://git-scm.com/book/ru/ и тут: http://githowto.com/ru/
+
