@@ -36,7 +36,7 @@
 #define _etext etext
 
 #include "config.h"
-
+#include "xis.h"
 #if HAVE_STDIO_H
 #include <stdio.h>
 #endif
